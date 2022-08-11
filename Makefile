@@ -48,6 +48,11 @@ testcov: test
 .PHONY: all
 all: lint types testcov
 
+.PHONY: sbom
+sbom:
+	@./gen-sbom
+	@cog -I. -P -c -r --check --markers="[[fill ]]] [[[end]]]" -p "from gen_sbom import *;from gen_licenses import *" docs/third-party/README.md
+
 .PHONY: version
 version:
 	@cog -I. -P -c -r --check --markers="[[fill ]]] [[[end]]]" -p "from gen_version import *" pyproject.toml suhteita/__init__.py
