@@ -6,8 +6,10 @@ import json
 import logging
 import os
 import pathlib
+import platform
 import secrets
 import sys
+import uuid
 from typing import List, Tuple, Union, no_type_check
 
 from atlassian import Jira  # type: ignore
@@ -66,21 +68,31 @@ def main(argv: Union[List[str], None] = None) -> int:
         '-u',
         dest='user',
         default=USER,
-        help=f'user (default: {USER if USER else "None, set LOADER_USER for default"})',
+        help=f'user (default: {USER if USER else "None, set {APP_ENV}_USER for default"})',
     )
     parser.add_argument(
         '--target',
         '-t',
         dest='target_url',
         default=BASE_URL,
-        help=f'target URL (default: {BASE_URL if BASE_URL else "None, set LOADER_BASE_URL for default"})',
+        help=f'target URL (default: {BASE_URL if BASE_URL else "None, set {APP_ENV}_BASE_URL for default"})',
     )
     parser.add_argument(
         '--project',
         '-p',
         dest='target_project',
         default=PROJECT,
-        help=f'target project (default: {PROJECT if PROJECT else "None, set LOADER_PROJECT for default"})',
+        help=f'target project (default: {PROJECT if PROJECT else "None, set {APP_ENV}_PROJECT for default"})',
+    )
+    parser.add_argument(
+        '--is-cloud',
+        action='store_true',
+        dest='is_cloud',
+        default=IS_CLOUD,
+        help=(
+            'target is cloud instance (default: '
+            f'{"True" if IS_CLOUD else "False, set {APP_ENV}_IS_CLOUD for a different default"})'
+        ),
     )
 
     args = parser.parse_args(argv)
@@ -88,23 +100,26 @@ def main(argv: Union[List[str], None] = None) -> int:
     user = args.user if args.user else USER
     target_url = args.target_url if args.target_url else BASE_URL
     target_project = args.target_project if args.target_project else PROJECT
+    is_cloud = args.is_cloud if args.is_cloud else IS_CLOUD
 
     init_logger(name=APP_ENV, level=logging.DEBUG if DEBUG else None)
     if not TOKEN:
-        log.error('No secret token or pass phrase given, please set LOADER_TOKEN accoringly')
+        log.error(f'No secret token or pass phrase given, please set {APP_ENV}_TOKEN accordingly')
         return 2
+
+    node_indicator = uuid.uuid3(uuid.NAMESPACE_DNS, platform.node())
+    c_rand, d_rand = two_sentences()
 
     start_time = dti.datetime.now(tz=dti.timezone.utc)
     start_ts = start_time.strftime('%Y-%m-%d %H:%M:%S.%f UTC')
     log.info(f'Starting load test execution at at ({start_ts})')
     log.info(f'Connecting to upstream service ({target_url}) per login ({user}) at ({start_ts})')
-    service = Jira(url=target_url, username=user, password=TOKEN, cloud=IS_CLOUD)
+    service = Jira(url=target_url, username=user, password=TOKEN, cloud=is_cloud)
     log.info('Connected to upstream service ... retrieve server info')
     log.info(json.dumps(service.get_server_info(True), indent=2))
 
-    c_rand, d_rand = two_sentences()
-    log.info(f'Generated two random sentences original ({c_rand}) and duplicate ({d_rand})')
-
+    log.info(f'Random sentence of original ({c_rand})')
+    log.info(f'Random sentence of duplicate ({d_rand})')
     projects = service.get_all_projects(included_archived=None)
     proj_env_ok = False
     if target_project:
@@ -125,8 +140,8 @@ def main(argv: Union[List[str], None] = None) -> int:
     desc_core = '... and short description we dictate.'
     log.info(f'Common description part will be ({desc_core})')
 
-    c_desc = f'{c_rand}\n{desc_core}'
-    d_desc = f'{d_rand}\n{desc_core}'
+    c_desc = f'{c_rand}\n{desc_core}\nCAUSALITY={node_indicator}'
+    d_desc = f'{d_rand}\n{desc_core}\nCAUSALITY={node_indicator}'
     fields = {
         'project': {'key': first_proj_key},
         'issuetype': {'name': 'Task'},
@@ -229,10 +244,10 @@ def main(argv: Union[List[str], None] = None) -> int:
     log.debug(json.dumps(x_iss, indent=2))
 
     log.info('Adding comments to the created issues tagging for deletion')
-    c_comment_resp = service.issue_add_comment(c_key, 'LOADER_PURGE_ME_ORIGINAL')
+    c_comment_resp = service.issue_add_comment(c_key, 'SUHTEITA_PURGE_ME_ORIGINAL')
     log.info(f'Added purge tag comment on original {c_key} with response ({str(c_comment_resp)})')
 
-    d_comment_resp = service.issue_add_comment(d_key, 'LOADER_PURGE_ME_DUPLICATE')
+    d_comment_resp = service.issue_add_comment(d_key, 'SUHTEITA_PURGE_ME_DUPLICATE')
     log.info(f'Added purge tag comment to the duplicate issue {d_key} with response ({str(d_comment_resp)})')
 
     end_time = dti.datetime.now(tz=dti.timezone.utc)
