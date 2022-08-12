@@ -113,7 +113,7 @@ def main(argv: Union[List[str], None] = None) -> int:
     start_time = dti.datetime.now(tz=dti.timezone.utc)
     start_ts = start_time.strftime('%Y-%m-%d %H:%M:%S.%f UTC')
     log.info(f'Starting load test execution at at ({start_ts})')
-    log.info(f'Connecting to upstream service ({target_url}) per login ({user}) at ({start_ts})')
+    log.info(f'Connecting to upstream ({"cloud" if is_cloud else "on-site"}) service ({target_url}) per login ({user}) at ({start_ts})')
     service = Jira(url=target_url, username=user, password=TOKEN, cloud=is_cloud)
     log.info('Connected to upstream service ... retrieve server info')
     log.info(json.dumps(service.get_server_info(True), indent=2))
