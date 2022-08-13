@@ -113,6 +113,7 @@ def main(argv: Union[List[str], None] = None) -> int:
     start_time = dti.datetime.now(tz=dti.timezone.utc)
     start_ts = start_time.strftime('%Y-%m-%d %H:%M:%S.%f UTC')
     log.info(f'Starting load test execution at at ({start_ts})')
+    log.info(f'Node indicator ({node_indicator})')
     log.info(
         f'Connecting to upstream ({"cloud" if is_cloud else "on-site"}) service ({target_url})'
         f' per login ({user}) at ({start_ts})'
