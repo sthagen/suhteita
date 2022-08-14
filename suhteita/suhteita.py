@@ -182,7 +182,7 @@ def main(argv: Union[List[str], None] = None) -> int:
     }
     service.create_issue_link(data)
 
-    todo, in_progress, done = ('Todo', 'In Progress', 'Done')
+    todo, in_progress, done = ('To Do', 'In Progress', 'Done')
     log.info(f'The test workflow assumes the states ({todo}, {in_progress}, {done})')
 
     d_iss_state = service.get_issue_status(d_key)
