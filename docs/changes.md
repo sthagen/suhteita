@@ -7,7 +7,7 @@
 * Made README and docs landing page lobby for the distributed in dvcs (git), codeberg, and sourcehut
 * Fixed a state literal ...
 * Added node incator log line
-* ENhanced code quality
+* Enhanced code quality
 * Added the either cloud or on-site upstream info to the log
 * Unlittered the code and added more info to created issues as well as to the log
 
