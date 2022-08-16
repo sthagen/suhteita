@@ -4,6 +4,7 @@
 
 * Added new dict based memoizing extractor (examples)
 * Added dict based analyzer with less wordy labels and larger symbols (examples)
+
 ## 2022.8.16
 
 * Added examples scripts for log extraction and graphical reporting durations per target and scenario
