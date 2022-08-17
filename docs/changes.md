@@ -1,5 +1,9 @@
 # Change History
 
+## 2022.8.18
+
+* Prepared configurable scenarios
+
 ## 2022.8.17
 
 * Added new dict based memoizing extractor (examples)
