@@ -130,6 +130,12 @@ def add_comment(service: Jira, issue_key: str, comment: str):
     return service.issue_add_comment(issue_key, comment)
 
 
+@no_type_check
+def extract_fields(data, fields):
+    """DRY."""
+    return {field: data[field] for field in fields}
+
+
 def update_issue_field(service: Jira, issue_key: str, labels: List[str]) -> None:
     """DRY."""
     service.update_issue_field(issue_key, fields={'labels': labels})
@@ -300,8 +306,8 @@ def main(argv: Union[List[str], None] = None) -> int:
     if d_iss_state_done != done:
         log.error(f'Unexpected state ({d_iss_state}) for duplicate {d_key} - expected was ({done})')
 
-    d_comment_resp_closing = add_comment(service, d_key, 'Closed as duplicate.')
-    log.info(f'Adding comment on {d_key} had response ({str(d_comment_resp_closing)})')
+    some = extract_fields(add_comment(service, d_key, 'Closed as duplicate.'), fields=('self', 'body'))
+    log.info(f'Adding comment on {d_key} had response extract ({some})')
 
     set_original_estimate(service, c_key, hours=42)
 
@@ -324,12 +330,13 @@ def main(argv: Union[List[str], None] = None) -> int:
     x_iss = load_issue(service, c_key)
     log.debug(json.dumps(x_iss, indent=2))
 
-    log.info('Adding comments to the created issues tagging for deletion')
-    c_comment_resp = add_comment(service=service, issue_key=c_key, comment='SUHTEITA_PURGE_ME_ORIGINAL')
-    log.info(f'Added purge tag comment on original {c_key} with response ({str(c_comment_resp)})')
+    purge_me = 'SUHTEITA_PURGE_ME_ORIGINAL'
+    log.info(f'Adding comments ({purge_me}) to the created issues tagging for deletion')
+    some = extract_fields(add_comment(service=service, issue_key=c_key, comment=purge_me), fields=('self', 'body'))
+    log.info(f'Added purge tag comment on original {c_key} with response extract ({some})')
 
-    d_comment_resp = add_comment(service=service, issue_key=d_key, comment='SUHTEITA_PURGE_ME_DUPLICATE')
-    log.info(f'Added purge tag comment to the duplicate issue {d_key} with response ({str(d_comment_resp)})')
+    some = extract_fields(add_comment(service=service, issue_key=d_key, comment=purge_me), fields=('self', 'body'))
+    log.info(f'Added purge tag comment on duplicate issue {d_key} with response extract ({some})')
 
     end_time = dti.datetime.now(tz=dti.timezone.utc)
     end_ts = end_time.strftime('%Y-%m-%d %H:%M:%S.%f UTC')
