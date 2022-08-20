@@ -32,16 +32,6 @@ LOG_PATH = pathlib.Path(LOG_FOLDER, LOG_FILE) if LOG_FOLDER.is_dir() else pathli
 LOG_LEVEL = logging.INFO
 
 
-def two_sentences(word_count: int = 4) -> Tuple[str, str]:
-    """DRY."""
-    with open('/usr/share/dict/words', 'rt', encoding=ENCODING) as handle:
-        words = [word.strip() for word in handle]
-        wun = ' '.join(secrets.choice(words) for _ in range(word_count))
-        two = ' '.join(secrets.choice(words) for _ in range(word_count))
-        del words
-    return wun, two
-
-
 @no_type_check
 def init_logger(name=None, level=None):
     """Initialize module level logger"""
@@ -58,10 +48,79 @@ def init_logger(name=None, level=None):
     log.propagate = True
 
 
-def main(argv: Union[List[str], None] = None) -> int:
-    """Drive the transactions."""
-    argv = sys.argv[1:] if argv is None else argv
+def two_sentences(word_count: int = 4) -> Tuple[str, str]:
+    """DRY."""
+    with open('/usr/share/dict/words', 'rt', encoding=ENCODING) as handle:
+        words = [word.strip() for word in handle]
+        wun = ' '.join(secrets.choice(words) for _ in range(word_count))
+        two = ' '.join(secrets.choice(words) for _ in range(word_count))
+        del words
+    return wun, two
 
+
+def create_issue_pair(service: Jira, project: str, node: uuid.UUID, ts: str, ident: Tuple[str, str]) -> Tuple[str, str]:
+    """DRY."""
+    desc_core = '... and short description we dictate.'
+    log.info(f'Common description part will be ({desc_core})')
+    c_desc = f'{ident[0]}\n{desc_core}\nCAUSALITY={node}'
+    d_desc = f'{ident[1]}\n{desc_core}\nCAUSALITY={node}'
+    fields = {
+        'project': {'key': project},
+        'issuetype': {'name': 'Task'},
+        'summary': f'From REST we create at {ts}',
+        'description': c_desc,
+    }
+    created = service.issue_create(fields=fields)
+    c_key = created['key']
+    if not service.issue_exists(c_key):
+        log.error(f'Failed existence test for original ({c_key})')
+    fields['description'] = d_desc
+    duplicate = service.issue_create(fields=fields)
+    d_key = duplicate['key']
+    if not service.issue_exists(d_key):
+        log.error(f'Failed existence test for original ({d_key})')
+    return c_key, d_key
+
+
+@no_type_check
+def execute_jql(service: Jira, query: str):
+    """DRY."""
+    return service.jql(query)
+
+
+@no_type_check
+def amend_issue_description(service: Jira, issue_key: str, amendment: str, issue_context) -> None:
+    """DRY."""
+    service.update_issue_field(
+        issue_key,
+        fields={'description': f"{issue_context['issues'][0]['fields']['description']}\n{amendment}"},
+    )
+
+
+@no_type_check
+def add_comment(service: Jira, issue_key: str, comment: str):
+    """DRY."""
+    return service.issue_add_comment(issue_key, comment)
+
+
+def create_component(service: Jira, project: str, description: str) -> Tuple[str, str, object]:
+    """DRY."""
+    random_component = secrets.token_urlsafe()
+    log.info(f'Random component will be ({random_component})')
+    comp_data = {
+        'project': project,
+        'description': description,
+        'name': random_component,
+        'assigneeType': 'UNASSIGNED',
+    }
+    log.info(f'Creating random component ({random_component})')
+    comp_create_resp = service.create_component(comp_data)
+    comp_id = comp_create_resp['id']
+    return comp_id, random_component, service.component(comp_id)
+
+
+def parse_request(argv: List[str]) -> argparse.Namespace:
+    """DRY."""
     parser = argparse.ArgumentParser(description=APP_ALIAS)
     parser.add_argument(
         '--user',
@@ -94,13 +153,19 @@ def main(argv: Union[List[str], None] = None) -> int:
             f'{"True" if IS_CLOUD else "False, set {APP_ENV}_IS_CLOUD for a different default"})'
         ),
     )
+    return parser.parse_args(argv)
 
-    args = parser.parse_args(argv)
+
+def main(argv: Union[List[str], None] = None) -> int:
+    """Drive the transactions."""
+    argv = sys.argv[1:] if argv is None else argv
+
+    options = parse_request(argv)
     # Belt and braces:
-    user = args.user if args.user else USER
-    target_url = args.target_url if args.target_url else BASE_URL
-    target_project = args.target_project if args.target_project else PROJECT
-    is_cloud = args.is_cloud if args.is_cloud else IS_CLOUD
+    user = options.user if options.user else USER
+    target_url = options.target_url if options.target_url else BASE_URL
+    target_project = options.target_project if options.target_project else PROJECT
+    is_cloud = options.is_cloud if options.is_cloud else IS_CLOUD
 
     init_logger(name=APP_ENV, level=logging.DEBUG if DEBUG else None)
     if not TOKEN:
@@ -141,33 +206,18 @@ def main(argv: Union[List[str], None] = None) -> int:
     ts = dti.datetime.now(tz=dti.timezone.utc).strftime('%Y-%m-%d %H:%M:%S.%f UTC')
     log.info(f'Timestamp marker in summaries will be ({ts})')
 
-    desc_core = '... and short description we dictate.'
-    log.info(f'Common description part will be ({desc_core})')
-
-    c_desc = f'{c_rand}\n{desc_core}\nCAUSALITY={node_indicator}'
-    d_desc = f'{d_rand}\n{desc_core}\nCAUSALITY={node_indicator}'
-    fields = {
-        'project': {'key': first_proj_key},
-        'issuetype': {'name': 'Task'},
-        'summary': f'From REST we create at {ts}',
-        'description': c_desc,
-    }
-    created = service.issue_create(fields=fields)
-    c_key = created['key']
-    service.issue_exists(c_key)
-    fields['description'] = d_desc
-    duplicate = service.issue_create(fields=fields)
-    d_key = duplicate['key']
-    service.issue_exists(d_key)
+    c_key, d_key = create_issue_pair(
+        service=service, project=first_proj_key, node=node_indicator, ts=ts, ident=(c_rand, d_rand)
+    )
     log.info(f'Generated two issues: original ({c_key}) and duplicate ({d_key})')
 
-    c_q = service.jql(f'issue = {c_key}')
+    c_q = execute_jql(service=service, query=f'issue = {c_key}')
 
-    service.update_issue_field(
-        c_key,
-        fields={'description': f"{c_q['issues'][0]['fields']['description']}\nNo, no, no. They duplicated me, help!"},
+    amend_issue_description(
+        service=service, issue_key=c_key, amendment='No, no, no. They duplicated me, help!', issue_context=c_q
     )
-    d_comment_resp = service.issue_add_comment(d_key, 'I am the original, surely!')
+
+    _ = add_comment(service=service, issue_key=d_key, comment='I am the original, surely!')
 
     service.update_issue_field(d_key, fields={'labels': ['du', 'pli', 'ca', 'te']})
     service.update_issue_field(c_key, fields={'labels': ['for', 'real', 'highlander']})
@@ -198,7 +248,7 @@ def main(argv: Union[List[str], None] = None) -> int:
     if d_iss_state_done != done:
         log.error(f'Unexpected state ({d_iss_state}) for duplicate {d_key} - expected was ({done})')
 
-    d_comment_resp_closing = service.issue_add_comment(d_key, 'Closed as duplicate.')
+    d_comment_resp_closing = add_comment(service, d_key, 'Closed as duplicate.')
     log.info(f'Adding comment on {d_key} had response ({str(d_comment_resp_closing)})')
 
     hours = 42
@@ -222,23 +272,12 @@ def main(argv: Union[List[str], None] = None) -> int:
     if c_iss_state_in_progress != in_progress:
         log.error(f'Unexpected state ({c_iss_state_in_progress}) for original {c_key} - expected was ({in_progress})')
 
-    random_component = secrets.token_urlsafe()
-    log.info(f'Random component will be ({random_component})')
-    comp_data = {
-        'project': first_proj_key,
-        'description': c_rand,
-        'name': random_component,
-        'assigneeType': 'UNASSIGNED',
-    }
-    log.info(f'Creating random component ({random_component})')
-    comp_create_resp = service.create_component(comp_data)
-    comp_id = comp_create_resp['id']
-    comp_resp = service.component(comp_id)
-    log.info(f'Created component {random_component} with response ({str(comp_resp)})')
+    comp_id, a_component, comp_resp = create_component(service=service, project=first_proj_key, description=c_rand)
+    log.info(f'Created component {a_component} with response ({str(comp_resp)})')
 
     try:
-        log.info(f'Associating the original {c_key} with random component ({random_component})')
-        service.update_issue_field(c_key, fields={'components': [{'name': random_component}]})
+        log.info(f'Associating the original {c_key} with random component ({a_component})')
+        service.update_issue_field(c_key, fields={'components': [{'name': a_component}]})
     except Exception as err:  # noqa
         service.delete_component(comp_id)
         log.error(f'Not able to set component for issue: {err}')
@@ -248,10 +287,10 @@ def main(argv: Union[List[str], None] = None) -> int:
     log.debug(json.dumps(x_iss, indent=2))
 
     log.info('Adding comments to the created issues tagging for deletion')
-    c_comment_resp = service.issue_add_comment(c_key, 'SUHTEITA_PURGE_ME_ORIGINAL')
+    c_comment_resp = add_comment(service=service, issue_key=c_key, comment='SUHTEITA_PURGE_ME_ORIGINAL')
     log.info(f'Added purge tag comment on original {c_key} with response ({str(c_comment_resp)})')
 
-    d_comment_resp = service.issue_add_comment(d_key, 'SUHTEITA_PURGE_ME_DUPLICATE')
+    d_comment_resp = add_comment(service=service, issue_key=d_key, comment='SUHTEITA_PURGE_ME_DUPLICATE')
     log.info(f'Added purge tag comment to the duplicate issue {d_key} with response ({str(d_comment_resp)})')
 
     end_time = dti.datetime.now(tz=dti.timezone.utc)
