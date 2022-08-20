@@ -10,7 +10,7 @@ import platform
 import secrets
 import sys
 import uuid
-from typing import List, Tuple, Union, no_type_check
+from typing import Dict, List, Tuple, Union, no_type_check
 
 from atlassian import Jira  # type: ignore
 
@@ -101,6 +101,24 @@ def amend_issue_description(service: Jira, issue_key: str, amendment: str, issue
 def add_comment(service: Jira, issue_key: str, comment: str):
     """DRY."""
     return service.issue_add_comment(issue_key, comment)
+
+
+def update_issue_field(service: Jira, issue_key: str, fields: Dict[str, List[str]]) -> None:
+    """DRY. expecting fields as dict with single key labels and value lsit of strings."""
+    service.update_issue_field(issue_key, fields=fields)
+
+
+def create_duplicates_issue_link(service: Jira, duplicate_issue_key: str, original_issue_key: str) -> None:
+    """DRY."""
+    data = {
+        'type': {'name': 'Duplicate'},
+        'inwardIssue': {'key': duplicate_issue_key},
+        'outwardIssue': {'key': original_issue_key},
+        'comment': {
+            'body': f'{duplicate_issue_key} truly duplicates {original_issue_key}!',
+        },
+    }
+    service.create_issue_link(data)
 
 
 def create_component(service: Jira, project: str, description: str) -> Tuple[str, str, object]:
@@ -206,31 +224,19 @@ def main(argv: Union[List[str], None] = None) -> int:
     ts = dti.datetime.now(tz=dti.timezone.utc).strftime('%Y-%m-%d %H:%M:%S.%f UTC')
     log.info(f'Timestamp marker in summaries will be ({ts})')
 
-    c_key, d_key = create_issue_pair(
-        service=service, project=first_proj_key, node=node_indicator, ts=ts, ident=(c_rand, d_rand)
-    )
+    c_key, d_key = create_issue_pair(service, first_proj_key, node_indicator, ts, ident=(c_rand, d_rand))
     log.info(f'Generated two issues: original ({c_key}) and duplicate ({d_key})')
 
     c_q = execute_jql(service=service, query=f'issue = {c_key}')
 
-    amend_issue_description(
-        service=service, issue_key=c_key, amendment='No, no, no. They duplicated me, help!', issue_context=c_q
-    )
+    amend_issue_description(service, c_key, amendment='No, no, no. They duplicated me, help!', issue_context=c_q)
 
     _ = add_comment(service=service, issue_key=d_key, comment='I am the original, surely!')
 
-    service.update_issue_field(d_key, fields={'labels': ['du', 'pli', 'ca', 'te']})
-    service.update_issue_field(c_key, fields={'labels': ['for', 'real', 'highlander']})
+    update_issue_field(service, d_key, fields={'labels': ['du', 'pli', 'ca', 'te']})
+    update_issue_field(service, c_key, fields={'labels': ['for', 'real', 'highlander']})
 
-    data = {
-        'type': {'name': 'Duplicate'},
-        'inwardIssue': {'key': d_key},
-        'outwardIssue': {'key': c_key},
-        'comment': {
-            'body': f'{d_key} truly duplicates {c_key}!',
-        },
-    }
-    service.create_issue_link(data)
+    create_duplicates_issue_link(service, c_key, d_key)
 
     todo, in_progress, done = ('To Do', 'In Progress', 'Done')
     log.info(f'The test workflow assumes the states ({todo}, {in_progress}, {done})')
