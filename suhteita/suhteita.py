@@ -10,7 +10,7 @@ import platform
 import secrets
 import sys
 import uuid
-from typing import Dict, List, Tuple, Union, no_type_check
+from typing import List, Tuple, Union, no_type_check
 
 from atlassian import Jira  # type: ignore
 
@@ -103,9 +103,9 @@ def add_comment(service: Jira, issue_key: str, comment: str):
     return service.issue_add_comment(issue_key, comment)
 
 
-def update_issue_field(service: Jira, issue_key: str, fields: Dict[str, List[str]]) -> None:
-    """DRY. expecting fields as dict with single key labels and value lsit of strings."""
-    service.update_issue_field(issue_key, fields=fields)
+def update_issue_field(service: Jira, issue_key: str, labels: List[str]) -> None:
+    """DRY."""
+    service.update_issue_field(issue_key, fields={'labels': labels})
 
 
 def create_duplicates_issue_link(service: Jira, duplicate_issue_key: str, original_issue_key: str) -> None:
@@ -233,8 +233,8 @@ def main(argv: Union[List[str], None] = None) -> int:
 
     _ = add_comment(service=service, issue_key=d_key, comment='I am the original, surely!')
 
-    update_issue_field(service, d_key, fields={'labels': ['du', 'pli', 'ca', 'te']})
-    update_issue_field(service, c_key, fields={'labels': ['for', 'real', 'highlander']})
+    update_issue_field(service, d_key, labels=['du', 'pli', 'ca', 'te'])
+    update_issue_field(service, c_key, labels=['for', 'real', 'highlander'])
 
     create_duplicates_issue_link(service, c_key, d_key)
 
