@@ -58,28 +58,55 @@ def two_sentences(word_count: int = 4) -> Tuple[str, str]:
     return wun, two
 
 
-def create_issue_pair(service: Jira, project: str, node: uuid.UUID, ts: str, ident: Tuple[str, str]) -> Tuple[str, str]:
+@no_type_check
+def create_issue(service: Jira, project: str, ts: str, description: str) -> str:
     """DRY."""
-    desc_core = '... and short description we dictate.'
-    log.info(f'Common description part will be ({desc_core})')
-    c_desc = f'{ident[0]}\n{desc_core}\nCAUSALITY={node}'
-    d_desc = f'{ident[1]}\n{desc_core}\nCAUSALITY={node}'
     fields = {
         'project': {'key': project},
         'issuetype': {'name': 'Task'},
         'summary': f'From REST we create at {ts}',
-        'description': c_desc,
+        'description': description,
     }
     created = service.issue_create(fields=fields)
-    c_key = created['key']
-    if not service.issue_exists(c_key):
+    return created['key']
+
+
+@no_type_check
+def issue_exists(service: Jira, issue_key: str) -> bool:
+    """DRY."""
+    return service.issue_exists(issue_key)
+
+
+def create_issue_pair(service: Jira, project: str, node: uuid.UUID, ts: str, ident: Tuple[str, str]) -> Tuple[str, str]:
+    """DRY."""
+    desc_core = '... and short description we dictate.'
+    log.info(f'Common description part will be ({desc_core})')
+
+    c_key = create_issue(service, project, ts, description=f'{ident[0]}\n{desc_core}\nCAUSALITY={node}')
+    if not issue_exists(service, c_key):
         log.error(f'Failed existence test for original ({c_key})')
-    fields['description'] = d_desc
-    duplicate = service.issue_create(fields=fields)
-    d_key = duplicate['key']
-    if not service.issue_exists(d_key):
+
+    d_key = create_issue(service, project, ts, description=f'{ident[1]}\n{desc_core}\nCAUSALITY={node}')
+    if not issue_exists(service, d_key):
         log.error(f'Failed existence test for original ({d_key})')
+
     return c_key, d_key
+
+
+@no_type_check
+def get_issue_status(service: Jira, issue_key: str) -> str:
+    """DRY."""
+    return service.get_issue_status(issue_key)
+
+
+def set_issue_status(service: Jira, issue_key: str, status: str) -> None:
+    """DRY."""
+    service.set_issue_status(issue_key, status)
+
+
+def load_issue(service: Jira, issue_key: str) -> object:
+    """DRY."""
+    return service.issue(issue_key)
 
 
 @no_type_check
@@ -121,6 +148,19 @@ def create_duplicates_issue_link(service: Jira, duplicate_issue_key: str, origin
     service.create_issue_link(data)
 
 
+def set_original_estimate(service: Jira, issue_key: str, hours: int) -> None:
+    """DRY."""
+    log.info(f'Non-zero original time estimate will be ({hours}h)')
+    try:
+        _ = service.update_issue_field(issue_key, fields={'timetracking': {'originalEstimate': f'{hours}h'}})
+        log.info(f'Set "{issue_key}".timetracking.originalEstimate to {hours}')
+    except Exception as err:  # noqa
+        log.error(f'Failed setting "{issue_key}".timetracking.originalEstimate to {hours} with (next error log line):')
+        log.error(f'cont. ({err})')
+        log.warning('These can be license issues - verify timetracking works in the web ui')
+        log.info('Ignoring the problem ...')
+
+
 def create_component(service: Jira, project: str, description: str) -> Tuple[str, str, object]:
     """DRY."""
     random_component = secrets.token_urlsafe()
@@ -135,6 +175,16 @@ def create_component(service: Jira, project: str, description: str) -> Tuple[str
     comp_create_resp = service.create_component(comp_data)
     comp_id = comp_create_resp['id']
     return comp_id, random_component, service.component(comp_id)
+
+
+def relate_issue_to_component(service: Jira, issue_key: str, issue_hint: str, comp_id: str, comp_name: str) -> None:
+    """DRY."""
+    try:
+        log.info(f'Associating the {issue_hint} {issue_key} with random component ({comp_name})')
+        service.update_issue_field(issue_key, fields={'components': [{'name': comp_name}]})
+    except Exception as err:  # noqa
+        service.delete_component(comp_id)
+        log.error(f'Not able to set component for issue: {err}')
 
 
 def parse_request(argv: List[str]) -> argparse.Namespace:
@@ -228,68 +278,50 @@ def main(argv: Union[List[str], None] = None) -> int:
     log.info(f'Generated two issues: original ({c_key}) and duplicate ({d_key})')
 
     c_q = execute_jql(service=service, query=f'issue = {c_key}')
-
     amend_issue_description(service, c_key, amendment='No, no, no. They duplicated me, help!', issue_context=c_q)
-
     _ = add_comment(service=service, issue_key=d_key, comment='I am the original, surely!')
-
     update_issue_field(service, d_key, labels=['du', 'pli', 'ca', 'te'])
     update_issue_field(service, c_key, labels=['for', 'real', 'highlander'])
-
     create_duplicates_issue_link(service, c_key, d_key)
 
     todo, in_progress, done = ('To Do', 'In Progress', 'Done')
     log.info(f'The test workflow assumes the states ({todo}, {in_progress}, {done})')
 
-    d_iss_state = service.get_issue_status(d_key)
+    d_iss_state = get_issue_status(service, d_key)
     if d_iss_state != todo:
         log.error(f'Unexpected state ({d_iss_state}) for duplicate {d_key} - expected was ({todo})')
 
     log.info(f'Transitioning the duplicate {d_key} to ({in_progress})')
-    service.set_issue_status(d_key, in_progress)
+    set_issue_status(service, d_key, in_progress)
 
     log.info(f'Transitioning the duplicate {d_key} to ({done})')
-    service.set_issue_status(d_key, done)
-    d_iss_state_done = service.get_issue_status(d_key)
+    set_issue_status(service, d_key, done)
+    d_iss_state_done = get_issue_status(service, d_key)
     if d_iss_state_done != done:
         log.error(f'Unexpected state ({d_iss_state}) for duplicate {d_key} - expected was ({done})')
 
     d_comment_resp_closing = add_comment(service, d_key, 'Closed as duplicate.')
     log.info(f'Adding comment on {d_key} had response ({str(d_comment_resp_closing)})')
 
-    hours = 42
-    log.info(f'Non-zero original time estimate will be ({hours}h)')
-    try:
-        _ = service.update_issue_field(c_key, fields={'timetracking': {'originalEstimate': f'{hours}h'}})
-        log.info(f'Set "{c_key}".timetracking.originalEstimate to {hours}')
-    except Exception as err:  # noqa
-        log.error(f'Failed setting "{c_key}".timetracking.originalEstimate to {hours} with (next error log line):')
-        log.error(f'cont. ({err})')
-        log.warning('These can be license issues - verify timetracking works in the web ui')
-        log.info('Ignoring the problem ...')
+    set_original_estimate(service, c_key, hours=42)
 
-    c_iss_state = service.get_issue_status(c_key)
+    c_iss_state = get_issue_status(service, c_key)
     if c_iss_state != todo:
         log.error(f'Unexpected state ({c_iss_state}) for original {c_key} - expected was ({todo})')
 
     log.info(f'Transitioning the original {c_key} to ({in_progress})')
-    service.set_issue_status(c_key, in_progress)
-    c_iss_state_in_progress = service.get_issue_status(c_key)
+    set_issue_status(service, c_key, in_progress)
+    c_iss_state_in_progress = get_issue_status(service, c_key)
     if c_iss_state_in_progress != in_progress:
         log.error(f'Unexpected state ({c_iss_state_in_progress}) for original {c_key} - expected was ({in_progress})')
 
     comp_id, a_component, comp_resp = create_component(service=service, project=first_proj_key, description=c_rand)
     log.info(f'Created component {a_component} with response ({str(comp_resp)})')
 
-    try:
-        log.info(f'Associating the original {c_key} with random component ({a_component})')
-        service.update_issue_field(c_key, fields={'components': [{'name': a_component}]})
-    except Exception as err:  # noqa
-        service.delete_component(comp_id)
-        log.error(f'Not able to set component for issue: {err}')
+    relate_issue_to_component(service, c_key, 'original', comp_id, a_component)
 
     log.info(f'Loading issue ({c_key}) wun more time')
-    x_iss = service.issue(c_key)
+    x_iss = load_issue(service, c_key)
     log.debug(json.dumps(x_iss, indent=2))
 
     log.info('Adding comments to the created issues tagging for deletion')
