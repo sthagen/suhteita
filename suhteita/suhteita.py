@@ -10,7 +10,7 @@ import platform
 import secrets
 import sys
 import uuid
-from typing import List, Tuple, Union, no_type_check
+from typing import Dict, List, Tuple, Union, no_type_check
 
 from atlassian import Jira  # type: ignore
 
@@ -86,7 +86,7 @@ def get_server_info(service: Jira) -> Tuple[Clocking, object]:
     return clocking, data
 
 
-def get_all_projects(service: Jira) -> Tuple[Clocking, List[str]]:
+def get_all_projects(service: Jira) -> Tuple[Clocking, List[Dict[str, str]]]:
     """DRY."""
     start_time = dti.datetime.now(tz=dti.timezone.utc)
     projects = service.get_all_projects(included_archived=None)
@@ -415,7 +415,9 @@ def main(argv: Union[List[str], None] = None) -> int:
     proj_env_ok = False
     if target_project:
         proj_env_ok = any((target_project == project['key'] for project in projects))
-        log.info(f'Verified target project from request ({target_project}) to be {"" if proj_env_ok else "not "}present')
+        log.info(
+            f'Verified target project from request ({target_project}) to be {"" if proj_env_ok else "not "}present'
+        )
 
     if not proj_env_ok:
         log.error('Belt and braces - verify project selection:')
