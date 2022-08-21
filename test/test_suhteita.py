@@ -6,7 +6,7 @@ class Arij(dict):
         self['fake'] = 'yes'
 
     def __init__(self, url='target_url', username='user', password='password', cloud=False):
-        self.factory(url='target_url', username='user', password='password', cloud=False)
+        self.factory(url, username, password, cloud)
 
     def get_server_info(self, foo: bool):
         return {'everything': 'fine', 'foo': foo}
@@ -18,7 +18,8 @@ class Arij(dict):
             return [{'key': 'this'}, {'key': 'that'}, {'key': 'attic'}]
 
     def issue_create(self, fields):
-        return {'key': f"{fields['project']['key']}-42"}
+        project = fields['project']['key']
+        return {'key': f'{project}-42' if project else ''}
 
     def issue_exists(self, key: str):
         return bool(key)
@@ -109,12 +110,12 @@ def test_issue_exists():
     clk, exists = run.issue_exists(service, issue_key='')
     assert len(clk) == 3
     assert int(clk[1]) >= 0
-    assert clk[0] < clk[2]
+    assert clk[0] <= clk[2]
     assert exists is False
     clk, exists = run.issue_exists(service, issue_key='FORREAL-42')
     assert len(clk) == 3
     assert int(clk[1]) >= 0
-    assert clk[0] < clk[2]
+    assert clk[0] <= clk[2]
     assert exists is True
 
 
@@ -128,3 +129,10 @@ def test_create_issue_pair():
     assert clk[0] < clk[2]
     assert a_key == 'FOO-42'
     assert b_key == 'FOO-42'
+    kwargs = dict(project='', node='so-what', ts='time-flies', ident=('a b c d', 'e f g h'))
+    clk, a_key, b_key = run.create_issue_pair(service, **kwargs)
+    assert len(clk) == 3
+    assert int(clk[1]) >= 0
+    assert clk[0] < clk[2]
+    assert a_key == ''
+    assert b_key == ''
