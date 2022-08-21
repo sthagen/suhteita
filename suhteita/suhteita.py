@@ -373,7 +373,8 @@ def main(argv: Union[List[str], None] = None) -> int:
         log.error(f'Unexpected state ({c_iss_state_in_progress}) for original {c_key} - expected was ({in_progress})')
 
     comp_id, a_component, comp_resp = create_component(service=service, project=first_proj_key, description=c_rand)
-    log.info(f'Created component {a_component} with response ({str(comp_resp)})')
+    some = extract_fields(comp_resp, fields=('self', 'description'))
+    log.info(f'Created component {a_component} with response extract({some})')
 
     relate_issue_to_component(service, c_key, 'original', comp_id, a_component)
 
