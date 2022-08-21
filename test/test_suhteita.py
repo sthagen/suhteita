@@ -9,7 +9,7 @@ class Arij(dict):
         self.factory(url='target_url', username='user', password='password', cloud=False)
 
     def get_server_info(self, foo: bool):
-        return {'everything': 'fine'}
+        return {'everything': 'fine', 'foo': foo}
 
 
 def test_two_sentences():
