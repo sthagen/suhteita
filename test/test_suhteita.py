@@ -116,3 +116,15 @@ def test_issue_exists():
     assert int(clk[1]) >= 0
     assert clk[0] < clk[2]
     assert exists is True
+
+
+def test_create_issue_pair():
+    run.Jira = Arij
+    _, service = run.login(target_url='target_url', user='user')
+    kwargs = dict(project='FOO', node='so-what', ts='time-flies', ident=('a b c d', 'e f g h'))
+    clk, a_key, b_key = run.create_issue_pair(service, **kwargs)
+    assert len(clk) == 3
+    assert int(clk[1]) >= 0
+    assert clk[0] < clk[2]
+    assert a_key == 'FOO-42'
+    assert b_key == 'FOO-42'
