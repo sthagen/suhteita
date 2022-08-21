@@ -52,6 +52,12 @@ class Arij(dict):
     def component(self, comp_id: str):
         return {'self': 'https://example.com/component/123', 'description': 'ABC', 'name': 'oops'}
 
+    def get_issue_status(self, issue_key):
+        return 'status-value'
+
+    def set_issue_status(self, issue_key, status):
+        return None
+
 
 def test_two_sentences():
     wun, two = run.two_sentences(word_count=1)
@@ -263,3 +269,22 @@ def test_amend_issue_description():
     assert clk[0] <= clk[2]
     with pytest.raises(Exception, match=r'You asked for it!'):
         run.amend_issue_description(service, issue_key='raise', amendment='X', issue_context=ctx)
+
+
+def test_get_issue_status():
+    run.Jira = Arij
+    _, service = run.login(target_url='target_url', user='user')
+    clk, status = run.get_issue_status(service, issue_key='BAR-42')
+    assert len(clk) == 3
+    assert int(clk[1]) >= 0
+    assert clk[0] <= clk[2]
+    assert status == 'status-value'
+
+
+def test_set_issue_status():
+    run.Jira = Arij
+    _, service = run.login(target_url='target_url', user='user')
+    clk = run.set_issue_status(service, issue_key='BAR-42', status='something-brittle')
+    assert len(clk) == 3
+    assert int(clk[1]) >= 0
+    assert clk[0] <= clk[2]
