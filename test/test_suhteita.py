@@ -20,6 +20,9 @@ class Arij(dict):
     def issue_create(self, fields):
         return {'key': f"{fields['project']['key']}-42"}
 
+    def issue_exists(self, key: str):
+        return bool(key)
+
 
 def test_two_sentences():
     wun, two = run.two_sentences(word_count=1)
@@ -98,3 +101,18 @@ def test_create_issue():
     assert int(clk[1]) >= 0
     assert clk[0] < clk[2]
     assert x_key == 'FOO-42'
+
+
+def test_issue_exists():
+    run.Jira = Arij
+    _, service = run.login(target_url='target_url', user='user')
+    clk, exists = run.issue_exists(service, issue_key='')
+    assert len(clk) == 3
+    assert int(clk[1]) >= 0
+    assert clk[0] < clk[2]
+    assert exists is False
+    clk, exists = run.issue_exists(service, issue_key='FORREAL-42')
+    assert len(clk) == 3
+    assert int(clk[1]) >= 0
+    assert clk[0] < clk[2]
+    assert exists is True
