@@ -1,8 +1,18 @@
 # Change History
 
-## 2022.8.18
+## 2022.8.21
 
-* Prepared configurable scenarios
+* Flattened the API for labeling (to ease keyword API)
+* Refactored all transactions into functions to prepare keyword library creation
+* Added atomic versions for most REST transactions
+* Added clocking decoration for all scenario functions
+* Added the reason for the cleanup upon failed issue-component association to the logging
+* Reduced response log for component creation
+* Fenced server info log to a line
+* Harmonized the purge me comment, shortedned the response logs for comments
+* Added tests for all non-main functions (mocked) reaching 2/3 test coverage
+* Extended and bumped dev and test dependencies
+* Maximized pyproject.toml content (only had to keep flake8 config in setup.cfg until upstream project opens up ...)
 
 ## 2022.8.17
 
