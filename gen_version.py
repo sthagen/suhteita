@@ -15,7 +15,7 @@ def _fetch_version():
     with open(pathlib.Path('pyproject.toml'), 'rt', encoding=ENCODING) as handle:
         for line in handle:
             if line.strip().startswith('version'):
-                version = line.strip().split('=')[1].strip().strip)'"'
+                version = line.strip().split('=')[1].strip().strip('"')
     return version
 
 
