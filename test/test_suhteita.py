@@ -44,6 +44,12 @@ class Arij(dict):
     def delete_component(self, that):
         return that
 
+    def create_component(self, data):
+        return {'id': '123', **data}
+
+    def component(self, comp_id: str):
+        return {'self': 'https://example.com/component/123', 'description': 'ABC', 'name': 'oops'}
+
 
 def test_two_sentences():
     wun, two = run.two_sentences(word_count=1)
@@ -231,3 +237,15 @@ def test_relate_issue_to_component():
     assert len(clk) == 3
     assert int(clk[1]) >= 0
     assert clk[0] <= clk[2]
+
+
+def test_create_component():
+    run.Jira = Arij
+    _, service = run.login(target_url='target_url', user='user')
+    clk, comp_id, random_component, response = run.create_component(service, project='X', description='Z')
+    assert len(clk) == 3
+    assert int(clk[1]) >= 0
+    assert clk[0] <= clk[2]
+    assert comp_id == '123'
+    some = run.extract_fields(response, fields=('self', 'description', 'name'))
+    assert some == {'self': 'https://example.com/component/123', 'description': 'ABC', 'name': 'oops'}
