@@ -1,3 +1,5 @@
+import pytest
+
 import suhteita.suhteita as run
 
 
@@ -249,3 +251,15 @@ def test_create_component():
     assert comp_id == '123'
     some = run.extract_fields(response, fields=('self', 'description', 'name'))
     assert some == {'self': 'https://example.com/component/123', 'description': 'ABC', 'name': 'oops'}
+
+
+def test_amend_issue_description():
+    run.Jira = Arij
+    _, service = run.login(target_url='target_url', user='user')
+    ctx = {'issues': [{'fields': {'description': 'D'}}]}
+    clk = run.amend_issue_description(service, issue_key='F1', amendment='A', issue_context=ctx)
+    assert len(clk) == 3
+    assert int(clk[1]) >= 0
+    assert clk[0] <= clk[2]
+    with pytest.raises(Exception, match=r'You asked for it!'):
+        run.amend_issue_description(service, issue_key='raise', amendment='X', issue_context=ctx)
