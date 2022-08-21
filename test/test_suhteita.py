@@ -200,3 +200,12 @@ def test_create_duplicates_issue_link():
     assert len(clk) == 3
     assert int(clk[1]) >= 0
     assert clk[0] <= clk[2]
+
+
+def test_set_original_estimate():
+    run.Jira = Arij
+    _, service = run.login(target_url='target_url', user='user')
+    clk = run.set_original_estimate(service, issue_key='BAR-42', hours=123)
+    assert len(clk) == 3
+    assert int(clk[1]) >= 0
+    assert clk[0] <= clk[2]
