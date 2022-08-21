@@ -17,6 +17,9 @@ class Arij(dict):
         else:
             return [{'key': 'this'}, {'key': 'that'}, {'key': 'attic'}]
 
+    def issue_create(self, fields):
+        return {'key': f"{fields['project']['key']}-42"}
+
 
 def test_two_sentences():
     wun, two = run.two_sentences(word_count=1)
@@ -85,3 +88,13 @@ def test_get_all_projects():
     assert len(projects) == 2
     assert projects[0]['key'] == 'this'
     assert projects[1]['key'] == 'that'
+
+
+def test_create_issue():
+    run.Jira = Arij
+    _, service = run.login(target_url='target_url', user='user')
+    clk, x_key = run.create_issue(service, project='FOO', ts='so-what', description='nothing')
+    assert len(clk) == 3
+    assert int(clk[1]) >= 0
+    assert clk[0] < clk[2]
+    assert x_key == 'FOO-42'
