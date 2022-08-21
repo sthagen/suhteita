@@ -1,3 +1,5 @@
+import logging
+
 import pytest
 
 import suhteita.suhteita as run
@@ -288,3 +290,10 @@ def test_set_issue_status():
     assert len(clk) == 3
     assert int(clk[1]) >= 0
     assert clk[0] <= clk[2]
+
+
+def test_main(caplog):
+    run.TOKEN = ''
+    assert 2 == run.main(['-p', 'XYZ'])
+    message = 'No secret token or pass phrase given, please set SUHTEITA_TOKEN accordingly'
+    assert caplog.record_tuples == [('SUHTEITA', logging.ERROR, message)]
