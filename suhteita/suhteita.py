@@ -31,6 +31,8 @@ LOG_FILE = f'{APP_ALIAS}.log'
 LOG_PATH = pathlib.Path(LOG_FOLDER, LOG_FILE) if LOG_FOLDER.is_dir() else pathlib.Path(LOG_FILE)
 LOG_LEVEL = logging.INFO
 
+Clocking = Tuple[str, float, str]
+
 
 @no_type_check
 def init_logger(name=None, level=None):
@@ -59,7 +61,7 @@ def two_sentences(word_count: int = 4) -> Tuple[str, str]:
 
 
 @no_type_check
-def create_issue(service: Jira, project: str, ts: str, description: str) -> str:
+def create_issue(service: Jira, project: str, ts: str, description: str) -> Tuple[Clocking, str]:
     """DRY."""
     fields = {
         'project': {'key': project},
@@ -67,30 +69,60 @@ def create_issue(service: Jira, project: str, ts: str, description: str) -> str:
         'summary': f'From REST we create at {ts}',
         'description': description,
     }
+    start_time = dti.datetime.now(tz=dti.timezone.utc)
     created = service.issue_create(fields=fields)
-    return created['key']
+    end_time = dti.datetime.now(tz=dti.timezone.utc)
+    clocking: Clocking = (
+        start_time.strftime('%Y-%m-%d %H:%M:%S.%f UTC'),
+        (end_time - start_time).microseconds,
+        end_time.strftime('%Y-%m-%d %H:%M:%S.%f UTC'),
+    )
+    return clocking, created['key']
 
 
 @no_type_check
-def issue_exists(service: Jira, issue_key: str) -> bool:
+def issue_exists(service: Jira, issue_key: str) -> Tuple[Clocking, bool]:
     """DRY."""
-    return service.issue_exists(issue_key)
+    start_time = dti.datetime.now(tz=dti.timezone.utc)
+    exists = service.issue_exists(issue_key)
+    end_time = dti.datetime.now(tz=dti.timezone.utc)
+    clocking: Clocking = (
+        start_time.strftime('%Y-%m-%d %H:%M:%S.%f UTC'),
+        (end_time - start_time).microseconds,
+        end_time.strftime('%Y-%m-%d %H:%M:%S.%f UTC'),
+    )
+    return clocking, exists
 
 
-def create_issue_pair(service: Jira, project: str, node: uuid.UUID, ts: str, ident: Tuple[str, str]) -> Tuple[str, str]:
+def create_issue_pair(
+    service: Jira, project: str, node: uuid.UUID, ts: str, ident: Tuple[str, str]
+) -> Tuple[Clocking, str, str]:
     """DRY."""
     desc_core = '... and short description we dictate.'
     log.info(f'Common description part will be ({desc_core})')
 
-    c_key = create_issue(service, project, ts, description=f'{ident[0]}\n{desc_core}\nCAUSALITY={node}')
-    if not issue_exists(service, c_key):
+    start_time = dti.datetime.now(tz=dti.timezone.utc)
+    c_clocking, c_key = create_issue(service, project, ts, description=f'{ident[0]}\n{desc_core}\nCAUSALITY={node}')
+    d_clocking, d_key = create_issue(service, project, ts, description=f'{ident[1]}\n{desc_core}\nCAUSALITY={node}')
+    end_time = dti.datetime.now(tz=dti.timezone.utc)
+    clocking: Clocking = (
+        start_time.strftime('%Y-%m-%d %H:%M:%S.%f UTC'),
+        (end_time - start_time).microseconds,
+        end_time.strftime('%Y-%m-%d %H:%M:%S.%f UTC'),
+    )
+    c_e_clocking, c_e = issue_exists(service, c_key)
+    if not c_e:
         log.error(f'Failed existence test for original ({c_key})')
+    log.debug(f'Creation clocking of original CLK={c_clocking}')
+    log.debug(f'Existence check clocking of original CLK={c_e_clocking}')
 
-    d_key = create_issue(service, project, ts, description=f'{ident[1]}\n{desc_core}\nCAUSALITY={node}')
-    if not issue_exists(service, d_key):
+    d_e_clocking, d_e = issue_exists(service, d_key)
+    if not d_e:
         log.error(f'Failed existence test for original ({d_key})')
+    log.debug(f'Creation clocking of duplicate CLK={d_clocking}')
+    log.debug(f'Existence check clocking of duplicate CLK={d_e_clocking}')
 
-    return c_key, d_key
+    return clocking, c_key, d_key
 
 
 @no_type_check
@@ -104,15 +136,31 @@ def set_issue_status(service: Jira, issue_key: str, status: str) -> None:
     service.set_issue_status(issue_key, status)
 
 
-def load_issue(service: Jira, issue_key: str) -> object:
+def load_issue(service: Jira, issue_key: str) -> Tuple[Clocking, object]:
     """DRY."""
-    return service.issue(issue_key)
+    start_time = dti.datetime.now(tz=dti.timezone.utc)
+    data = service.issue(issue_key)
+    end_time = dti.datetime.now(tz=dti.timezone.utc)
+    clocking: Clocking = (
+        start_time.strftime('%Y-%m-%d %H:%M:%S.%f UTC'),
+        (end_time - start_time).microseconds,
+        end_time.strftime('%Y-%m-%d %H:%M:%S.%f UTC'),
+    )
+    return clocking, data
 
 
 @no_type_check
-def execute_jql(service: Jira, query: str):
+def execute_jql(service: Jira, query: str) -> Tuple[Clocking, object]:
     """DRY."""
-    return service.jql(query)
+    start_time = dti.datetime.now(tz=dti.timezone.utc)
+    data = service.jql(query)
+    end_time = dti.datetime.now(tz=dti.timezone.utc)
+    clocking: Clocking = (
+        start_time.strftime('%Y-%m-%d %H:%M:%S.%f UTC'),
+        (end_time - start_time).microseconds,
+        end_time.strftime('%Y-%m-%d %H:%M:%S.%f UTC'),
+    )
+    return clocking, data
 
 
 @no_type_check
@@ -280,10 +328,13 @@ def main(argv: Union[List[str], None] = None) -> int:
     ts = dti.datetime.now(tz=dti.timezone.utc).strftime('%Y-%m-%d %H:%M:%S.%f UTC')
     log.info(f'Timestamp marker in summaries will be ({ts})')
 
-    c_key, d_key = create_issue_pair(service, first_proj_key, node_indicator, ts, ident=(c_rand, d_rand))
-    log.info(f'Generated two issues: original ({c_key}) and duplicate ({d_key})')
+    clk, c_key, d_key = create_issue_pair(service, first_proj_key, node_indicator, ts, ident=(c_rand, d_rand))
+    log.info(f'Generated two issues: original ({c_key}) and duplicate ({d_key}); CLK={clk}')
 
-    c_q = execute_jql(service=service, query=f'issue = {c_key}')
+    query = f'issue = {c_key}'
+    clk, c_q = execute_jql(service=service, query=query)
+    log.info(f'Executed JQL({query}); CLK={clk}')
+
     amend_issue_description(service, c_key, amendment='No, no, no. They duplicated me, help!', issue_context=c_q)
     _ = add_comment(service=service, issue_key=d_key, comment='I am the original, surely!')
     update_issue_field(service, d_key, labels=['du', 'pli', 'ca', 'te'])
@@ -327,7 +378,8 @@ def main(argv: Union[List[str], None] = None) -> int:
     relate_issue_to_component(service, c_key, 'original', comp_id, a_component)
 
     log.info(f'Loading issue ({c_key}) wun more time')
-    x_iss = load_issue(service, c_key)
+    clk, x_iss = load_issue(service, c_key)
+    log.info(f'Loaded issue {c_key}; CLK={clk}')
     log.debug(json.dumps(x_iss, indent=2))
 
     purge_me = 'SUHTEITA_PURGE_ME_ORIGINAL'
