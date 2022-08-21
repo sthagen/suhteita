@@ -27,6 +27,9 @@ class Arij(dict):
     def issue(self, key: str):
         return {'key': key}
 
+    def jql(self, query: str):
+        return {'issues': [{'key': 'FOO-42'}]}
+
 
 def test_two_sentences():
     wun, two = run.two_sentences(word_count=1)
@@ -149,3 +152,13 @@ def test_load_issue():
     assert int(clk[1]) >= 0
     assert clk[0] <= clk[2]
     assert issue['key'] == 'QUUX-1'
+
+
+def test_execute_jql():
+    run.Jira = Arij
+    _, service = run.login(target_url='target_url', user='user')
+    clk, results = run.execute_jql(service, 'key = FOO-42')
+    assert len(clk) == 3
+    assert int(clk[1]) >= 0
+    assert clk[0] <= clk[2]
+    assert results['issues'][0]['key'] == 'FOO-42'
