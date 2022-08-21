@@ -30,6 +30,9 @@ class Arij(dict):
     def jql(self, query: str):
         return {'issues': [{'key': 'FOO-42'}]}
 
+    def issue_add_comment(self, key: str, comment: str):
+        return {'key': key, 'body': comment}
+
 
 def test_two_sentences():
     wun, two = run.two_sentences(word_count=1)
@@ -162,3 +165,14 @@ def test_execute_jql():
     assert int(clk[1]) >= 0
     assert clk[0] <= clk[2]
     assert results['issues'][0]['key'] == 'FOO-42'
+
+
+def test_add_comment():
+    run.Jira = Arij
+    _, service = run.login(target_url='target_url', user='user')
+    clk, response = run.add_comment(service, issue_key='BAZ-42', comment='no-comment')
+    assert len(clk) == 3
+    assert int(clk[1]) >= 0
+    assert clk[0] <= clk[2]
+    some = run.extract_fields(response, fields=['key', 'body'])
+    assert some == {'key': 'BAZ-42', 'body': 'no-comment'}
