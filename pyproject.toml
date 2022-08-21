@@ -38,13 +38,45 @@ Test-Coverage = "https://codes.dilettant.life/coverage/suhteita"
 [project.scripts]
 suhteita = "suhteita.cli:main"
 
-#[tool.setuptools.packages.find]
-#exclude = ["test*"]
+[tool.setuptools.packages.find]
+include = ["suhteita"]
+exclude = ["test*"]
 
 [bdist_wheel]
-universal = "True"
+universal = true
 
 [tool.black]
 line-length = 120
-skip-string-normalization = "True"
+skip-string-normalization = true
 target-version = ["py38", "py39", "py310"]
+
+[tool.coverage.run]
+branch = true
+
+[tool.coverage.report]
+precision = 2
+exclude_lines = [
+    "pragma: no cover",
+    "raise NotImplementedError",
+    "if TYPE_CHECKING:",
+    "@overload",
+]
+omit = [
+    "*/__main__.py",
+]
+
+[tool.isort]
+line_length = 120
+known_first_party = "suhteita"
+multi_line_output = 3
+include_trailing_comma = true
+force_grid_wrap = 0
+combine_as_imports = true
+
+[tool.mypy]
+strict = true
+implicit_reexport = true
+
+[tool.pytest]
+testpaths = "test"
+filterwarnings = "error"
