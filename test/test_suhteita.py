@@ -1,6 +1,17 @@
 import suhteita.suhteita as run
 
 
+class Arij(dict):
+    def factory(self, url='target_url', username='user', password='password', cloud=False):
+        self['fake'] = 'yes'
+
+    def __init__(self, url='target_url', username='user', password='password', cloud=False):
+        self.factory(url='target_url', username='user', password='password', cloud=False)
+
+    def get_server_info(self, foo: bool):
+        return {'everything': 'fine'}
+
+
 def test_two_sentences():
     wun, two = run.two_sentences(word_count=1)
     assert wun
@@ -37,3 +48,22 @@ def test_parse_request_mode():
     options = run.parse_request(['--is-cloud'])
     assert options
     assert options.is_cloud
+
+
+def test_login():
+    run.Jira = Arij
+    clk, service = run.login(target_url='target_url', user='user')
+    assert len(clk) == 3
+    assert int(clk[1]) >= 0
+    assert clk[0] < clk[2]
+    assert service['fake'] == 'yes'
+
+
+def test_get_server_info():
+    run.Jira = Arij
+    _, service = run.login(target_url='target_url', user='user')
+    clk, info = run.get_server_info(service)
+    assert len(clk) == 3
+    assert int(clk[1]) >= 0
+    assert clk[0] < clk[2]
+    assert info['everything'] == 'fine'
