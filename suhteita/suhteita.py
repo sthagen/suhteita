@@ -165,14 +165,30 @@ def create_issue_pair(
 
 
 @no_type_check
-def get_issue_status(service: Jira, issue_key: str) -> str:
+def get_issue_status(service: Jira, issue_key: str) -> Tuple[Clocking, str]:
     """DRY."""
-    return service.get_issue_status(issue_key)
+    start_time = dti.datetime.now(tz=dti.timezone.utc)
+    status = service.get_issue_status(issue_key)
+    end_time = dti.datetime.now(tz=dti.timezone.utc)
+    clocking: Clocking = (
+        start_time.strftime('%Y-%m-%d %H:%M:%S.%f UTC'),
+        (end_time - start_time).microseconds,
+        end_time.strftime('%Y-%m-%d %H:%M:%S.%f UTC'),
+    )
+    return clocking, status
 
 
-def set_issue_status(service: Jira, issue_key: str, status: str) -> None:
+def set_issue_status(service: Jira, issue_key: str, status: str) -> Clocking:
     """DRY."""
+    start_time = dti.datetime.now(tz=dti.timezone.utc)
     service.set_issue_status(issue_key, status)
+    end_time = dti.datetime.now(tz=dti.timezone.utc)
+    clocking: Clocking = (
+        start_time.strftime('%Y-%m-%d %H:%M:%S.%f UTC'),
+        (end_time - start_time).microseconds,
+        end_time.strftime('%Y-%m-%d %H:%M:%S.%f UTC'),
+    )
+    return clocking
 
 
 def load_issue(service: Jira, issue_key: str) -> Tuple[Clocking, object]:
@@ -308,13 +324,13 @@ def create_component(service: Jira, project: str, description: str) -> Tuple[Clo
     log.info(f'Creating random component ({random_component})')
     start_time = dti.datetime.now(tz=dti.timezone.utc)
     comp_create_resp = service.create_component(comp_data)
-    comp_id = comp_create_resp['id']
     end_time = dti.datetime.now(tz=dti.timezone.utc)
     clocking: Clocking = (
         start_time.strftime('%Y-%m-%d %H:%M:%S.%f UTC'),
         (end_time - start_time).microseconds,
         end_time.strftime('%Y-%m-%d %H:%M:%S.%f UTC'),
     )
+    comp_id = comp_create_resp['id']
     return clocking, comp_id, random_component, service.component(comp_id)
 
 
