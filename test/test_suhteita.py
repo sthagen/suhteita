@@ -33,6 +33,9 @@ class Arij(dict):
     def issue_add_comment(self, key: str, comment: str):
         return {'key': key, 'body': comment}
 
+    def update_issue_field(self, issue_key: str, fields):
+        return {'key': issue_key, 'fields': {**fields}}
+
 
 def test_two_sentences():
     wun, two = run.two_sentences(word_count=1)
@@ -176,3 +179,12 @@ def test_add_comment():
     assert clk[0] <= clk[2]
     some = run.extract_fields(response, fields=['key', 'body'])
     assert some == {'key': 'BAZ-42', 'body': 'no-comment'}
+
+
+def test_update_issue_field():
+    run.Jira = Arij
+    _, service = run.login(target_url='target_url', user='user')
+    clk = run.update_issue_field(service, issue_key='BAR-101', labels=['yes', 'but', 'no'])
+    assert len(clk) == 3
+    assert int(clk[1]) >= 0
+    assert clk[0] <= clk[2]
