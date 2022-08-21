@@ -24,6 +24,9 @@ class Arij(dict):
     def issue_exists(self, key: str):
         return bool(key)
 
+    def issue(self, key: str):
+        return {'key': key}
+
 
 def test_two_sentences():
     wun, two = run.two_sentences(word_count=1)
@@ -136,3 +139,13 @@ def test_create_issue_pair():
     assert clk[0] < clk[2]
     assert a_key == ''
     assert b_key == ''
+
+
+def test_load_issue():
+    run.Jira = Arij
+    _, service = run.login(target_url='target_url', user='user')
+    clk, issue = run.load_issue(service, 'QUUX-1')
+    assert len(clk) == 3
+    assert int(clk[1]) >= 0
+    assert clk[0] <= clk[2]
+    assert issue['key'] == 'QUUX-1'
