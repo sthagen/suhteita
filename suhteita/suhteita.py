@@ -60,6 +60,45 @@ def two_sentences(word_count: int = 4) -> Tuple[str, str]:
     return wun, two
 
 
+def login(target_url: str, user: str, password: str = TOKEN, is_cloud: bool = IS_CLOUD) -> Tuple[Clocking, Jira]:
+    """DRY."""
+    start_time = dti.datetime.now(tz=dti.timezone.utc)
+    service = Jira(url=target_url, username=user, password=password, cloud=is_cloud)
+    end_time = dti.datetime.now(tz=dti.timezone.utc)
+    clocking: Clocking = (
+        start_time.strftime('%Y-%m-%d %H:%M:%S.%f UTC'),
+        (end_time - start_time).microseconds,
+        end_time.strftime('%Y-%m-%d %H:%M:%S.%f UTC'),
+    )
+    return clocking, service
+
+
+def get_server_info(service: Jira) -> Tuple[Clocking, object]:
+    """DRY."""
+    start_time = dti.datetime.now(tz=dti.timezone.utc)
+    data = service.get_server_info(True)
+    end_time = dti.datetime.now(tz=dti.timezone.utc)
+    clocking: Clocking = (
+        start_time.strftime('%Y-%m-%d %H:%M:%S.%f UTC'),
+        (end_time - start_time).microseconds,
+        end_time.strftime('%Y-%m-%d %H:%M:%S.%f UTC'),
+    )
+    return clocking, data
+
+
+def get_all_projects(service: Jira) -> Tuple[Clocking, List[str]]:
+    """DRY."""
+    start_time = dti.datetime.now(tz=dti.timezone.utc)
+    projects = service.get_all_projects(included_archived=None)
+    end_time = dti.datetime.now(tz=dti.timezone.utc)
+    clocking: Clocking = (
+        start_time.strftime('%Y-%m-%d %H:%M:%S.%f UTC'),
+        (end_time - start_time).microseconds,
+        end_time.strftime('%Y-%m-%d %H:%M:%S.%f UTC'),
+    )
+    return clocking, projects
+
+
 @no_type_check
 def create_issue(service: Jira, project: str, ts: str, description: str) -> Tuple[Clocking, str]:
     """DRY."""
@@ -363,17 +402,20 @@ def main(argv: Union[List[str], None] = None) -> int:
         f'Connecting to upstream ({"cloud" if is_cloud else "on-site"}) service ({target_url})'
         f' per login ({user}) at ({start_ts})'
     )
-    service = Jira(url=target_url, username=user, password=TOKEN, cloud=is_cloud)
-    log.info('Connected to upstream service ... retrieve server info')
-    log.info(json.dumps(service.get_server_info(True), indent=2))
+    clk, service = login(target_url, user, password=TOKEN, is_cloud=is_cloud)
+    log.info(f'Connected to upstream service; CLK={clk}')
+    clk, info = get_server_info(service)
+    log.info(f'Retrieved upstream server info; CLK={clk}')
+    log.info(f'Server info is ({info})')
 
     log.info(f'Random sentence of original ({c_rand})')
     log.info(f'Random sentence of duplicate ({d_rand})')
-    projects = service.get_all_projects(included_archived=None)
+    clk, projects = get_all_projects(service)
+    log.info(f'Retrieved {len(projects)} unarchived projects;CLK={clk}')
     proj_env_ok = False
     if target_project:
         proj_env_ok = any((target_project == project['key'] for project in projects))
-        log.info(f'Verified target project from reques ({target_project}) to be {"" if proj_env_ok else "not "}present')
+        log.info(f'Verified target project from request ({target_project}) to be {"" if proj_env_ok else "not "}present')
 
     if not proj_env_ok:
         log.error('Belt and braces - verify project selection:')
