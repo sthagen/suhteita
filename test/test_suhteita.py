@@ -11,6 +11,12 @@ class Arij(dict):
     def get_server_info(self, foo: bool):
         return {'everything': 'fine', 'foo': foo}
 
+    def get_all_projects(self, included_archived=None):
+        if included_archived is None:
+            return [{'key': 'this'}, {'key': 'that'}]
+        else:
+            return [{'key': 'this'}, {'key': 'that'}, {'key': 'attic'}]
+
 
 def test_two_sentences():
     wun, two = run.two_sentences(word_count=1)
@@ -67,3 +73,15 @@ def test_get_server_info():
     assert int(clk[1]) >= 0
     assert clk[0] < clk[2]
     assert info['everything'] == 'fine'
+
+
+def test_get_all_projects():
+    run.Jira = Arij
+    _, service = run.login(target_url='target_url', user='user')
+    clk, projects = run.get_all_projects(service)
+    assert len(clk) == 3
+    assert int(clk[1]) >= 0
+    assert clk[0] < clk[2]
+    assert len(projects) == 2
+    assert projects[0]['key'] == 'this'
+    assert projects[1]['key'] == 'that'
