@@ -1,5 +1,10 @@
 # Change History
 
+## 2022.8.22
+
+* Made all atomic transactions fully observable
+* Added precise tagged recording of times into JSON file below configurable path
+
 ## 2022.8.21
 
 * Flattened the API for labeling (to ease keyword API)
