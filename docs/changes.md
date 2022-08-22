@@ -4,6 +4,7 @@
 
 * Made all atomic transactions fully observable
 * Added precise tagged recording of times into JSON file below configurable path
+* Bumped implementation dependencies
 
 ## 2022.8.21
 
