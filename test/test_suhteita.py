@@ -297,3 +297,19 @@ def test_main(caplog):
     assert 2 == run.main(['-p', 'XYZ'])
     message = 'No secret token or pass phrase given, please set SUHTEITA_TOKEN accordingly'
     assert caplog.record_tuples == [('SUHTEITA', logging.ERROR, message)]
+
+
+def test_store_class():
+    context = {
+        'target': 'target',
+        'mode': 'mode',
+        'project': 'project',
+        'scenario': 'scenario',
+        'identity': 'identity',
+        'start_time': run.dti.datetime.now(tz=run.dti.timezone.utc),
+    }
+    store = run.Store(context=context, folder_path='/tmp/away')
+    assert store.db
+    tx = run.dti.datetime.now(tz=run.dti.timezone.utc)
+    store.add('x', True, (str(tx), 42., str(tx)), 'yes')
+    store.dump(tx, has_failures=True)
