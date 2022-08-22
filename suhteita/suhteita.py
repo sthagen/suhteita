@@ -67,7 +67,8 @@ class Store:
                 'start_ts': self.start_time.strftime(TS_FORMAT_PAYLOADS),
                 'total_secs': self.total_secs,
                 'end_ts': self.end_ts,
-                'has_failures': None,
+                'has_failures_declared': None,
+                'has_failures_detected': None,
             },
             'events': [],
         }
@@ -92,7 +93,12 @@ class Store:
         self.end_time = end_time
         self.db['_meta']['end_ts'] = self.end_time.strftime(TS_FORMAT_PAYLOADS)
         self.db['_meta']['total_secs'] = (self.end_time - self.start_time).total_seconds()
-        self.db['_meta']['has_failures'] = has_failures
+        self.db['_meta']['has_failures_declared'] = has_failures
+        detect_failures = False
+        for event in self.db['events']:
+            if not event['ok']:
+                detect_failures = True
+        self.db['_meta']['has_failures_detected'] = detect_failures
         with open(self.store / self.db_name, 'wt', encoding=ENCODING) as handle:
             json.dump(self.db, handle)
 
@@ -559,7 +565,7 @@ def main(argv: Union[List[str], None] = None) -> int:
     ts = dti.datetime.now(tz=dti.timezone.utc).strftime(TS_FORMAT_PAYLOADS)
     log.info(f'Timestamp marker in summaries will be ({ts})')
 
-    clk, c_key, d_key, c_clk, c_e_clk, c_ok, d_clk, d_e_clk, d_ok,  = create_issue_pair(
+    clk, c_key, d_key, c_clk, c_e_clk, c_ok, d_clk, d_e_clk, d_ok = create_issue_pair(
         service, first_proj_key, node_indicator, ts, ident=(c_rand, d_rand)
     )
     log.info(f'Generated two issues: original ({c_key}) and duplicate ({d_key}); CLK={clk}')
@@ -613,7 +619,7 @@ def main(argv: Union[List[str], None] = None) -> int:
     store.add('ADD_COMMENT', True, clk, f'duplicate({some["body"]})')
 
     clk, ok = set_original_estimate(service, c_key, hours=42)
-    store.add('SET_ORIGINAL_ESTIMATE', ok, clk, f'original')
+    store.add('SET_ORIGINAL_ESTIMATE', ok, clk, 'original')
 
     clk, c_iss_state = get_issue_status(service, c_key)
     store.add('GET_ISSUE_STATUS', c_iss_state == todo, clk, f'original({c_iss_state})')
@@ -638,7 +644,7 @@ def main(argv: Union[List[str], None] = None) -> int:
     clk, ok = relate_issue_to_component(service, c_key, 'original', comp_id, a_component)
     store.add('RELATE_ISSUE_TO_COMPONENT', ok, clk, 'original')
     if not ok:
-        has_failures = False
+        has_failures = True
 
     log.info(f'Loading issue ({c_key}) wun more time')
     clk, x_iss = load_issue(service, c_key)
