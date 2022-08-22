@@ -47,24 +47,24 @@ class Store:
     def __init__(self, context: Dict[str, Union[str, dti.datetime]], folder_path: Union[pathlib.Path, str] = STORE):
         self.store = pathlib.Path(folder_path)
         self.identity = context['identity']
-        self.start_ts = context['start_ts']
+        self.start_time = context['start_time']
         self.end_ts = None
         self.total_secs = 0.0
         self.node_indicator = NODE_INDICATOR
         self.store.mkdir(parents=True, exist_ok=True)
-        self.db_name = f'{self.identity}-{self.start_ts.strftime(TS_FORMAT_STORE)}-{self.node_indicator}.json'
+        self.db_name = f'{self.identity}-{self.start_time.strftime(TS_FORMAT_STORE)}-{self.node_indicator}.json'
         self.rank = 0
         self.db = {
             '_meta': {
                 'scenario': context.get('scenario', 'unknown'),
                 'identity': self.identity,
-                'node_indicator': self.node_indicator,
+                'node_indicator': str(self.node_indicator),
                 'target': context.get('target', 'unknown'),
                 'mode': context.get('mode', 'unknown'),
                 'project': context.get('project', 'unknown'),
                 'db_name': self.db_name,
                 'db_path': str(self.store / self.db_name),
-                'start_ts': self.start_ts.strftime(TS_FORMAT_PAYLOADS),
+                'start_ts': self.start_time.strftime(TS_FORMAT_PAYLOADS),
                 'total_secs': self.total_secs,
                 'end_ts': self.end_ts,
                 'has_failures': None,
@@ -75,10 +75,11 @@ class Store:
     @no_type_check
     def add(self, label: str, ok: bool, clk: Clocking, comment: str = ''):
         self.rank += 1
-        self.events.append(
+        self.db['events'].append(
             {
                 'rank': self.rank,
                 'label': label,
+                'ok': ok,
                 'start_ts': clk[0],
                 'duration_usecs': clk[1],
                 'end_ts': clk[2],
@@ -87,10 +88,10 @@ class Store:
         )
 
     @no_type_check
-    def dump(self, end_ts: dti.datetime, has_failures: bool = False):
-        self.end_ts = end_ts
-        self.db['_meta']['end_ts'] = self.end_ts.strftime(TS_FORMAT_PAYLOADS)
-        self.db['_meta']['total_secs'] = (self.end_ts - self.start_ts).total_seconds()
+    def dump(self, end_time: dti.datetime, has_failures: bool = False):
+        self.end_time = end_time
+        self.db['_meta']['end_ts'] = self.end_time.strftime(TS_FORMAT_PAYLOADS)
+        self.db['_meta']['total_secs'] = (self.end_time - self.start_time).total_seconds()
         self.db['_meta']['has_failures'] = has_failures
         with open(self.store / self.db_name, 'wt', encoding=ENCODING) as handle:
             json.dump(self.db, handle)
@@ -512,7 +513,7 @@ def main(argv: Union[List[str], None] = None) -> int:
         'project': target_project,
         'scenario': scenario,
         'identity': identity,
-        'start_ts': start_ts,
+        'start_time': start_time,
     }
     store = Store(context=context, folder_path=storage_path)
     log.info(f'Starting load test execution at at ({start_ts})')
@@ -626,7 +627,7 @@ def main(argv: Union[List[str], None] = None) -> int:
 
     end_time = dti.datetime.now(tz=dti.timezone.utc)
     end_ts = end_time.strftime(TS_FORMAT_PAYLOADS)
-    store.dump(end_ts=end_ts, has_failures=has_failures)
+    store.dump(end_time=end_time, has_failures=has_failures)
 
     log.info(f'Ended execution of load test at ({end_ts})')
     log.info(f'Execution of load test took {(end_time - start_time)} h:mm:ss.uuuuuu')
