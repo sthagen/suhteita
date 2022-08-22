@@ -1,8 +1,8 @@
 # Third Party Dependencies
 
 <!--[[[fill sbom_sha256()]]]-->
-The [SBOM in CycloneDX v1.4 JSON format](https://github.com/sthagen/pilli/blob/default/sbom.json) with SHA256 checksum ([22d3d519 ...](https://raw.githubusercontent.com/sthagen/pilli/default/sbom.json.sha256 "sha256:22d3d51953aef7463cb55b9b9b66a72c3345165b3542d39ef055ec1988c95bfd")).
-<!--[[[end]]] (checksum: 3e876db15395e1f8921bdaa4023c9c21)-->
+The [SBOM in CycloneDX v1.4 JSON format](https://github.com/sthagen/pilli/blob/default/sbom.json) with SHA256 checksum ([8f1b4dd0 ...](https://raw.githubusercontent.com/sthagen/pilli/default/sbom.json.sha256 "sha256:8f1b4dd00f8f0a702e577c2411b05f0280a249749a481fae91bc4d628e0137d4")).
+<!--[[[end]]] (checksum: c0fedcd46b66409a9e1af245e6da7bfb)-->
 ## Licenses 
 
 JSON files with complete license info of: [direct dependencies](direct-dependency-licenses.json) | [all dependencies](all-dependency-licenses.json)
@@ -12,8 +12,8 @@ JSON files with complete license info of: [direct dependencies](direct-dependenc
 <!--[[[fill direct_dependencies_table()]]]-->
 | Name                                                                          | Version                                                         | License                 | Author           | Description (from packaging data) |
 |:------------------------------------------------------------------------------|:----------------------------------------------------------------|:------------------------|:-----------------|:----------------------------------|
-| [atlassian-python-api](https://github.com/atlassian-api/atlassian-python-api) | [3.26.0](https://pypi.org/project/atlassian-python-api/3.26.0/) | Apache Software License | Matt Harasymczuk | Python Atlassian REST API Wrapper |
-<!--[[[end]]] (checksum: 53fcdfe2bd3b1a291699597025b77811)-->
+| [atlassian-python-api](https://github.com/atlassian-api/atlassian-python-api) | [3.27.0](https://pypi.org/project/atlassian-python-api/3.27.0/) | Apache Software License | Matt Harasymczuk | Python Atlassian REST API Wrapper |
+<!--[[[end]]] (checksum: dbdc0d190500d5e5e9dae02bea8382de)-->
 
 ### Indirect Dependencies
 
@@ -37,7 +37,7 @@ Base graphviz file in dot format: [Trees of the direct dependencies](package-dep
 
 <!--[[[fill dependency_tree_console_text()]]]-->
 ````console
-atlassian-python-api==3.26.0
+atlassian-python-api==3.27.0
   - deprecated [required: Any, installed: 1.2.13]
     - wrapt [required: >=1.10,<2, installed: 1.14.1]
   - oauthlib [required: Any, installed: 3.2.0]
@@ -55,4 +55,4 @@ atlassian-python-api==3.26.0
       - urllib3 [required: >=1.21.1,<1.27, installed: 1.26.11]
   - six [required: Any, installed: 1.16.0]
 ````
-<!--[[[end]]] (checksum: 62da53da8eb8e5a751b5869201f8c92d)-->
+<!--[[[end]]] (checksum: 3de0f59ffe6dde9798a66c75113c6882)-->
