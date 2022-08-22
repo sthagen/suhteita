@@ -637,4 +637,4 @@ def main(argv: Union[List[str], None] = None) -> int:
 
 
 if __name__ == '__main__':
-    sys.exit(main(sys.argv[1:]))
+    sys.exit(main(sys.argv[1:]))  # pragma: no cover
