@@ -424,14 +424,14 @@ def parse_request(argv: List[str]) -> argparse.Namespace:
         '-u',
         dest='user',
         default=USER,
-        help=f'user (default: {USER if USER else "None, set {APP_ENV}_USER for default"})',
+        help=f'user (default: {USER if USER else f"None, set {APP_ENV}_USER for default"})',
     )
     parser.add_argument(
         '--target',
         '-t',
         dest='target_url',
         default=BASE_URL,
-        help=f'target URL (default: {BASE_URL if BASE_URL else "None, set {APP_ENV}_BASE_URL for default"})',
+        help=f'target URL (default: {BASE_URL if BASE_URL else f"None, set {APP_ENV}_BASE_URL for default"})',
     )
     parser.add_argument(
         '--is-cloud',
@@ -440,7 +440,7 @@ def parse_request(argv: List[str]) -> argparse.Namespace:
         default=IS_CLOUD,
         help=(
             'target is cloud instance (default: '
-            f'{"True" if IS_CLOUD else "False, set {APP_ENV}_IS_CLOUD for a different default"})'
+            f'{"True" if IS_CLOUD else f"False, set {APP_ENV}_IS_CLOUD for a different default"})'
         ),
     )
     parser.add_argument(
@@ -448,7 +448,7 @@ def parse_request(argv: List[str]) -> argparse.Namespace:
         '-p',
         dest='target_project',
         default=PROJECT,
-        help=f'target project (default: {PROJECT if PROJECT else "None, set {APP_ENV}_PROJECT for default"})',
+        help=f'target project (default: {PROJECT if PROJECT else f"None, set {APP_ENV}_PROJECT for default"})',
     )
     parser.add_argument(
         '--scenario',
@@ -464,7 +464,7 @@ def parse_request(argv: List[str]) -> argparse.Namespace:
         default=IDENTITY if IDENTITY else 'adhoc',
         help=(
             'identity of take for recording'
-            f' (default: {IDENTITY if IDENTITY else "adhoc, set {APP_ENV}_IDENTITY for default"})'
+            f' (default: {IDENTITY if IDENTITY else f"adhoc, set {APP_ENV}_IDENTITY for default"})'
         ),
     )
     parser.add_argument(
@@ -474,7 +474,7 @@ def parse_request(argv: List[str]) -> argparse.Namespace:
         default=STORE if STORE else 'store',
         help=(
             'output folder path for recording'
-            f' (default: {STORE if STORE else "store, set {APP_ENV}_STORE for default"})'
+            f' (default: {STORE if STORE else f"store, set {APP_ENV}_STORE for default"})'
         ),
     )
     return parser.parse_args(argv)
