@@ -2,8 +2,11 @@
 
 ## 2022.8.22
 
+* Fixed unprocessed vars in help strings for arguments
 * Made all atomic transactions fully observable
-* Added precise tagged recording of times into JSON file below configurable path
+* Added store implementation (JSON)
+* Implemented collection of transaction results in context to database (JSON)
+* Amended API and usage docs
 * Bumped implementation dependencies
 
 ## 2022.8.21
