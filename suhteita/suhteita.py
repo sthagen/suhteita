@@ -397,14 +397,18 @@ def create_component(service: Jira, project: str, description: str) -> Tuple[Clo
     return clocking, comp_id, random_component, service.component(comp_id)
 
 
-def relate_issue_to_component(service: Jira, issue_key: str, issue_hint: str, comp_id: str, comp_name: str) -> Clocking:
+def relate_issue_to_component(
+    service: Jira, issue_key: str, issue_hint: str, comp_id: str, comp_name: str
+) -> Tuple[Clocking, bool]:
     """DRY."""
+    ok = True
     try:
         log.info(f'Associating the {issue_hint} {issue_key} with random component ({comp_name})')
         start_time = dti.datetime.now(tz=dti.timezone.utc)
         service.update_issue_field(issue_key, fields={'components': [{'name': comp_name}]})
         end_time = dti.datetime.now(tz=dti.timezone.utc)
     except Exception as err:  # noqa
+        ok = False
         end_time = dti.datetime.now(tz=dti.timezone.utc)
         log.error(f'Not able to set component for issue: {err}')
         log.info(f'Cleaning up - deleting component ID={comp_id}')
@@ -414,7 +418,7 @@ def relate_issue_to_component(service: Jira, issue_key: str, issue_hint: str, co
         (end_time - start_time).microseconds,
         end_time.strftime(TS_FORMAT_PAYLOADS),
     )
-    return clocking
+    return clocking, ok
 
 
 def parse_request(argv: List[str]) -> argparse.Namespace:
@@ -562,26 +566,35 @@ def main(argv: Union[List[str], None] = None) -> int:
     log.info(f'Executed JQL({query}); CLK={clk}')
     store.add('EXECUTE_JQL', True, clk, f'query({query})')
 
-    amend_issue_description(service, c_key, amendment='No, no, no. They duplicated me, help!', issue_context=c_q)
-    _ = add_comment(service=service, issue_key=d_key, comment='I am the original, surely!')
-    update_issue_field(service, d_key, labels=['du', 'pli', 'ca', 'te'])
-    update_issue_field(service, c_key, labels=['for', 'real', 'highlander'])
-    create_duplicates_issue_link(service, c_key, d_key)
+    clk = amend_issue_description(service, c_key, amendment='No, no, no. They duplicated me, help!', issue_context=c_q)
+    store.add('AMEND_ISSUE_DESCRIPTION', True, clk, 'original')
+    clk, _ = add_comment(service=service, issue_key=d_key, comment='I am the original, surely!')
+    store.add('ADD_COMMENT', True, clk, 'duplicate')
+    clk = update_issue_field(service, d_key, labels=['du', 'pli', 'ca', 'te'])
+    store.add('UPDATE_ISSUE_FIELD', True, clk, 'duplicate')
+    clk = update_issue_field(service, c_key, labels=['for', 'real', 'highlander'])
+    store.add('UPDATE_ISSUE_FIELD', True, clk, 'original')
+    clk = create_duplicates_issue_link(service, c_key, d_key)
+    store.add('CREATE_DUPLICATES_ISSUE_LINK', True, clk, 'dublicate duplicates original')
 
     todo, in_progress, done = ('To Do', 'In Progress', 'Done')
     log.info(f'The test workflow assumes the states ({todo}, {in_progress}, {done})')
 
     d_iss_state = get_issue_status(service, d_key)
+    store.add('GET_ISSUE_STATUS', d_iss_state == todo, clk, f'duplicate({d_iss_state})')
     if d_iss_state != todo:
         log.error(f'Unexpected state ({d_iss_state}) for duplicate {d_key} - expected was ({todo})')
         has_failures = True
 
     log.info(f'Transitioning the duplicate {d_key} to ({in_progress})')
-    set_issue_status(service, d_key, in_progress)
+    clk = set_issue_status(service, d_key, in_progress)
+    store.add('SET_ISSUE_STATUS', True, clk, f'duplicate ({todo})->({in_progress})')
 
     log.info(f'Transitioning the duplicate {d_key} to ({done})')
-    set_issue_status(service, d_key, done)
-    d_iss_state_done = get_issue_status(service, d_key)
+    clk = set_issue_status(service, d_key, done)
+    store.add('SET_ISSUE_STATUS', True, clk, f'duplicate ({in_progress})->({done})')
+    clk, d_iss_state_done = get_issue_status(service, d_key)
+    store.add('GET_ISSUE_STATUS', d_iss_state_done == done, clk, f'duplicate({d_iss_state_done})')
     if d_iss_state_done != done:
         log.error(f'Unexpected state ({d_iss_state}) for duplicate {d_key} - expected was ({done})')
         has_failures = True
@@ -592,14 +605,17 @@ def main(argv: Union[List[str], None] = None) -> int:
 
     set_original_estimate(service, c_key, hours=42)
 
-    c_iss_state = get_issue_status(service, c_key)
+    clk, c_iss_state = get_issue_status(service, c_key)
+    store.add('GET_ISSUE_STATUS', c_iss_state == todo, clk, f'original({c_iss_state})')
     if c_iss_state != todo:
         log.error(f'Unexpected state ({c_iss_state}) for original {c_key} - expected was ({todo})')
         has_failures = True
 
     log.info(f'Transitioning the original {c_key} to ({in_progress})')
-    set_issue_status(service, c_key, in_progress)
+    clk = set_issue_status(service, c_key, in_progress)
+    store.add('SET_ISSUE_STATUS', True, clk, f'original ({todo})->({in_progress})')
     c_iss_state_in_progress = get_issue_status(service, c_key)
+    store.add('GET_ISSUE_STATUS', c_iss_state_in_progress == in_progress, clk, f'original({c_iss_state_in_progress})')
     if c_iss_state_in_progress != in_progress:
         log.error(f'Unexpected state ({c_iss_state_in_progress}) for original {c_key} - expected was ({in_progress})')
         has_failures = True
@@ -607,23 +623,30 @@ def main(argv: Union[List[str], None] = None) -> int:
     clk, comp_id, a_component, comp_resp = create_component(service=service, project=first_proj_key, description=c_rand)
     some = extract_fields(comp_resp, fields=('self', 'description'))
     log.info(f'Created component {a_component} with response extract({some}); CLK={clk}')
+    store.add('CREATE_COMPONENT', True, clk, f'component({some})')
 
-    relate_issue_to_component(service, c_key, 'original', comp_id, a_component)
+    clk, ok = relate_issue_to_component(service, c_key, 'original', comp_id, a_component)
+    store.add('RELATE_ISSUE_TO_COMPONENT', ok, clk, 'original')
+    if not ok:
+        has_failures = False
 
     log.info(f'Loading issue ({c_key}) wun more time')
     clk, x_iss = load_issue(service, c_key)
     log.info(f'Loaded issue {c_key}; CLK={clk}')
     log.debug(json.dumps(x_iss, indent=2))
+    store.add('LOAD_ISSUE', True, clk, 'original')
 
     purge_me = 'SUHTEITA_PURGE_ME_ORIGINAL'
     log.info(f'Adding comments ({purge_me}) to the created issues tagging for deletion')
     clk, response = add_comment(service=service, issue_key=c_key, comment=purge_me)
     some = extract_fields(response, fields=('self', 'body'))
     log.info(f'Added purge tag comment on original {c_key} with response extract ({some}); CLK={clk}')
+    store.add('ADD_COMMENT', True, clk, f'original({some})')
 
     clk, response = add_comment(service=service, issue_key=d_key, comment=purge_me)
     some = extract_fields(response, fields=('self', 'body'))
     log.info(f'Added purge tag comment on duplicate issue {d_key} with response extract ({some}); CLK={clk}')
+    store.add('ADD_COMMENT', True, clk, f'duplicate({some})')
 
     end_time = dti.datetime.now(tz=dti.timezone.utc)
     end_ts = end_time.strftime(TS_FORMAT_PAYLOADS)
