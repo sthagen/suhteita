@@ -137,3 +137,4 @@ local*
 current-bandit.json
 tmp*
 foo
+store/
