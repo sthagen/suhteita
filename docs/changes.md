@@ -3,6 +3,8 @@
 ## 2022.8.22
 
 * Fixed unprocessed vars in help strings for arguments
+* Fixed mistaking clocking tuple for status return values
+* Still not auto-detect for cloud vs. on-site (mode) default may claim on-site regardless
 * Made all atomic transactions fully observable
 * Added store implementation (JSON)
 * Implemented collection of transaction results in context to database (JSON)
