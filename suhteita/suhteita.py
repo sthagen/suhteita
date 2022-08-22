@@ -24,6 +24,10 @@ TOKEN = os.getenv(f'{APP_ENV}_TOKEN', '')
 BASE_URL = os.getenv(f'{APP_ENV}_BASE_URL', '')
 IS_CLOUD = bool(os.getenv(f'{APP_ENV}_IS_CLOUD', ''))
 PROJECT = os.getenv(f'{APP_ENV}_PROJECT', '')
+STORE = os.getenv(f'{APP_ENV}_STORE', '')  # default 'store' per argparse
+IDENTITY = os.getenv(f'{APP_ENV}_IDENTITY', '')  # default 'adhoc' per argparse
+WORDS = os.getenv(f'{APP_ENV}_WORDS', '/usr/share/dict/words')
+NODE_INDICATOR = uuid.uuid3(uuid.NAMESPACE_DNS, platform.node())
 
 log = logging.getLogger()  # Module level logger is sufficient
 LOG_FOLDER = pathlib.Path('logs')
@@ -31,7 +35,65 @@ LOG_FILE = f'{APP_ALIAS}.log'
 LOG_PATH = pathlib.Path(LOG_FOLDER, LOG_FILE) if LOG_FOLDER.is_dir() else pathlib.Path(LOG_FILE)
 LOG_LEVEL = logging.INFO
 
+TS_FORMAT_LOG = '%Y-%m-%dT%H:%M:%S'
+TS_FORMAT_PAYLOADS = '%Y-%m-%d %H:%M:%S.%f UTC'
+TS_FORMAT_STORE = '%Y%m%dT%H%M%S.%fZ'
 Clocking = Tuple[str, float, str]
+
+
+@no_type_check
+class Store:
+    @no_type_check
+    def __init__(self, context: Dict[str, Union[str, dti.datetime]], folder_path: Union[pathlib.Path, str] = STORE):
+        self.store = pathlib.Path(folder_path)
+        self.identity = context['identity']
+        self.start_ts = context['start_ts']
+        self.end_ts = None
+        self.total_secs = 0.0
+        self.node_indicator = NODE_INDICATOR
+        self.store.mkdir(parents=True, exist_ok=True)
+        self.db_name = f'{self.identity}-{self.start_ts.strftime(TS_FORMAT_STORE)}-{self.node_indicator}.json'
+        self.rank = 0
+        self.db = {
+            '_meta': {
+                'scenario': context.get('scenario', 'unknown'),
+                'identity': self.identity,
+                'node_indicator': self.node_indicator,
+                'target': context.get('target', 'unknown'),
+                'mode': context.get('mode', 'unknown'),
+                'project': context.get('project', 'unknown'),
+                'db_name': self.db_name,
+                'db_path': str(self.store / self.db_name),
+                'start_ts': self.start_ts.strftime(TS_FORMAT_PAYLOADS),
+                'total_secs': self.total_secs,
+                'end_ts': self.end_ts,
+                'has_failures': None,
+            },
+            'events': [],
+        }
+
+    @no_type_check
+    def add(self, label: str, ok: bool, clk: Clocking, comment: str = ''):
+        self.rank += 1
+        self.events.append(
+            {
+                'rank': self.rank,
+                'label': label,
+                'start_ts': clk[0],
+                'duration_usecs': clk[1],
+                'end_ts': clk[2],
+                'comment': comment,
+            }
+        )
+
+    @no_type_check
+    def dump(self, end_ts: dti.datetime, has_failures: bool = False):
+        self.end_ts = end_ts
+        self.db['_meta']['end_ts'] = self.end_ts.strftime(TS_FORMAT_PAYLOADS)
+        self.db['_meta']['total_secs'] = (self.end_ts - self.start_ts).total_seconds()
+        self.db['_meta']['has_failures'] = has_failures
+        with open(self.store / self.db_name, 'wt', encoding=ENCODING) as handle:
+            json.dump(self.db, handle)
 
 
 @no_type_check
@@ -41,7 +103,7 @@ def init_logger(name=None, level=None):
 
     log_format = {
         'format': '%(asctime)s.%(msecs)03d %(levelname)s [%(name)s]: %(message)s',
-        'datefmt': '%Y-%m-%dT%H:%M:%S',
+        'datefmt': TS_FORMAT_LOG,
         # 'filename': LOG_PATH,
         'level': LOG_LEVEL if level is None else level,
     }
@@ -52,7 +114,7 @@ def init_logger(name=None, level=None):
 
 def two_sentences(word_count: int = 4) -> Tuple[str, str]:
     """DRY."""
-    with open('/usr/share/dict/words', 'rt', encoding=ENCODING) as handle:
+    with open(WORDS, 'rt', encoding=ENCODING) as handle:
         words = [word.strip() for word in handle]
         wun = ' '.join(secrets.choice(words) for _ in range(word_count))
         two = ' '.join(secrets.choice(words) for _ in range(word_count))
@@ -66,9 +128,9 @@ def login(target_url: str, user: str, password: str = TOKEN, is_cloud: bool = IS
     service = Jira(url=target_url, username=user, password=password, cloud=is_cloud)
     end_time = dti.datetime.now(tz=dti.timezone.utc)
     clocking: Clocking = (
-        start_time.strftime('%Y-%m-%d %H:%M:%S.%f UTC'),
+        start_time.strftime(TS_FORMAT_PAYLOADS),
         (end_time - start_time).microseconds,
-        end_time.strftime('%Y-%m-%d %H:%M:%S.%f UTC'),
+        end_time.strftime(TS_FORMAT_PAYLOADS),
     )
     return clocking, service
 
@@ -79,9 +141,9 @@ def get_server_info(service: Jira) -> Tuple[Clocking, object]:
     data = service.get_server_info(True)
     end_time = dti.datetime.now(tz=dti.timezone.utc)
     clocking: Clocking = (
-        start_time.strftime('%Y-%m-%d %H:%M:%S.%f UTC'),
+        start_time.strftime(TS_FORMAT_PAYLOADS),
         (end_time - start_time).microseconds,
-        end_time.strftime('%Y-%m-%d %H:%M:%S.%f UTC'),
+        end_time.strftime(TS_FORMAT_PAYLOADS),
     )
     return clocking, data
 
@@ -92,9 +154,9 @@ def get_all_projects(service: Jira) -> Tuple[Clocking, List[Dict[str, str]]]:
     projects = service.get_all_projects(included_archived=None)
     end_time = dti.datetime.now(tz=dti.timezone.utc)
     clocking: Clocking = (
-        start_time.strftime('%Y-%m-%d %H:%M:%S.%f UTC'),
+        start_time.strftime(TS_FORMAT_PAYLOADS),
         (end_time - start_time).microseconds,
-        end_time.strftime('%Y-%m-%d %H:%M:%S.%f UTC'),
+        end_time.strftime(TS_FORMAT_PAYLOADS),
     )
     return clocking, projects
 
@@ -112,9 +174,9 @@ def create_issue(service: Jira, project: str, ts: str, description: str) -> Tupl
     created = service.issue_create(fields=fields)
     end_time = dti.datetime.now(tz=dti.timezone.utc)
     clocking: Clocking = (
-        start_time.strftime('%Y-%m-%d %H:%M:%S.%f UTC'),
+        start_time.strftime(TS_FORMAT_PAYLOADS),
         (end_time - start_time).microseconds,
-        end_time.strftime('%Y-%m-%d %H:%M:%S.%f UTC'),
+        end_time.strftime(TS_FORMAT_PAYLOADS),
     )
     return clocking, created['key']
 
@@ -126,9 +188,9 @@ def issue_exists(service: Jira, issue_key: str) -> Tuple[Clocking, bool]:
     exists = service.issue_exists(issue_key)
     end_time = dti.datetime.now(tz=dti.timezone.utc)
     clocking: Clocking = (
-        start_time.strftime('%Y-%m-%d %H:%M:%S.%f UTC'),
+        start_time.strftime(TS_FORMAT_PAYLOADS),
         (end_time - start_time).microseconds,
-        end_time.strftime('%Y-%m-%d %H:%M:%S.%f UTC'),
+        end_time.strftime(TS_FORMAT_PAYLOADS),
     )
     return clocking, exists
 
@@ -145,9 +207,9 @@ def create_issue_pair(
     d_clocking, d_key = create_issue(service, project, ts, description=f'{ident[1]}\n{desc_core}\nCAUSALITY={node}')
     end_time = dti.datetime.now(tz=dti.timezone.utc)
     clocking: Clocking = (
-        start_time.strftime('%Y-%m-%d %H:%M:%S.%f UTC'),
+        start_time.strftime(TS_FORMAT_PAYLOADS),
         (end_time - start_time).microseconds,
-        end_time.strftime('%Y-%m-%d %H:%M:%S.%f UTC'),
+        end_time.strftime(TS_FORMAT_PAYLOADS),
     )
     c_e_clocking, c_e = issue_exists(service, c_key)
     if not c_e:
@@ -171,9 +233,9 @@ def get_issue_status(service: Jira, issue_key: str) -> Tuple[Clocking, str]:
     status = service.get_issue_status(issue_key)
     end_time = dti.datetime.now(tz=dti.timezone.utc)
     clocking: Clocking = (
-        start_time.strftime('%Y-%m-%d %H:%M:%S.%f UTC'),
+        start_time.strftime(TS_FORMAT_PAYLOADS),
         (end_time - start_time).microseconds,
-        end_time.strftime('%Y-%m-%d %H:%M:%S.%f UTC'),
+        end_time.strftime(TS_FORMAT_PAYLOADS),
     )
     return clocking, status
 
@@ -184,9 +246,9 @@ def set_issue_status(service: Jira, issue_key: str, status: str) -> Clocking:
     service.set_issue_status(issue_key, status)
     end_time = dti.datetime.now(tz=dti.timezone.utc)
     clocking: Clocking = (
-        start_time.strftime('%Y-%m-%d %H:%M:%S.%f UTC'),
+        start_time.strftime(TS_FORMAT_PAYLOADS),
         (end_time - start_time).microseconds,
-        end_time.strftime('%Y-%m-%d %H:%M:%S.%f UTC'),
+        end_time.strftime(TS_FORMAT_PAYLOADS),
     )
     return clocking
 
@@ -197,9 +259,9 @@ def load_issue(service: Jira, issue_key: str) -> Tuple[Clocking, object]:
     data = service.issue(issue_key)
     end_time = dti.datetime.now(tz=dti.timezone.utc)
     clocking: Clocking = (
-        start_time.strftime('%Y-%m-%d %H:%M:%S.%f UTC'),
+        start_time.strftime(TS_FORMAT_PAYLOADS),
         (end_time - start_time).microseconds,
-        end_time.strftime('%Y-%m-%d %H:%M:%S.%f UTC'),
+        end_time.strftime(TS_FORMAT_PAYLOADS),
     )
     return clocking, data
 
@@ -211,9 +273,9 @@ def execute_jql(service: Jira, query: str) -> Tuple[Clocking, object]:
     data = service.jql(query)
     end_time = dti.datetime.now(tz=dti.timezone.utc)
     clocking: Clocking = (
-        start_time.strftime('%Y-%m-%d %H:%M:%S.%f UTC'),
+        start_time.strftime(TS_FORMAT_PAYLOADS),
         (end_time - start_time).microseconds,
-        end_time.strftime('%Y-%m-%d %H:%M:%S.%f UTC'),
+        end_time.strftime(TS_FORMAT_PAYLOADS),
     )
     return clocking, data
 
@@ -228,9 +290,9 @@ def amend_issue_description(service: Jira, issue_key: str, amendment: str, issue
     )
     end_time = dti.datetime.now(tz=dti.timezone.utc)
     clocking: Clocking = (
-        start_time.strftime('%Y-%m-%d %H:%M:%S.%f UTC'),
+        start_time.strftime(TS_FORMAT_PAYLOADS),
         (end_time - start_time).microseconds,
-        end_time.strftime('%Y-%m-%d %H:%M:%S.%f UTC'),
+        end_time.strftime(TS_FORMAT_PAYLOADS),
     )
     return clocking
 
@@ -242,9 +304,9 @@ def add_comment(service: Jira, issue_key: str, comment: str) -> Tuple[Clocking, 
     response = service.issue_add_comment(issue_key, comment)
     end_time = dti.datetime.now(tz=dti.timezone.utc)
     clocking: Clocking = (
-        start_time.strftime('%Y-%m-%d %H:%M:%S.%f UTC'),
+        start_time.strftime(TS_FORMAT_PAYLOADS),
         (end_time - start_time).microseconds,
-        end_time.strftime('%Y-%m-%d %H:%M:%S.%f UTC'),
+        end_time.strftime(TS_FORMAT_PAYLOADS),
     )
     return clocking, response
 
@@ -261,9 +323,9 @@ def update_issue_field(service: Jira, issue_key: str, labels: List[str]) -> Cloc
     service.update_issue_field(issue_key, fields={'labels': labels})
     end_time = dti.datetime.now(tz=dti.timezone.utc)
     clocking: Clocking = (
-        start_time.strftime('%Y-%m-%d %H:%M:%S.%f UTC'),
+        start_time.strftime(TS_FORMAT_PAYLOADS),
         (end_time - start_time).microseconds,
-        end_time.strftime('%Y-%m-%d %H:%M:%S.%f UTC'),
+        end_time.strftime(TS_FORMAT_PAYLOADS),
     )
     return clocking
 
@@ -282,9 +344,9 @@ def create_duplicates_issue_link(service: Jira, duplicate_issue_key: str, origin
     service.create_issue_link(data)
     end_time = dti.datetime.now(tz=dti.timezone.utc)
     clocking: Clocking = (
-        start_time.strftime('%Y-%m-%d %H:%M:%S.%f UTC'),
+        start_time.strftime(TS_FORMAT_PAYLOADS),
         (end_time - start_time).microseconds,
-        end_time.strftime('%Y-%m-%d %H:%M:%S.%f UTC'),
+        end_time.strftime(TS_FORMAT_PAYLOADS),
     )
     return clocking
 
@@ -304,9 +366,9 @@ def set_original_estimate(service: Jira, issue_key: str, hours: int) -> Clocking
         log.warning('These can be license issues - verify timetracking works in the web ui')
         log.info('Ignoring the problem ...')
     clocking: Clocking = (
-        start_time.strftime('%Y-%m-%d %H:%M:%S.%f UTC'),
+        start_time.strftime(TS_FORMAT_PAYLOADS),
         (end_time - start_time).microseconds,
-        end_time.strftime('%Y-%m-%d %H:%M:%S.%f UTC'),
+        end_time.strftime(TS_FORMAT_PAYLOADS),
     )
     return clocking
 
@@ -326,9 +388,9 @@ def create_component(service: Jira, project: str, description: str) -> Tuple[Clo
     comp_create_resp = service.create_component(comp_data)
     end_time = dti.datetime.now(tz=dti.timezone.utc)
     clocking: Clocking = (
-        start_time.strftime('%Y-%m-%d %H:%M:%S.%f UTC'),
+        start_time.strftime(TS_FORMAT_PAYLOADS),
         (end_time - start_time).microseconds,
-        end_time.strftime('%Y-%m-%d %H:%M:%S.%f UTC'),
+        end_time.strftime(TS_FORMAT_PAYLOADS),
     )
     comp_id = comp_create_resp['id']
     return clocking, comp_id, random_component, service.component(comp_id)
@@ -347,9 +409,9 @@ def relate_issue_to_component(service: Jira, issue_key: str, issue_hint: str, co
         log.info(f'Cleaning up - deleting component ID={comp_id}')
         service.delete_component(comp_id)
     clocking: Clocking = (
-        start_time.strftime('%Y-%m-%d %H:%M:%S.%f UTC'),
+        start_time.strftime(TS_FORMAT_PAYLOADS),
         (end_time - start_time).microseconds,
-        end_time.strftime('%Y-%m-%d %H:%M:%S.%f UTC'),
+        end_time.strftime(TS_FORMAT_PAYLOADS),
     )
     return clocking
 
@@ -372,13 +434,6 @@ def parse_request(argv: List[str]) -> argparse.Namespace:
         help=f'target URL (default: {BASE_URL if BASE_URL else "None, set {APP_ENV}_BASE_URL for default"})',
     )
     parser.add_argument(
-        '--project',
-        '-p',
-        dest='target_project',
-        default=PROJECT,
-        help=f'target project (default: {PROJECT if PROJECT else "None, set {APP_ENV}_PROJECT for default"})',
-    )
-    parser.add_argument(
         '--is-cloud',
         action='store_true',
         dest='is_cloud',
@@ -386,6 +441,40 @@ def parse_request(argv: List[str]) -> argparse.Namespace:
         help=(
             'target is cloud instance (default: '
             f'{"True" if IS_CLOUD else "False, set {APP_ENV}_IS_CLOUD for a different default"})'
+        ),
+    )
+    parser.add_argument(
+        '--project',
+        '-p',
+        dest='target_project',
+        default=PROJECT,
+        help=f'target project (default: {PROJECT if PROJECT else "None, set {APP_ENV}_PROJECT for default"})',
+    )
+    parser.add_argument(
+        '--scenario',
+        '-s',
+        dest='scenario',
+        default='unknown',
+        help='scenario for recording (default: unknown)',
+    )
+    parser.add_argument(
+        '--identity',
+        '-i',
+        dest='identity',
+        default=IDENTITY if IDENTITY else 'adhoc',
+        help=(
+            'identity of take for recording'
+            f' (default: {IDENTITY if IDENTITY else "adhoc, set {APP_ENV}_IDENTITY for default"})'
+        ),
+    )
+    parser.add_argument(
+        '--out-path',
+        '-o',
+        dest='out_path',
+        default=STORE if STORE else 'store',
+        help=(
+            'output folder path for recording'
+            f' (default: {STORE if STORE else "store, set {APP_ENV}_STORE for default"})'
         ),
     )
     return parser.parse_args(argv)
@@ -399,19 +488,33 @@ def main(argv: Union[List[str], None] = None) -> int:
     # Belt and braces:
     user = options.user if options.user else USER
     target_url = options.target_url if options.target_url else BASE_URL
-    target_project = options.target_project if options.target_project else PROJECT
     is_cloud = options.is_cloud if options.is_cloud else IS_CLOUD
+    target_project = options.target_project if options.target_project else PROJECT
+    scenario = options.scenario if options.scenario else 'unknown'
+    identity = options.identity if options.identity else IDENTITY
+    storage_path = options.out_path if options.out_path else STORE
+
+    has_failures = False
 
     init_logger(name=APP_ENV, level=logging.DEBUG if DEBUG else None)
     if not TOKEN:
         log.error(f'No secret token or pass phrase given, please set {APP_ENV}_TOKEN accordingly')
         return 2
 
-    node_indicator = uuid.uuid3(uuid.NAMESPACE_DNS, platform.node())
+    node_indicator = NODE_INDICATOR
     c_rand, d_rand = two_sentences()
 
     start_time = dti.datetime.now(tz=dti.timezone.utc)
-    start_ts = start_time.strftime('%Y-%m-%d %H:%M:%S.%f UTC')
+    start_ts = start_time.strftime(TS_FORMAT_PAYLOADS)
+    context = {
+        'target': target_url,
+        'mode': f'{"cloud" if is_cloud else "on-site"}',
+        'project': target_project,
+        'scenario': scenario,
+        'identity': identity,
+        'start_ts': start_ts,
+    }
+    store = Store(context=context, folder_path=storage_path)
     log.info(f'Starting load test execution at at ({start_ts})')
     log.info(f'Node indicator ({node_indicator})')
     log.info(
@@ -420,14 +523,17 @@ def main(argv: Union[List[str], None] = None) -> int:
     )
     clk, service = login(target_url, user, password=TOKEN, is_cloud=is_cloud)
     log.info(f'Connected to upstream service; CLK={clk}')
+    store.add('LOGIN', True, clk)
     clk, info = get_server_info(service)
     log.info(f'Retrieved upstream server info; CLK={clk}')
+    store.add('SERVER_INFO', True, clk, str(info))
     log.info(f'Server info is ({info})')
 
     log.info(f'Random sentence of original ({c_rand})')
     log.info(f'Random sentence of duplicate ({d_rand})')
     clk, projects = get_all_projects(service)
     log.info(f'Retrieved {len(projects)} unarchived projects;CLK={clk}')
+    store.add('PROJECTS', True, clk, f'count({len(projects)})')
     proj_env_ok = False
     if target_project:
         proj_env_ok = any((target_project == project['key'] for project in projects))
@@ -443,15 +549,17 @@ def main(argv: Union[List[str], None] = None) -> int:
     first_proj_key = target_project if proj_env_ok else projects[0]['key']
     log.info(f'Target project set to ({first_proj_key})')
 
-    ts = dti.datetime.now(tz=dti.timezone.utc).strftime('%Y-%m-%d %H:%M:%S.%f UTC')
+    ts = dti.datetime.now(tz=dti.timezone.utc).strftime(TS_FORMAT_PAYLOADS)
     log.info(f'Timestamp marker in summaries will be ({ts})')
 
     clk, c_key, d_key = create_issue_pair(service, first_proj_key, node_indicator, ts, ident=(c_rand, d_rand))
     log.info(f'Generated two issues: original ({c_key}) and duplicate ({d_key}); CLK={clk}')
+    store.add('CREATE_TWINS', True, clk, f'original({c_key}), duplicate({d_key})')
 
     query = f'issue = {c_key}'
     clk, c_q = execute_jql(service=service, query=query)
     log.info(f'Executed JQL({query}); CLK={clk}')
+    store.add('EXECUTE_JQL', True, clk, f'query({query})')
 
     amend_issue_description(service, c_key, amendment='No, no, no. They duplicated me, help!', issue_context=c_q)
     _ = add_comment(service=service, issue_key=d_key, comment='I am the original, surely!')
@@ -465,6 +573,7 @@ def main(argv: Union[List[str], None] = None) -> int:
     d_iss_state = get_issue_status(service, d_key)
     if d_iss_state != todo:
         log.error(f'Unexpected state ({d_iss_state}) for duplicate {d_key} - expected was ({todo})')
+        has_failures = True
 
     log.info(f'Transitioning the duplicate {d_key} to ({in_progress})')
     set_issue_status(service, d_key, in_progress)
@@ -474,6 +583,7 @@ def main(argv: Union[List[str], None] = None) -> int:
     d_iss_state_done = get_issue_status(service, d_key)
     if d_iss_state_done != done:
         log.error(f'Unexpected state ({d_iss_state}) for duplicate {d_key} - expected was ({done})')
+        has_failures = True
 
     clk, response = add_comment(service, d_key, 'Closed as duplicate.')
     some = extract_fields(response, fields=('self', 'body'))
@@ -484,12 +594,14 @@ def main(argv: Union[List[str], None] = None) -> int:
     c_iss_state = get_issue_status(service, c_key)
     if c_iss_state != todo:
         log.error(f'Unexpected state ({c_iss_state}) for original {c_key} - expected was ({todo})')
+        has_failures = True
 
     log.info(f'Transitioning the original {c_key} to ({in_progress})')
     set_issue_status(service, c_key, in_progress)
     c_iss_state_in_progress = get_issue_status(service, c_key)
     if c_iss_state_in_progress != in_progress:
         log.error(f'Unexpected state ({c_iss_state_in_progress}) for original {c_key} - expected was ({in_progress})')
+        has_failures = True
 
     clk, comp_id, a_component, comp_resp = create_component(service=service, project=first_proj_key, description=c_rand)
     some = extract_fields(comp_resp, fields=('self', 'description'))
@@ -513,7 +625,9 @@ def main(argv: Union[List[str], None] = None) -> int:
     log.info(f'Added purge tag comment on duplicate issue {d_key} with response extract ({some}); CLK={clk}')
 
     end_time = dti.datetime.now(tz=dti.timezone.utc)
-    end_ts = end_time.strftime('%Y-%m-%d %H:%M:%S.%f UTC')
+    end_ts = end_time.strftime(TS_FORMAT_PAYLOADS)
+    store.dump(end_ts=end_ts, has_failures=has_failures)
+
     log.info(f'Ended execution of load test at ({end_ts})')
     log.info(f'Execution of load test took {(end_time - start_time)} h:mm:ss.uuuuuu')
 
