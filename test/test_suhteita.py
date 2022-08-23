@@ -155,37 +155,6 @@ def test_issue_exists():
     assert exists is True
 
 
-def test_create_issue_pair():
-    run.Jira = Arij
-    _, service = run.login(target_url='target_url', user='user')
-    kwargs = dict(project='FOO', node='so-what', ts='time-flies', ident=('a b c d', 'e f g h'))
-    clk, a_key, b_key, a_clk, a_e_clk, a_e_ok, b_clk, b_e_clk, b_e_ok = run.create_issue_pair(service, **kwargs)
-    assert len(clk) == 3
-    assert int(clk[1]) >= 0
-    assert clk[0] < clk[2]
-    assert a_key == 'FOO-42'
-    assert b_key == 'FOO-42'
-    assert a_clk
-    assert a_e_clk
-    assert a_e_ok
-    assert b_clk
-    assert b_e_clk
-    assert b_e_ok
-    kwargs = dict(project='', node='so-what', ts='time-flies', ident=('a b c d', 'e f g h'))
-    clk, a_key, b_key, a_clk, a_e_clk, a_e_ok, b_clk, b_e_clk, b_e_ok = run.create_issue_pair(service, **kwargs)
-    assert len(clk) == 3
-    assert int(clk[1]) >= 0
-    assert clk[0] < clk[2]
-    assert a_key == ''
-    assert b_key == ''
-    assert a_clk
-    assert a_e_clk
-    assert not a_e_ok
-    assert b_clk
-    assert b_e_clk
-    assert not b_e_ok
-
-
 def test_load_issue():
     run.Jira = Arij
     _, service = run.login(target_url='target_url', user='user')
