@@ -233,10 +233,13 @@ for k, profile in enumerate(profiles):
     ta_end_time =  dti.datetime.strptime(ta_end_ts, UTC_TS_FORMAT)
     sta_start_ts = profile['step_start_ts']
     sta_start_time = dti.datetime.strptime(sta_start_ts, UTC_TS_FORMAT)
+    sta_end_ts = profile['step_end_ts']
+    sta_end_time = dti.datetime.strptime(sta_end_ts, UTC_TS_FORMAT)
     total_secs = profile['total_secs']
     profiles[k]['start_rel_float_epoc'] = (ta_start_time - early_time).total_seconds()
     profiles[k]['end_rel_float_epoc'] = (ta_end_time - early_time).total_seconds()
     profiles[k]['step_start_rel_float_epoc'] = (sta_start_time - early_time).total_seconds()
+    profiles[k]['step_end_rel_float_epoc'] = (sta_end_time - early_time).total_seconds()
     profiles[k]['sub_transaction_local_start_rel_float_percent'] = 100 * (sta_start_time - ta_start_time).total_seconds() / total_secs
 
 with open('profiles.json', 'wt', encoding=ENCODING) as handle:
