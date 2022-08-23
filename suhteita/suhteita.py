@@ -261,10 +261,12 @@ def execute_jql(service: Jira, query: str) -> Tuple[Clocking, object]:
 def amend_issue_description(service: Jira, issue_key: str, amendment: str, issue_context) -> Clocking:
     """DRY."""
     start_time = dti.datetime.now(tz=dti.timezone.utc)
-    _ = copy.deepcopy(service.update_issue_field(
-        issue_key,
-        fields={'description': f"{issue_context['issues'][0]['fields']['description']}\n{amendment}"},
-    ))
+    _ = copy.deepcopy(
+        service.update_issue_field(
+            issue_key,
+            fields={'description': f"{issue_context['issues'][0]['fields']['description']}\n{amendment}"},
+        )
+    )
     end_time = dti.datetime.now(tz=dti.timezone.utc)
     clocking: Clocking = (
         start_time.strftime(TS_FORMAT_PAYLOADS),
@@ -334,7 +336,9 @@ def set_original_estimate(service: Jira, issue_key: str, hours: int) -> Tuple[Cl
     ok = True
     try:
         start_time = dti.datetime.now(tz=dti.timezone.utc)
-        _ = copy.deepcopy(service.update_issue_field(issue_key, fields={'timetracking': {'originalEstimate': f'{hours}h'}}))
+        _ = copy.deepcopy(
+            service.update_issue_field(issue_key, fields={'timetracking': {'originalEstimate': f'{hours}h'}})
+        )
         end_time = dti.datetime.now(tz=dti.timezone.utc)
         log.info(f'Set "{issue_key}".timetracking.originalEstimate to {hours}')
     except Exception as err:  # noqa
@@ -538,7 +542,9 @@ def main(argv: Union[List[str], None] = None) -> int:
     desc_core = '... and short description we dictate.'
     log.info(f'Common description part - of twin issues / pair - will be ({desc_core})')
 
-    clk, c_key = create_issue(service, first_proj_key, ts, description=f'{c_rand}\n{desc_core}\nCAUSALITY={node_indicator}')
+    clk, c_key = create_issue(
+        service, first_proj_key, ts, description=f'{c_rand}\n{desc_core}\nCAUSALITY={node_indicator}'
+    )
     store.add('CREATE_ISSUE', True, clk, 'original')
     log.info(f'Creation clocking of original ({c_key}); CLK={clk}')
 
@@ -548,7 +554,9 @@ def main(argv: Union[List[str], None] = None) -> int:
         log.error(f'Failed existence test for original ({c_key})')
     log.info(f'Existence check clocking of original ({c_key}); CLK={clk}')
 
-    clk, d_key = create_issue(service, first_proj_key, ts, description=f'{d_rand}\n{desc_core}\nCAUSALITY={node_indicator}')
+    clk, d_key = create_issue(
+        service, first_proj_key, ts, description=f'{d_rand}\n{desc_core}\nCAUSALITY={node_indicator}'
+    )
     store.add('CREATE_ISSUE', True, clk, 'duplicate')
     log.info(f'Creation clocking of duplicate ({d_key}); CLK={clk}')
 
@@ -616,7 +624,9 @@ def main(argv: Union[List[str], None] = None) -> int:
     clk = set_issue_status(service, c_key, in_progress)
     store.add('SET_ISSUE_STATUS', True, clk, f'original ({todo})->({in_progress})')
     clk, c_iss_state_in_progress = get_issue_status(service, c_key)
-    store.add('GET_ISSUE_STATUS', c_iss_state_in_progress.lower() == in_progress, clk, f'original({c_iss_state_in_progress})')
+    store.add(
+        'GET_ISSUE_STATUS', c_iss_state_in_progress.lower() == in_progress, clk, f'original({c_iss_state_in_progress})'
+    )
     if c_iss_state_in_progress.lower() != in_progress:
         log.error(f'Unexpected state ({c_iss_state_in_progress}) for original {c_key} - expected was ({in_progress})')
         has_failures = True
