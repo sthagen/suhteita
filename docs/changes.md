@@ -1,5 +1,13 @@
 # Change History
 
+## 2022.8.23
+
+* Made all calls atomic (no more molecules like create issue pairs)
+* Changed order of 2 x create issue - 2 x existence check to more canonical interlaced mode (early feedback)
+* Replaced specifc key reference in JQL query log with generic identifier
+* Wrapped deepcopy around all API calls to ensure no reference type is lazily filled (skewing the timing)
+* Added a store analyzer example script
+
 ## 2022.8.22
 
 * Fixed unprocessed vars in help strings for arguments
