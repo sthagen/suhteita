@@ -515,7 +515,7 @@ def main(argv: Union[List[str], None] = None) -> int:
     log.info(f'Random sentence of original ({c_rand})')
     log.info(f'Random sentence of duplicate ({d_rand})')
     clk, projects = get_all_projects(service)
-    log.info(f'Retrieved {len(projects)} unarchived projects;CLK={clk}')
+    log.info(f'Retrieved {len(projects)} unarchived projects; CLK={clk}')
     store.add('PROJECTS', True, clk, f'count({len(projects)})')
     proj_env_ok = False
     if target_project:
