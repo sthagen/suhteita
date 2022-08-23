@@ -202,37 +202,6 @@ def issue_exists(service: Jira, issue_key: str) -> Tuple[Clocking, bool]:
     return clocking, exists
 
 
-def create_issue_pair(
-    service: Jira, project: str, node: uuid.UUID, ts: str, ident: Tuple[str, str]
-) -> Tuple[Clocking, str, str, Clocking, Clocking, bool, Clocking, Clocking, bool]:
-    """DRY."""
-    desc_core = '... and short description we dictate.'
-    log.info(f'Common description part will be ({desc_core})')
-
-    start_time = dti.datetime.now(tz=dti.timezone.utc)
-    c_clocking, c_key = create_issue(service, project, ts, description=f'{ident[0]}\n{desc_core}\nCAUSALITY={node}')
-    d_clocking, d_key = create_issue(service, project, ts, description=f'{ident[1]}\n{desc_core}\nCAUSALITY={node}')
-    end_time = dti.datetime.now(tz=dti.timezone.utc)
-    clocking: Clocking = (
-        start_time.strftime(TS_FORMAT_PAYLOADS),
-        (end_time - start_time).microseconds,
-        end_time.strftime(TS_FORMAT_PAYLOADS),
-    )
-    c_e_clocking, c_e = issue_exists(service, c_key)
-    if not c_e:
-        log.error(f'Failed existence test for original ({c_key})')
-    log.debug(f'Creation clocking of original CLK={c_clocking}')
-    log.debug(f'Existence check clocking of original CLK={c_e_clocking}')
-
-    d_e_clocking, d_e = issue_exists(service, d_key)
-    if not d_e:
-        log.error(f'Failed existence test for original ({d_key})')
-    log.debug(f'Creation clocking of duplicate CLK={d_clocking}')
-    log.debug(f'Existence check clocking of duplicate CLK={d_e_clocking}')
-
-    return clocking, c_key, d_key, c_clocking, c_e_clocking, bool(c_e), d_clocking, d_e_clocking, bool(d_e)
-
-
 @no_type_check
 def get_issue_status(service: Jira, issue_key: str) -> Tuple[Clocking, str]:
     """DRY."""
@@ -565,20 +534,35 @@ def main(argv: Union[List[str], None] = None) -> int:
     ts = dti.datetime.now(tz=dti.timezone.utc).strftime(TS_FORMAT_PAYLOADS)
     log.info(f'Timestamp marker in summaries will be ({ts})')
 
-    clk, c_key, d_key, c_clk, c_e_clk, c_ok, d_clk, d_e_clk, d_ok = create_issue_pair(
-        service, first_proj_key, node_indicator, ts, ident=(c_rand, d_rand)
-    )
-    log.info(f'Generated two issues: original ({c_key}) and duplicate ({d_key}); CLK={clk}')
-    store.add('CREATE_TWINS', True, clk, 'original, duplicate')
-    store.add('CREATE_ISSUE', True, c_clk, 'original')
-    store.add('ISSUE_EXISTS', c_ok, c_e_clk, 'original')
-    store.add('CREATE_ISSUE', True, d_clk, 'duplicate')
-    store.add('ISSUE_EXISTS', d_ok, d_e_clk, 'duplicate')
+    desc_core = '... and short description we dictate.'
+    log.info(f'Common description part - of twin issues / pair - will be ({desc_core})')
+
+    clk, c_key = create_issue(service, first_proj_key, ts, description=f'{c_rand}\n{desc_core}\nCAUSALITY={node_indicator}')
+    store.add('CREATE_ISSUE', True, clk, 'original')
+    log.info(f'Creation clocking of original ({c_key}); CLK={clk}')
+
+    clk, d_key = create_issue(service, first_proj_key, ts, description=f'{d_rand}\n{desc_core}\nCAUSALITY={node_indicator}')
+    store.add('CREATE_ISSUE', True, clk, 'duplicate')
+    log.info(f'Creation clocking of duplicate ({d_key}); CLK={clk}')
+
+    clk, c_e = issue_exists(service, c_key)
+    store.add('ISSUE_EXISTS', bool(c_e), clk, 'original')
+    if not c_e:
+        log.error(f'Failed existence test for original ({c_key})')
+    log.info(f'Existence check clocking of original ({c_key}); CLK={clk}')
+
+    clk, d_e = issue_exists(service, d_key)
+    store.add('ISSUE_EXISTS', bool(d_e), clk, 'duplicate')
+    if not d_e:
+        log.error(f'Failed existence test for duplicate ({d_key})')
+    log.info(f'Existence check clocking of duplicate ({d_key}); CLK={clk}')
+
+    log.info(f'Generated two issues: original ({c_key}) and duplicate ({d_key})')
 
     query = f'issue = {c_key}'
     clk, c_q = execute_jql(service=service, query=query)
     log.info(f'Executed JQL({query}); CLK={clk}')
-    store.add('EXECUTE_JQL', True, clk, f'query({query})')
+    store.add('EXECUTE_JQL', True, clk, f'query({query.replace(c_key, "original-key")})')
 
     clk = amend_issue_description(service, c_key, amendment='No, no, no. They duplicated me, help!', issue_context=c_q)
     store.add('AMEND_ISSUE_DESCRIPTION', True, clk, 'original')
@@ -591,12 +575,12 @@ def main(argv: Union[List[str], None] = None) -> int:
     clk = create_duplicates_issue_link(service, c_key, d_key)
     store.add('CREATE_DUPLICATES_ISSUE_LINK', True, clk, 'dublicate duplicates original')
 
-    todo, in_progress, done = ('To Do', 'In Progress', 'Done')
+    todo, in_progress, done = ('to do', 'in progress', 'done')
     log.info(f'The test workflow assumes the states ({todo}, {in_progress}, {done})')
 
     clk, d_iss_state = get_issue_status(service, d_key)
-    store.add('GET_ISSUE_STATUS', d_iss_state == todo, clk, f'duplicate({d_iss_state})')
-    if d_iss_state != todo:
+    store.add('GET_ISSUE_STATUS', d_iss_state.lower() == todo, clk, f'duplicate({d_iss_state})')
+    if d_iss_state.lower() != todo:
         log.error(f'Unexpected state ({d_iss_state}) for duplicate {d_key} - expected was ({todo})')
         has_failures = True
 
@@ -608,8 +592,8 @@ def main(argv: Union[List[str], None] = None) -> int:
     clk = set_issue_status(service, d_key, done)
     store.add('SET_ISSUE_STATUS', True, clk, f'duplicate ({in_progress})->({done})')
     clk, d_iss_state_done = get_issue_status(service, d_key)
-    store.add('GET_ISSUE_STATUS', d_iss_state_done == done, clk, f'duplicate({d_iss_state_done})')
-    if d_iss_state_done != done:
+    store.add('GET_ISSUE_STATUS', d_iss_state_done.lower() == done, clk, f'duplicate({d_iss_state_done})')
+    if d_iss_state_done.lower() != done:
         log.error(f'Unexpected state ({d_iss_state}) for duplicate {d_key} - expected was ({done})')
         has_failures = True
 
@@ -622,8 +606,8 @@ def main(argv: Union[List[str], None] = None) -> int:
     store.add('SET_ORIGINAL_ESTIMATE', ok, clk, 'original')
 
     clk, c_iss_state = get_issue_status(service, c_key)
-    store.add('GET_ISSUE_STATUS', c_iss_state == todo, clk, f'original({c_iss_state})')
-    if c_iss_state != todo:
+    store.add('GET_ISSUE_STATUS', c_iss_state.lower() == todo, clk, f'original({c_iss_state})')
+    if c_iss_state.lower() != todo:
         log.error(f'Unexpected state ({c_iss_state}) for original {c_key} - expected was ({todo})')
         has_failures = True
 
@@ -631,8 +615,8 @@ def main(argv: Union[List[str], None] = None) -> int:
     clk = set_issue_status(service, c_key, in_progress)
     store.add('SET_ISSUE_STATUS', True, clk, f'original ({todo})->({in_progress})')
     clk, c_iss_state_in_progress = get_issue_status(service, c_key)
-    store.add('GET_ISSUE_STATUS', c_iss_state_in_progress == in_progress, clk, f'original({c_iss_state_in_progress})')
-    if c_iss_state_in_progress != in_progress:
+    store.add('GET_ISSUE_STATUS', c_iss_state_in_progress.lower() == in_progress, clk, f'original({c_iss_state_in_progress})')
+    if c_iss_state_in_progress.lower() != in_progress:
         log.error(f'Unexpected state ({c_iss_state_in_progress}) for original {c_key} - expected was ({in_progress})')
         has_failures = True
 
