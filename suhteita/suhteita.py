@@ -1,6 +1,7 @@
 #! /usr/bin/env python
 """Load the JIRA instance."""
 import argparse
+import copy
 import datetime as dti
 import json
 import logging
@@ -145,7 +146,7 @@ def login(target_url: str, user: str, password: str = TOKEN, is_cloud: bool = IS
 def get_server_info(service: Jira) -> Tuple[Clocking, object]:
     """DRY."""
     start_time = dti.datetime.now(tz=dti.timezone.utc)
-    data = service.get_server_info(True)
+    data = copy.deepcopy(service.get_server_info(True))
     end_time = dti.datetime.now(tz=dti.timezone.utc)
     clocking: Clocking = (
         start_time.strftime(TS_FORMAT_PAYLOADS),
@@ -158,7 +159,7 @@ def get_server_info(service: Jira) -> Tuple[Clocking, object]:
 def get_all_projects(service: Jira) -> Tuple[Clocking, List[Dict[str, str]]]:
     """DRY."""
     start_time = dti.datetime.now(tz=dti.timezone.utc)
-    projects = service.get_all_projects(included_archived=None)
+    projects = copy.deepcopy(service.get_all_projects(included_archived=None))
     end_time = dti.datetime.now(tz=dti.timezone.utc)
     clocking: Clocking = (
         start_time.strftime(TS_FORMAT_PAYLOADS),
@@ -178,7 +179,7 @@ def create_issue(service: Jira, project: str, ts: str, description: str) -> Tupl
         'description': description,
     }
     start_time = dti.datetime.now(tz=dti.timezone.utc)
-    created = service.issue_create(fields=fields)
+    created = copy.deepcopy(service.issue_create(fields=fields))
     end_time = dti.datetime.now(tz=dti.timezone.utc)
     clocking: Clocking = (
         start_time.strftime(TS_FORMAT_PAYLOADS),
@@ -192,7 +193,7 @@ def create_issue(service: Jira, project: str, ts: str, description: str) -> Tupl
 def issue_exists(service: Jira, issue_key: str) -> Tuple[Clocking, bool]:
     """DRY."""
     start_time = dti.datetime.now(tz=dti.timezone.utc)
-    exists = service.issue_exists(issue_key)
+    exists = copy.deepcopy(service.issue_exists(issue_key))
     end_time = dti.datetime.now(tz=dti.timezone.utc)
     clocking: Clocking = (
         start_time.strftime(TS_FORMAT_PAYLOADS),
@@ -206,7 +207,7 @@ def issue_exists(service: Jira, issue_key: str) -> Tuple[Clocking, bool]:
 def get_issue_status(service: Jira, issue_key: str) -> Tuple[Clocking, str]:
     """DRY."""
     start_time = dti.datetime.now(tz=dti.timezone.utc)
-    status = service.get_issue_status(issue_key)
+    status = copy.deepcopy(service.get_issue_status(issue_key))
     end_time = dti.datetime.now(tz=dti.timezone.utc)
     clocking: Clocking = (
         start_time.strftime(TS_FORMAT_PAYLOADS),
@@ -219,7 +220,7 @@ def get_issue_status(service: Jira, issue_key: str) -> Tuple[Clocking, str]:
 def set_issue_status(service: Jira, issue_key: str, status: str) -> Clocking:
     """DRY."""
     start_time = dti.datetime.now(tz=dti.timezone.utc)
-    service.set_issue_status(issue_key, status)
+    _ = copy.deepcopy(service.set_issue_status(issue_key, status))
     end_time = dti.datetime.now(tz=dti.timezone.utc)
     clocking: Clocking = (
         start_time.strftime(TS_FORMAT_PAYLOADS),
@@ -232,7 +233,7 @@ def set_issue_status(service: Jira, issue_key: str, status: str) -> Clocking:
 def load_issue(service: Jira, issue_key: str) -> Tuple[Clocking, object]:
     """DRY."""
     start_time = dti.datetime.now(tz=dti.timezone.utc)
-    data = service.issue(issue_key)
+    data = copy.deepcopy(service.issue(issue_key))
     end_time = dti.datetime.now(tz=dti.timezone.utc)
     clocking: Clocking = (
         start_time.strftime(TS_FORMAT_PAYLOADS),
@@ -246,7 +247,7 @@ def load_issue(service: Jira, issue_key: str) -> Tuple[Clocking, object]:
 def execute_jql(service: Jira, query: str) -> Tuple[Clocking, object]:
     """DRY."""
     start_time = dti.datetime.now(tz=dti.timezone.utc)
-    data = service.jql(query)
+    data = copy.deepcopy(service.jql(query))
     end_time = dti.datetime.now(tz=dti.timezone.utc)
     clocking: Clocking = (
         start_time.strftime(TS_FORMAT_PAYLOADS),
@@ -260,10 +261,10 @@ def execute_jql(service: Jira, query: str) -> Tuple[Clocking, object]:
 def amend_issue_description(service: Jira, issue_key: str, amendment: str, issue_context) -> Clocking:
     """DRY."""
     start_time = dti.datetime.now(tz=dti.timezone.utc)
-    service.update_issue_field(
+    _ = copy.deepcopy(service.update_issue_field(
         issue_key,
         fields={'description': f"{issue_context['issues'][0]['fields']['description']}\n{amendment}"},
-    )
+    ))
     end_time = dti.datetime.now(tz=dti.timezone.utc)
     clocking: Clocking = (
         start_time.strftime(TS_FORMAT_PAYLOADS),
@@ -277,7 +278,7 @@ def amend_issue_description(service: Jira, issue_key: str, amendment: str, issue
 def add_comment(service: Jira, issue_key: str, comment: str) -> Tuple[Clocking, object]:
     """DRY."""
     start_time = dti.datetime.now(tz=dti.timezone.utc)
-    response = service.issue_add_comment(issue_key, comment)
+    response = copy.deepcopy(service.issue_add_comment(issue_key, comment))
     end_time = dti.datetime.now(tz=dti.timezone.utc)
     clocking: Clocking = (
         start_time.strftime(TS_FORMAT_PAYLOADS),
@@ -296,7 +297,7 @@ def extract_fields(data, fields):
 def update_issue_field(service: Jira, issue_key: str, labels: List[str]) -> Clocking:
     """DRY."""
     start_time = dti.datetime.now(tz=dti.timezone.utc)
-    service.update_issue_field(issue_key, fields={'labels': labels})
+    _ = copy.deepcopy(service.update_issue_field(issue_key, fields={'labels': labels}))
     end_time = dti.datetime.now(tz=dti.timezone.utc)
     clocking: Clocking = (
         start_time.strftime(TS_FORMAT_PAYLOADS),
@@ -317,7 +318,7 @@ def create_duplicates_issue_link(service: Jira, duplicate_issue_key: str, origin
         },
     }
     start_time = dti.datetime.now(tz=dti.timezone.utc)
-    service.create_issue_link(data)
+    _ = copy.deepcopy(service.create_issue_link(data))
     end_time = dti.datetime.now(tz=dti.timezone.utc)
     clocking: Clocking = (
         start_time.strftime(TS_FORMAT_PAYLOADS),
@@ -333,7 +334,7 @@ def set_original_estimate(service: Jira, issue_key: str, hours: int) -> Tuple[Cl
     ok = True
     try:
         start_time = dti.datetime.now(tz=dti.timezone.utc)
-        _ = service.update_issue_field(issue_key, fields={'timetracking': {'originalEstimate': f'{hours}h'}})
+        _ = copy.deepcopy(service.update_issue_field(issue_key, fields={'timetracking': {'originalEstimate': f'{hours}h'}}))
         end_time = dti.datetime.now(tz=dti.timezone.utc)
         log.info(f'Set "{issue_key}".timetracking.originalEstimate to {hours}')
     except Exception as err:  # noqa
@@ -363,7 +364,7 @@ def create_component(service: Jira, project: str, description: str) -> Tuple[Clo
     }
     log.info(f'Creating random component ({random_component})')
     start_time = dti.datetime.now(tz=dti.timezone.utc)
-    comp_create_resp = service.create_component(comp_data)
+    comp_create_resp = copy.deepcopy(service.create_component(comp_data))
     end_time = dti.datetime.now(tz=dti.timezone.utc)
     clocking: Clocking = (
         start_time.strftime(TS_FORMAT_PAYLOADS),
@@ -382,7 +383,7 @@ def relate_issue_to_component(
     try:
         log.info(f'Associating the {issue_hint} {issue_key} with random component ({comp_name})')
         start_time = dti.datetime.now(tz=dti.timezone.utc)
-        service.update_issue_field(issue_key, fields={'components': [{'name': comp_name}]})
+        _ = copy.deepcopy(service.update_issue_field(issue_key, fields={'components': [{'name': comp_name}]}))
         end_time = dti.datetime.now(tz=dti.timezone.utc)
     except Exception as err:  # noqa
         ok = False
@@ -541,15 +542,15 @@ def main(argv: Union[List[str], None] = None) -> int:
     store.add('CREATE_ISSUE', True, clk, 'original')
     log.info(f'Creation clocking of original ({c_key}); CLK={clk}')
 
-    clk, d_key = create_issue(service, first_proj_key, ts, description=f'{d_rand}\n{desc_core}\nCAUSALITY={node_indicator}')
-    store.add('CREATE_ISSUE', True, clk, 'duplicate')
-    log.info(f'Creation clocking of duplicate ({d_key}); CLK={clk}')
-
     clk, c_e = issue_exists(service, c_key)
     store.add('ISSUE_EXISTS', bool(c_e), clk, 'original')
     if not c_e:
         log.error(f'Failed existence test for original ({c_key})')
     log.info(f'Existence check clocking of original ({c_key}); CLK={clk}')
+
+    clk, d_key = create_issue(service, first_proj_key, ts, description=f'{d_rand}\n{desc_core}\nCAUSALITY={node_indicator}')
+    store.add('CREATE_ISSUE', True, clk, 'duplicate')
+    log.info(f'Creation clocking of duplicate ({d_key}); CLK={clk}')
 
     clk, d_e = issue_exists(service, d_key)
     store.add('ISSUE_EXISTS', bool(d_e), clk, 'duplicate')
