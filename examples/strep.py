@@ -11,7 +11,7 @@ scenario_labels_sequence = (  # Labels in scenario order:
     'SERVER_INFO',
     'PROJECTS',
     'CREATE_TWINS',  # get rid of this call and instead use the four atomic steps below (now sub atomic)
-    'CREATE_ISSUE',  
+    'CREATE_ISSUE',
     'ISSUE_EXISTS',
     'CREATE_ISSUE',
     'ISSUE_EXISTS',
@@ -56,13 +56,14 @@ scenario_labels_sequence = (  # Labels in scenario order:
       3  'SET_ISSUE_STATUS',
 """
 scenario_labels_set = set(sorted(scenario_labels_sequence))
-sub_atomic = ('CREATE_ISSUE', 'ISSUE_EXISTS')
-atomic_labels_set = set([label for label in scenario_labels_set if label not in sub_atomic])
+molecules = ('CREATE_TWINS',)
+atomic_labels_set = set([label for label in scenario_labels_set if label not in molecules])
 
 node_map = {
     '5c53f0de-8417-33df-9db8-718895b1f786': 'wun',
     '1c2175b4-eec5-3536-be76-2f20865df8ae': 'two',
     '7430eea0-7599-37db-b782-bbd336e7a755': 'the',
+    'c79891e5-aabf-3a83-95b9-588edcd8327f': 'mountain',
 }
 target_aliases = ('cloud-ref', 'cloud-prod', 'prod', 'test')
 
@@ -78,6 +79,7 @@ if len(sys.argv) < 2:
 
 profiles = []
 nodes = {}
+targets = set()
 for name in sys.argv[1:]:
     path = pathlib.Path(name)
     with open(path, 'rt', encoding=ENCODING) as handle:
@@ -92,6 +94,8 @@ for name in sys.argv[1:]:
     nodes[client_alias] += 1
     identity = db['_meta']['identity']
     target_alias, split_id = identity.split('-', 1)[1].rsplit('-', 1)
+    if target_alias not in targets:
+        targets.add(target_alias)
     start_ts = db['_meta']['start_ts']
     start_time = dti.datetime.strptime(start_ts, UTC_TS_FORMAT)
 
@@ -145,7 +149,7 @@ for name in sys.argv[1:]:
     print('- profile:')
     steps_profile = []
     ta_usecs = 0
-    steps = [event for event in db['events'] if event['label'] not in sub_atomic]
+    steps = [event for event in db['events'] if event['label'] not in molecules]
     end_step_trigger = len(steps)
     previous_start_time = start_time
     for order, step in enumerate(steps, start=1):
@@ -161,23 +165,23 @@ for name in sys.argv[1:]:
 
         step_start_time = dti.datetime.strptime(step_start_ts, UTC_TS_FORMAT)
         step_end_time = dti.datetime.strptime(step_end_ts, UTC_TS_FORMAT)
-        gap_before_secs = (step_start_time - previous_start_time).total_seconds()
+        gap_before_millis = round(1.e3 * (step_start_time - previous_start_time).total_seconds(), 3)
         previous_start_time = step_end_time
         if order == end_step_trigger:
-            gap_after_secs = (end_time - step_end_time).total_seconds()
+            gap_after_millis = round(1.e3 * (end_time - step_end_time).total_seconds(), 3)
         else:
             peek_next_step_start_ts = steps[order]['start_ts']
             peek_next_step_start_time = dti.datetime.strptime(peek_next_step_start_ts, UTC_TS_FORMAT)
-            gap_after_secs = (peek_next_step_start_time - step_end_time).total_seconds()
+            gap_after_millis = round(1.e3 * (peek_next_step_start_time - step_end_time).total_seconds(), 3)
 
-        print(f'      gap before {gap_before_secs * 1.e3 :7.3f} millisecs')
+        print(f'      gap before {gap_before_millis :7.3f} millisecs')
         print(f'  {order :2d}: {dt_usecs :7d} {step_start_ts} {label :32s} {ok} {comment}')
-        print(f'       gap after {gap_after_secs * 1.e3 :7.3f} millisecs')
-        steps_profile.append([order, step_start_ts, step_end_ts, dt_usecs, dt_secs, gap_before_secs, gap_after_secs, label, status, comment])
+        print(f'       gap after {gap_after_millis :7.3f} millisecs')
+        steps_profile.append([order, step_start_ts, step_end_ts, dt_usecs, dt_secs, gap_before_millis, gap_after_millis, label, status, comment])
     print('-' * 42)
     ta_secs = ta_usecs / 1.e6
     dc_percent = round(100. * ta_secs / total_secs, 3)
-    for order, step_start_ts, step_end_ts, dt_usecs, dt_secs, gap_before_secs, gap_after_secs, label, status, comment in steps_profile:
+    for order, step_start_ts, step_end_ts, dt_usecs, dt_secs, gap_before_millis, gap_after_millis, label, status, comment in steps_profile:
         profiles.append({
            'scenario': scenario,
            'sub_scenario': split_id,
@@ -201,8 +205,8 @@ for name in sys.argv[1:]:
            'sub_transaction_local_start_rel_float_percent': None,  #  100 * (step_start - ta_start).total_seconds() / total_secs
            'step_dt_usecs': dt_usecs,
            'step_dt_secs': dt_secs,
-           'gap_before_secs': gap_before_secs,
-           'gap_after_secs': gap_after_secs,
+           'gap_before_millis': gap_before_millis,
+           'gap_after_millis': gap_after_millis,
            'step_label': label,
            'step_status': status,
            'step_comment': comment,
@@ -242,18 +246,18 @@ df = pd.DataFrame(profiles)
 print(df.head())
 
 for transaction in atomic_labels_set:
-    for node in target_aliases:
+    for node in targets:
         print(node, transaction, '-' * 42)
         tmp_df = df[df['target_alias'].isin([node]) & df['scenario'].isin(['single']) & df['step_label'].isin([transaction])]
-        print(tmp_df[['total_secs', 'transactions_secs', 'duty_cycle_percent', 'step_dt_secs', 'gap_before_secs', 'gap_after_secs']].describe())
+        print(tmp_df[['total_secs', 'transactions_secs', 'duty_cycle_percent', 'step_dt_secs', 'gap_before_millis', 'gap_after_millis']].describe())
         print('-' * 42)
         print()
 
 print(nodes)
 
-for node in target_aliases:
+for node in targets:
     print(node)
     tmp_df = df[df['target_alias'].isin([node]) & df['scenario'].isin(['single'])]
-    print(tmp_df[['total_secs', 'transactions_secs', 'duty_cycle_percent', 'step_dt_secs', 'gap_before_secs', 'gap_after_secs']].describe())
+    print(tmp_df[['total_secs', 'transactions_secs', 'duty_cycle_percent', 'step_dt_secs', 'gap_before_millis', 'gap_after_millis']].describe())
     print('-' * 42)
     print()
