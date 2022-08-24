@@ -1,5 +1,14 @@
 # Change History
 
+## 2022.8.24
+
+* Moved closer to enabling data / keyword driven tests
+* Added forgotten timing store lines for the prototype scenario
+* Added postprocessing to determine size analogies (stringified sizes of responses received)
+* Moved the component name generation out of the function (input parameter)
+* Enhanced and extended the summarizer example script
+* Bumped development dependencies (setuptools==65.3.0)
+
 ## 2022.8.23
 
 * Made all calls atomic (no more molecules like create issue pairs)
