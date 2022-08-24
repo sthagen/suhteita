@@ -226,14 +226,12 @@ def test_set_original_estimate():
 def test_relate_issue_to_component():
     run.Jira = Arij
     _, service = run.login(target_url='target_url', user='user')
-    clk, ok = run.relate_issue_to_component(
-        service, issue_key='K', issue_hint='hint', comp_id='123', comp_name='a-comp'
-    )
+    clk, ok = run.relate_issue_to_component(service, issue_key='K', comp_id='123', comp_name='a-comp')
     assert len(clk) == 3
     assert int(clk[1]) >= 0
     assert clk[0] <= clk[2]
     assert ok
-    clk, ok = run.relate_issue_to_component(service, issue_key='raise', issue_hint='h', comp_id='1', comp_name='n/a')
+    clk, ok = run.relate_issue_to_component(service, issue_key='raise', comp_id='1', comp_name='n/a')
     assert len(clk) == 3
     assert int(clk[1]) >= 0
     assert clk[0] <= clk[2]
