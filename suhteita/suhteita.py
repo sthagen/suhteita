@@ -309,7 +309,9 @@ def update_issue_field(service: Jira, issue_key: str, labels: List[str]) -> Cloc
     return clocking
 
 
-def create_duplicates_issue_link(service: Jira, duplicate_issue_key: str, original_issue_key: str) -> Clocking:
+def create_duplicates_issue_link(
+    service: Jira, duplicate_issue_key: str, original_issue_key: str
+) -> Tuple[Clocking, object]:
     """DRY."""
     data = {
         'type': {'name': 'Duplicate'},
