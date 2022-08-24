@@ -6,11 +6,12 @@ import sys
 
 import pandas as pd
 
+pd.options.display.width = None
+
 scenario_labels_sequence = (  # Labels in scenario order:
     'LOGIN',
     'SERVER_INFO',
     'PROJECTS',
-    'CREATE_TWINS',  # get rid of this call and instead use the four atomic steps below (now sub atomic)
     'CREATE_ISSUE',
     'ISSUE_EXISTS',
     'CREATE_ISSUE',
@@ -36,25 +37,6 @@ scenario_labels_sequence = (  # Labels in scenario order:
     'ADD_COMMENT',
     'ADD_COMMENT',
 )
-
-"""
-> jq . store/some-db.json | grep label | cut -f 2 -d: | tr '"' "'" | sort | uniq -c
-      4  'ADD_COMMENT',
-      1  'AMEND_ISSUE_DESCRIPTION',
-      1  'CREATE_COMPONENT',
-      1  'CREATE_DUPLICATES_ISSUE_LINK',
-      2  'CREATE_ISSUE',
-      1  'CREATE_TWINS',
-      1  'EXECUTE_JQL',
-      4  'GET_ISSUE_STATUS',
-      2  'ISSUE_EXISTS',
-      1  'LOAD_ISSUE',
-      1  'LOGIN',
-      1  'PROJECTS',
-      1  'RELATE_ISSUE_TO_COMPONENT',
-      1  'SERVER_INFO',
-      3  'SET_ISSUE_STATUS',
-"""
 scenario_labels_set = set(sorted(scenario_labels_sequence))
 molecules = ('CREATE_TWINS',)
 atomic_labels_set = set([label for label in scenario_labels_set if label not in molecules])
@@ -174,10 +156,16 @@ for name in sys.argv[1:]:
             peek_next_step_start_time = dti.datetime.strptime(peek_next_step_start_ts, UTC_TS_FORMAT)
             gap_after_millis = round(1.e3 * (peek_next_step_start_time - step_end_time).total_seconds(), 3)
 
-        print(f'      gap before {gap_before_millis :7.3f} millisecs')
+        if order == 1:
+            print(f'      gap before  {gap_before_millis :7.3f} millisecs')
         print(f'  {order :2d}: {dt_usecs :7d} {step_start_ts} {label :32s} {ok} {comment}')
-        print(f'       gap after {gap_after_millis :7.3f} millisecs')
+        if order == end_step_trigger:
+            print(f'      gap after   {gap_after_millis :7.3f} millisecs')
+        else:
+            print(f'      gap between {gap_after_millis :7.3f} millisecs')
         steps_profile.append([order, step_start_ts, step_end_ts, dt_usecs, dt_secs, gap_before_millis, gap_after_millis, label, status, comment])
+    print(f'transaction_secs = {round(ta_usecs / 1.e6, 3)} secs')
+    print(f'duty_cycle_percent = {round(100. * (ta_usecs / 1.e6) / total_secs, 3)} %')
     print('-' * 42)
     ta_secs = ta_usecs / 1.e6
     dc_percent = round(100. * ta_secs / total_secs, 3)
