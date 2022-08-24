@@ -217,17 +217,17 @@ def get_issue_status(service: Jira, issue_key: str) -> Tuple[Clocking, str]:
     return clocking, status
 
 
-def set_issue_status(service: Jira, issue_key: str, status: str) -> Clocking:
+def set_issue_status(service: Jira, issue_key: str, status: str) -> Tuple[Clocking, object]:
     """DRY."""
     start_time = dti.datetime.now(tz=dti.timezone.utc)
-    _ = copy.deepcopy(service.set_issue_status(issue_key, status))
+    response = copy.deepcopy(service.set_issue_status(issue_key, status))
     end_time = dti.datetime.now(tz=dti.timezone.utc)
     clocking: Clocking = (
         start_time.strftime(TS_FORMAT_PAYLOADS),
         (end_time - start_time).microseconds,
         end_time.strftime(TS_FORMAT_PAYLOADS),
     )
-    return clocking
+    return clocking, response
 
 
 def load_issue(service: Jira, issue_key: str) -> Tuple[Clocking, object]:
@@ -320,14 +320,14 @@ def create_duplicates_issue_link(service: Jira, duplicate_issue_key: str, origin
         },
     }
     start_time = dti.datetime.now(tz=dti.timezone.utc)
-    _ = copy.deepcopy(service.create_issue_link(data))
+    response = copy.deepcopy(service.create_issue_link(data))
     end_time = dti.datetime.now(tz=dti.timezone.utc)
     clocking: Clocking = (
         start_time.strftime(TS_FORMAT_PAYLOADS),
         (end_time - start_time).microseconds,
         end_time.strftime(TS_FORMAT_PAYLOADS),
     )
-    return clocking
+    return clocking, response
 
 
 def set_original_estimate(service: Jira, issue_key: str, hours: int) -> Tuple[Clocking, bool]:
@@ -356,17 +356,16 @@ def set_original_estimate(service: Jira, issue_key: str, hours: int) -> Tuple[Cl
     return clocking, ok
 
 
-def create_component(service: Jira, project: str, description: str) -> Tuple[Clocking, str, str, object]:
+def create_component(service: Jira, project: str, name: str, description: str) -> Tuple[Clocking, str, str, object]:
     """DRY."""
-    random_component = secrets.token_urlsafe()
-    log.info(f'Random component will be ({random_component})')
+    log.info(f'Random component will be ({name})')
     comp_data = {
         'project': project,
         'description': description,
-        'name': random_component,
+        'name': name,
         'assigneeType': 'UNASSIGNED',
     }
-    log.info(f'Creating random component ({random_component})')
+    log.info(f'Creating random component ({name})')
     start_time = dti.datetime.now(tz=dti.timezone.utc)
     comp_create_resp = copy.deepcopy(service.create_component(comp_data))
     end_time = dti.datetime.now(tz=dti.timezone.utc)
@@ -376,7 +375,7 @@ def create_component(service: Jira, project: str, description: str) -> Tuple[Clo
         end_time.strftime(TS_FORMAT_PAYLOADS),
     )
     comp_id = comp_create_resp['id']
-    return clocking, comp_id, random_component, service.component(comp_id)
+    return clocking, comp_id, name, service.component(comp_id)
 
 
 def relate_issue_to_component(
@@ -490,6 +489,7 @@ def main(argv: Union[List[str], None] = None) -> int:
 
     node_indicator = NODE_INDICATOR
     c_rand, d_rand = two_sentences()
+    random_component = secrets.token_urlsafe()
 
     start_time = dti.datetime.now(tz=dti.timezone.utc)
     start_ts = start_time.strftime(TS_FORMAT_PAYLOADS)
@@ -575,13 +575,18 @@ def main(argv: Union[List[str], None] = None) -> int:
 
     clk = amend_issue_description(service, c_key, amendment='No, no, no. They duplicated me, help!', issue_context=c_q)
     store.add('AMEND_ISSUE_DESCRIPTION', True, clk, 'original')
+
     clk, _ = add_comment(service=service, issue_key=d_key, comment='I am the original, surely!')
     store.add('ADD_COMMENT', True, clk, 'duplicate')
+
     clk = update_issue_field(service, d_key, labels=['du', 'pli', 'ca', 'te'])
     store.add('UPDATE_ISSUE_FIELD', True, clk, 'duplicate')
+
     clk = update_issue_field(service, c_key, labels=['for', 'real', 'highlander'])
     store.add('UPDATE_ISSUE_FIELD', True, clk, 'original')
-    clk = create_duplicates_issue_link(service, c_key, d_key)
+
+    clk, _ = create_duplicates_issue_link(service, c_key, d_key)
+    log.info(f'Created link on duplicate stating it duplicates the original; CLK={clk}')
     store.add('CREATE_DUPLICATES_ISSUE_LINK', True, clk, 'dublicate duplicates original')
 
     todo, in_progress, done = ('to do', 'in progress', 'done')
@@ -594,12 +599,14 @@ def main(argv: Union[List[str], None] = None) -> int:
         has_failures = True
 
     log.info(f'Transitioning the duplicate {d_key} to ({in_progress})')
-    clk = set_issue_status(service, d_key, in_progress)
+    clk, _ = set_issue_status(service, d_key, in_progress)
     store.add('SET_ISSUE_STATUS', True, clk, f'duplicate ({todo})->({in_progress})')
 
     log.info(f'Transitioning the duplicate {d_key} to ({done})')
-    clk = set_issue_status(service, d_key, done)
+    clk, _ = set_issue_status(service, d_key, done)
+    log.info(f'Transitioned the duplicate {d_key} to ({done}); CLK={clk}')
     store.add('SET_ISSUE_STATUS', True, clk, f'duplicate ({in_progress})->({done})')
+
     clk, d_iss_state_done = get_issue_status(service, d_key)
     store.add('GET_ISSUE_STATUS', d_iss_state_done.lower() == done, clk, f'duplicate({d_iss_state_done})')
     if d_iss_state_done.lower() != done:
@@ -608,10 +615,12 @@ def main(argv: Union[List[str], None] = None) -> int:
 
     clk, response = add_comment(service, d_key, 'Closed as duplicate.')
     some = extract_fields(response, fields=('self', 'body'))
-    log.info(f'Adding comment on {d_key} had response extract ({some}); CLK={clk}')
+    log.info(f'Added comment on {d_key} with response extract ({some}); CLK={clk}')
     store.add('ADD_COMMENT', True, clk, f'duplicate({some["body"]})')
 
-    clk, ok = set_original_estimate(service, c_key, hours=42)
+    hours_value = 42
+    clk, ok = set_original_estimate(service, c_key, hours=hours_value)
+    log.info(f'Added ({hours_value}) hours as original estimate to original {c_key} with result ({ok}); CLK={clk}')
     store.add('SET_ORIGINAL_ESTIMATE', ok, clk, 'original')
 
     clk, c_iss_state = get_issue_status(service, c_key)
@@ -621,8 +630,10 @@ def main(argv: Union[List[str], None] = None) -> int:
         has_failures = True
 
     log.info(f'Transitioning the original {c_key} to ({in_progress})')
-    clk = set_issue_status(service, c_key, in_progress)
+    clk, _ = set_issue_status(service, c_key, in_progress)
+    log.info(f'Transitioned the original {c_key} to ({in_progress}); CLK={clk}')
     store.add('SET_ISSUE_STATUS', True, clk, f'original ({todo})->({in_progress})')
+
     clk, c_iss_state_in_progress = get_issue_status(service, c_key)
     store.add(
         'GET_ISSUE_STATUS', c_iss_state_in_progress.lower() == in_progress, clk, f'original({c_iss_state_in_progress})'
@@ -631,7 +642,9 @@ def main(argv: Union[List[str], None] = None) -> int:
         log.error(f'Unexpected state ({c_iss_state_in_progress}) for original {c_key} - expected was ({in_progress})')
         has_failures = True
 
-    clk, comp_id, a_component, comp_resp = create_component(service=service, project=first_proj_key, description=c_rand)
+    clk, comp_id, a_component, comp_resp = create_component(
+        service=service, project=first_proj_key, name=random_component, description=c_rand
+    )
     some = extract_fields(comp_resp, fields=('self', 'description'))
     log.info(f'Created component {a_component} with response extract({some}); CLK={clk}')
     store.add('CREATE_COMPONENT', True, clk, f'component({some["description"]})')
