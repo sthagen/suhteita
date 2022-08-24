@@ -178,11 +178,7 @@ def main(argv=None):
     # rescale expired secods to expired hours:
     df[[x_col]] /= 3600.0
     x_max = int(df[x_col].max()) + 1
-    y_max = int(df[y_col].max()) + 1
-    if y_max > 500:
-        y_max = max(y_max, A_SECOND_OF_USECS)
-    else:
-        y_max = 1000
+    y_max = max(int(df[y_col].max()) + 1, A_SECOND_OF_USECS)
     for node in targets:
         print(node)
         node_df = df[df[node_col].isin([node])]
@@ -225,6 +221,8 @@ def main(argv=None):
             fig = g.fig
             axes = plt.gca()
             axes.set_ylim([0, y_max])
+            if name == 'LOGIN':
+                axes.set_ylim([0, 1000])
             axes.set_xlim([0, x_max])
             axes.yaxis.grid(True)
             axes.xaxis.grid(True)
