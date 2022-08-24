@@ -198,10 +198,14 @@ def test_update_issue_field():
 def test_create_duplicates_issue_link():
     run.Jira = Arij
     _, service = run.login(target_url='target_url', user='user')
-    clk = run.create_duplicates_issue_link(service, duplicate_issue_key='BAR-42', original_issue_key='BAR-101')
+    clk, response = run.create_duplicates_issue_link(
+        service, duplicate_issue_key='BAR-42', original_issue_key='BAR-101'
+    )
     assert len(clk) == 3
     assert int(clk[1]) >= 0
     assert clk[0] <= clk[2]
+    some = run.extract_fields(response, fields=('inwardIssue', 'outwardIssue'))
+    assert some == {'inwardIssue': {'key': 'BAR-42'}, 'outwardIssue': {'key': 'BAR-101'}}
 
 
 def test_set_original_estimate():
@@ -239,13 +243,14 @@ def test_relate_issue_to_component():
 def test_create_component():
     run.Jira = Arij
     _, service = run.login(target_url='target_url', user='user')
-    clk, comp_id, random_component, response = run.create_component(service, project='X', description='Z')
+    clk, comp_id, random_component, response = run.create_component(service, project='X', name='Y', description='Z')
     assert len(clk) == 3
     assert int(clk[1]) >= 0
     assert clk[0] <= clk[2]
     assert comp_id == '123'
     some = run.extract_fields(response, fields=('self', 'description', 'name'))
     assert some == {'self': 'https://example.com/component/123', 'description': 'ABC', 'name': 'oops'}
+    assert random_component == 'Y'
 
 
 def test_amend_issue_description():
@@ -273,10 +278,11 @@ def test_get_issue_status():
 def test_set_issue_status():
     run.Jira = Arij
     _, service = run.login(target_url='target_url', user='user')
-    clk = run.set_issue_status(service, issue_key='BAR-42', status='something-brittle')
+    clk, response = run.set_issue_status(service, issue_key='BAR-42', status='something-brittle')
     assert len(clk) == 3
     assert int(clk[1]) >= 0
     assert clk[0] <= clk[2]
+    assert response is None
 
 
 def test_main(caplog):
