@@ -2,12 +2,21 @@
 
 ## 2022.8.24
 
-* Moved closer to enabling data / keyword driven tests
-* Added forgotten timing store lines for the prototype scenario
-* Added postprocessing to determine size analogies (stringified sizes of responses received)
-* Moved the component name generation out of the function (input parameter)
+* Added missing log lines for link, effort, set issue steps, and moved calculation of component name out of function
+* Added remaining forgotten timing store lines for the prototype scenario
+* Added microsecond resolution logging timestamps
+* Simplified and minimized log lines
+* Added generator version to logs
+* Moved long data extracts to references section
+* Made the example store grep script diagnostics less noisy
 * Enhanced and extended the summarizer example script
+* Updated third party docs and the SBOM
+* Updated baseline
+* Fixed types for create duplicate issue link function
+* Moved the component name generation out of the function (input parameter)
 * Bumped development dependencies (setuptools==65.3.0)
+* Adapted tests to changed function signatures
+* Added version adhoc to the implementation for logging (TODO)
 
 ## 2022.8.23
 
