@@ -511,6 +511,7 @@ def main(argv: Union[List[str], None] = None) -> int:
     clk, service = login(target_url, user, password=TOKEN, is_cloud=is_cloud)
     log.info(f'Connected to upstream service; CLK={clk}')
     store.add('LOGIN', True, clk)
+
     clk, info = get_server_info(service)
     log.info(f'Retrieved upstream server info; CLK={clk}')
     store.add('SERVER_INFO', True, clk, str(info))
@@ -518,9 +519,11 @@ def main(argv: Union[List[str], None] = None) -> int:
 
     log.info(f'Random sentence of original ({c_rand})')
     log.info(f'Random sentence of duplicate ({d_rand})')
+
     clk, projects = get_all_projects(service)
     log.info(f'Retrieved {len(projects)} unarchived projects; CLK={clk}')
     store.add('PROJECTS', True, clk, f'count({len(projects)})')
+
     proj_env_ok = False
     if target_project:
         proj_env_ok = any((target_project == project['key'] for project in projects))
@@ -545,11 +548,12 @@ def main(argv: Union[List[str], None] = None) -> int:
     clk, c_key = create_issue(
         service, first_proj_key, ts, description=f'{c_rand}\n{desc_core}\nCAUSALITY={node_indicator}'
     )
+    log.info(f'Created original ({c_key}); CLK={clk}')
     store.add('CREATE_ISSUE', True, clk, 'original')
-    log.info(f'Creation clocking of original ({c_key}); CLK={clk}')
 
     clk, c_e = issue_exists(service, c_key)
     store.add('ISSUE_EXISTS', bool(c_e), clk, 'original')
+    log.info(f'Asked if original ({c_key}) exists; CLK={clk}')
     if not c_e:
         log.error(f'Failed existence test for original ({c_key})')
     log.info(f'Existence check clocking of original ({c_key}); CLK={clk}')
@@ -557,14 +561,15 @@ def main(argv: Union[List[str], None] = None) -> int:
     clk, d_key = create_issue(
         service, first_proj_key, ts, description=f'{d_rand}\n{desc_core}\nCAUSALITY={node_indicator}'
     )
+    log.info(f'Created duplicate ({d_key}); CLK={clk}')
     store.add('CREATE_ISSUE', True, clk, 'duplicate')
     log.info(f'Creation clocking of duplicate ({d_key}); CLK={clk}')
 
     clk, d_e = issue_exists(service, d_key)
+    log.info(f'Asked if duplicate ({d_key}) exists; CLK={clk}')
     store.add('ISSUE_EXISTS', bool(d_e), clk, 'duplicate')
     if not d_e:
         log.error(f'Failed existence test for duplicate ({d_key})')
-    log.info(f'Existence check clocking of duplicate ({d_key}); CLK={clk}')
 
     log.info(f'Generated two issues: original ({c_key}) and duplicate ({d_key})')
 
@@ -573,16 +578,24 @@ def main(argv: Union[List[str], None] = None) -> int:
     log.info(f'Executed JQL({query}); CLK={clk}')
     store.add('EXECUTE_JQL', True, clk, f'query({query.replace(c_key, "original-key")})')
 
-    clk = amend_issue_description(service, c_key, amendment='No, no, no. They duplicated me, help!', issue_context=c_q)
+    amendment = 'No, no, no. They duplicated me, help!'
+    clk = amend_issue_description(service, c_key, amendment=amendment, issue_context=c_q)
+    log.info(f'Amended description of original {d_key} with ({amendment}); CLK={clk}')
     store.add('AMEND_ISSUE_DESCRIPTION', True, clk, 'original')
 
-    clk, _ = add_comment(service=service, issue_key=d_key, comment='I am the original, surely!')
+    comment = 'I am the original, surely!'
+    clk, _ = add_comment(service=service, issue_key=d_key, comment=comment)
+    log.info(f'Added comment ({comment}) to duplicate {d_key}; CLK={clk}')
     store.add('ADD_COMMENT', True, clk, 'duplicate')
 
-    clk = update_issue_field(service, d_key, labels=['du', 'pli', 'ca', 'te'])
+    labels = ['du', 'pli', 'ca', 'te']
+    clk = update_issue_field(service, d_key, labels=labels)
+    log.info(f'Updated duplicate {d_key} issue field of labels to ({labels}); CLK={clk}')
     store.add('UPDATE_ISSUE_FIELD', True, clk, 'duplicate')
 
-    clk = update_issue_field(service, c_key, labels=['for', 'real', 'highlander'])
+    labels = ['for', 'real', 'highlander']
+    clk = update_issue_field(service, c_key, labels=labels)
+    log.info(f'Updated original {c_key} issue field of labels to ({labels}); CLK={clk}')
     store.add('UPDATE_ISSUE_FIELD', True, clk, 'original')
 
     clk, _ = create_duplicates_issue_link(service, c_key, d_key)
@@ -593,6 +606,7 @@ def main(argv: Union[List[str], None] = None) -> int:
     log.info(f'The test workflow assumes the states ({todo}, {in_progress}, {done})')
 
     clk, d_iss_state = get_issue_status(service, d_key)
+    log.info(f'Retrieved status of the duplicate {d_key} as ({d_iss_state}); CLK={clk}')
     store.add('GET_ISSUE_STATUS', d_iss_state.lower() == todo, clk, f'duplicate({d_iss_state})')
     if d_iss_state.lower() != todo:
         log.error(f'Unexpected state ({d_iss_state}) for duplicate {d_key} - expected was ({todo})')
@@ -600,6 +614,7 @@ def main(argv: Union[List[str], None] = None) -> int:
 
     log.info(f'Transitioning the duplicate {d_key} to ({in_progress})')
     clk, _ = set_issue_status(service, d_key, in_progress)
+    log.info(f'Transitioned the duplicate {d_key} to ({in_progress}); CLK={clk}')
     store.add('SET_ISSUE_STATUS', True, clk, f'duplicate ({todo})->({in_progress})')
 
     log.info(f'Transitioning the duplicate {d_key} to ({done})')
