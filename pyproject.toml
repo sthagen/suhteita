@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "suhteita"
-version = "2022.8.23"
+version = "2022.8.24"
 description = "Relationships (Finnish: suhteita) maintained across distances as load test core."
 readme = "README.md"
 authors = [{ name = "Stefan Hagen", email = "stefan@hagen.link" }]
