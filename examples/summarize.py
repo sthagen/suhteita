@@ -10,8 +10,9 @@ import pandas as pd
 import seaborn as sns
 
 sns.set_theme(color_codes=True)  # style="whitegrid")
+pd.options.display.width = None
 
-APP_ALIAS = 'report'
+APP_ALIAS = 'summarize'
 APP_ENV = APP_ALIAS.upper()
 DEBUG = bool(os.getenv(f'{APP_ENV}_DEBUG', ''))
 ENCODING = 'utf-8'
@@ -26,12 +27,12 @@ LONG_PAST = '1000-08-13 11:32:26.250224'
 SINGLE = 'single'
 TWINS = 'twins'
 CLOSE = 0.1
+A_SECOND_OF_USECS = 1_000_000
 
 scenario_labels_sequence = (  # Labels in scenario order:
     'LOGIN',
     'SERVER_INFO',
     'PROJECTS',
-    'CREATE_TWINS',  # get rid of this call and instead use the four atomic steps below (now sub atomic)
     'CREATE_ISSUE',
     'ISSUE_EXISTS',
     'CREATE_ISSUE',
@@ -58,32 +59,12 @@ scenario_labels_sequence = (  # Labels in scenario order:
     'ADD_COMMENT',
 )
 
-"""
-> jq . store/some-db.json | grep label | cut -f 2 -d: | tr '"' "'" | sort | uniq -c
-      4  'ADD_COMMENT',
-      1  'AMEND_ISSUE_DESCRIPTION',
-      1  'CREATE_COMPONENT',
-      1  'CREATE_DUPLICATES_ISSUE_LINK',
-      2  'CREATE_ISSUE',
-      1  'CREATE_TWINS',
-      1  'EXECUTE_JQL',
-      4  'GET_ISSUE_STATUS',
-      2  'ISSUE_EXISTS',
-      1  'LOAD_ISSUE',
-      1  'LOGIN',
-      1  'PROJECTS',
-      1  'RELATE_ISSUE_TO_COMPONENT',
-      1  'SERVER_INFO',
-      3  'SET_ISSUE_STATUS',
-"""
-scenario_labels_set = set(sorted(scenario_labels_sequence))
-molecules = ('CREATE_TWINS',)
-atomic_labels_set = set([label for label in scenario_labels_set if label not in molecules])
+atomic_labels_set = set(sorted(scenario_labels_sequence))
 
 node_map = {
     '5c53f0de-8417-33df-9db8-718895b1f786': 'wun',
     '1c2175b4-eec5-3536-be76-2f20865df8ae': 'two',
-    '7430eea0-7599-37db-b782-bbd336e7a755': 'the',
+    '7430eea0-7599-37db-b782-bbd336e7a755': 'thr',
     'c79891e5-aabf-3a83-95b9-588edcd8327f': 'mountain',
 }
 target_aliases = ('cloud-ref', 'cloud-prod', 'prod', 'test')
@@ -140,8 +121,21 @@ def main(argv=None):
     for transaction in atomic_labels_set:
         for node in targets:
             print(node, transaction, '-' * 42)
-            tmp_df = df[df['target_alias'].isin([node]) & df['scenario'].isin(['single']) & df['step_label'].isin([transaction])]
-            print(tmp_df[['total_secs', 'transactions_secs', 'duty_cycle_percent', 'step_dt_secs', 'gap_before_millis', 'gap_after_millis']].describe())
+            tmp_df = df[
+                df['target_alias'].isin([node]) & df['scenario'].isin(['single']) & df['step_label'].isin([transaction])
+            ]
+            print(
+                tmp_df[
+                    [
+                        'total_secs',
+                        'transactions_secs',
+                        'duty_cycle_percent',
+                        'step_dt_usecs',
+                        'gap_before_millis',
+                        'gap_after_millis',
+                    ]
+                ].describe()
+            )
             print('-' * 42)
             print()
 
@@ -150,37 +144,101 @@ def main(argv=None):
         f' distinct targets with a total of {step_count} measurements'
     )
 
+    group = {
+        'all': sorted(atomic_labels_set),
+        'read': sorted(['SERVER_INFO', 'PROJECTS', 'ISSUE_EXISTS', 'EXECUTE_JQL', 'GET_ISSUE_STATUS', 'LOAD_ISSUE']),
+        'write': sorted(
+            [
+                'LOGIN',
+                'CREATE_ISSUE',
+                'AMEND_ISSUE_DESCRIPTION',
+                'ADD_COMMENT',
+                'UPDATE_ISSUE_FIELD',
+                'CREATE_DUPLICATES_LINK',
+                'SET_ISSUE_STATUS',
+                'SET_ORIGINAL_ESTIMATE',
+                'CREATE_COMPONENT',
+                'RELATE_ISSUE_TO_COMPONENT',
+            ]
+        ),
+        **{label: [label] for label in sorted(atomic_labels_set)},
+    }
+    node_col = 'target_alias'
+    y_col = 'step_dt_usecs'
+    x_col = 'step_start_rel_float_epoc'
+    sel_col = 'step_label'
+    describe_these = [
+        'total_secs',
+        'transactions_secs',
+        'duty_cycle_percent',
+        y_col,
+        'gap_before_millis',
+        'gap_after_millis',
+    ]
+    # rescale expired secods to expired hours:
+    df[[x_col]] /= 3600.0
+    x_max = int(df[x_col].max()) + 1
+    y_max = int(df[y_col].max()) + 1
+    if y_max > 500:
+        y_max = max(y_max, A_SECOND_OF_USECS)
+    else:
+        y_max = 1000
     for node in targets:
         print(node)
-        tmp_df = df[df['target_alias'].isin([node]) & df['scenario'].isin(['single'])]
-        print(tmp_df[['total_secs', 'transactions_secs', 'duty_cycle_percent', 'step_dt_secs', 'gap_before_millis', 'gap_after_millis']].describe())
-        print('-' * 42)
-        print()
+        node_df = df[df[node_col].isin([node])]
+        for name, labels in group.items():
+            print(f'- selector({name}):')
+            sel_df = node_df[node_df[sel_col].isin(labels)]
+            print(sel_df[describe_these].describe())
+            print('-' * 42)
+            print()
 
-    final_plot = sns.lmplot(
-        x='step_start_rel_float_epoc',
-        y='step_dt_secs',
-        hue='step_label',
-        data=df,
-        robust=True,
-        ci=95,
-        markers='o',
-        palette='deep',
-        scatter_kws={'s': 3},
-    )
-    fig = final_plot.fig
-    axes = plt.gca()
-    # axes.set_ylim([y_plot_min, y_plot_max])
-    axes.set_xlim([0, None])
-    axes.yaxis.grid(True)
-    axes.xaxis.grid(True)
-    axes.set_ylabel('')
-    axes.set_xlabel(f'Time')
+            parameters = dict(
+                x=x_col,
+                y=y_col,
+                hue=sel_col,
+                hue_order=labels,
+                data=sel_df,
+                robust=True,
+                ci=95,
+                markers='o',
+                palette='deep',
+                scatter_kws={'s': 3},
+                facet_kws={'legend_out': True},
+                legend=True
+            )
+            g = sns.lmplot(**parameters)
+            # check axes and find which is have legend
+            for ax in g.axes.flat:
+                leg = g.axes.flat[0].get_legend()
+                if not leg is None:
+                    break
+            # or legend may be on a figure
+            if leg is None:
+                leg = g._legend
+            leg.set_title('Action')
+            #handles, p_lables = g.get_legend_handles_labels()
+            #for h in handles:
+            #    h.set_markersize(10)
+            ## replace legend using handles and labels from above
+            #lgnd = plt.legend(handles, p_lables, bbox_to_anchor=(1.02, 0.5), loc='upper center', borderaxespad=0, title='Actions')
+            fig = g.fig
+            axes = plt.gca()
+            axes.set_ylim([0, y_max])
+            axes.set_xlim([0, x_max])
+            axes.yaxis.grid(True)
+            axes.xaxis.grid(True)
+            axes.set_ylabel('dt[µs]')
+            axes.set_xlabel(f'Relative start time during campaign [h]')
+            # lgnd = plt.legend(bbox_to_anchor=(1.04, 0.5), loc="center left", borderaxespad=0, title='Action', scatterpoints=1, fontsize=8)
+            # for handle in lgnd.legendHandles:
+            #     handle.set_sizes([8.0])
 
-    fig.savefig(f'timeseries-cloud-ref.svg', format='svg')
-    fig.savefig(f'timeseries-cloud-ref.png', format='png')
-    DEBUG and plt.show()
-    plt.close()
+            fig.savefig(f'timeseries-{name}-{node}.svg', format='svg')
+            fig.savefig(f'timeseries-{name}-{node}.png', format='png')
+            DEBUG and plt.show()
+            plt.close()
+
 
 if __name__ == '__main__':
     sys.exit(main(sys.argv[1:]))
