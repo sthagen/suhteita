@@ -14,14 +14,14 @@ ENCODING = 'utf-8'
 DB_PATH = pathlib.Path('db.json')
 
 RECORD = re.compile(r'^(?P<timestamp>2[^ ]+) (?P<level>[^ ]+) \[(?P<app>[^[]+)\]: (?P<payload>.*)$')
-START_PAYLOAD = re.compile(r'^Starting load test execution at (at )?\((?P<timestamp>[^)]+) UTC\)$')
-NODE_PAYLOAD = re.compile(r'^Node indicator \((?P<node>[^)]+)\)$')
+START_PAYLOAD = re.compile(r'^# Starting 27-steps scenario test execution at (at )?\((?P<timestamp>[^)]+) UTC\)$')
+NODE_PAYLOAD = re.compile(r'^- Setup <13> Node indicator \((?P<node>[^)]+)\)$')
 SESSION_PAYLOAD = re.compile(
-    r'^Connecting to upstream \(?(?P<mode>cloud|on-site|)\)? ?service \((?P<target>[^)]+)\)'
-    r' per login \((?P<user>[^)]+)\) at \((?P<timestamp>[^)]+) UTC\)$'
+    r'^- Setup <14> Connect will be to upstream \(?(?P<mode>cloud|on-site|)\)? ?service \((?P<target>[^)]+)\)'
+    r' per login \((?P<user>[^)]+)\)$'
 )
-END_PAYLOAD = re.compile(r'^Ended execution of load test at \((?P<timestamp>[^)]+) UTC\)$')
-DURATION_PAYLOAD = re.compile(r'^Execution of load test took (?P<duration>[^ ]+) h:mm:ss.uuuuuu$')
+END_PAYLOAD = re.compile(r'^# Ended execution of 27-steps scenario test at \((?P<timestamp>[^)]+) UTC\)$')
+DURATION_PAYLOAD = re.compile(r'^Execution of 27-steps scenario test took (?P<duration>[^ ]+) h:mm:ss.uuuuuu$')
 PARSE_DURATION = re.compile(r'^(?P<hours>\d+):(?P<minutes>\d+):(?P<seconds>[\.\d]+)')
 
 TS_FORMAT = '%Y-%m-%dT%H:%M:%S.%f'
@@ -92,6 +92,8 @@ def main(argv=None):
         ranks[scenario] += 1
         if scenario not in events:
             events[scenario] = []
+        end_ts = None
+        duration_value = None
         with open(path, 'rt', encoding=ENCODING) as handle:
             for line in handle:
                 match = RECORD.match(line)
@@ -113,7 +115,7 @@ def main(argv=None):
                         mode = session['mode']
                         target = session['target']
                         user = session['user']
-                        session_ts = dti.datetime.strptime(session['timestamp'], ITS_FORMAT)
+                        # session_ts = dti.datetime.strptime(session['timestamp'], ITS_FORMAT)
                         continue
                     end_match = END_PAYLOAD.match(record['payload'])
                     if end_match:
@@ -132,14 +134,14 @@ def main(argv=None):
             {
                 'time_marker': round(float(start_ts.strftime(XTS_FORMAT)), 3),
                 'start_ts': start_ts.strftime(ITS_FORMAT),
-                'end_ts': end_ts.strftime(ITS_FORMAT),
-                'duration_s': duration_value.total_seconds(),
+                'end_ts': end_ts.strftime(ITS_FORMAT) if end_ts else start_ts.strftime(ITS_FORMAT),
+                'duration_s': duration_value.total_seconds() if duration_value else None,
                 'rank_local': ranks[scenario],
                 'node_indicator': node_indicator,
                 'mode': mode,
                 'target': target,
                 'user_id': user,
-                'session_ts': session_ts.strftime(ITS_FORMAT),
+                'session_ts': start_ts.strftime(ITS_FORMAT),  # session_ts.strftime(ITS_FORMAT),
                 'location_path': location,
             }
         )
