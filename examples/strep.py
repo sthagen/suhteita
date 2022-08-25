@@ -139,7 +139,11 @@ for name in sys.argv[1:]:
         comment = step['comment']
         step_start_ts = step['start_ts']
         step_end_ts = step['end_ts']
-        dt_usecs = step['duration_usecs']
+        # dt_usecs = step['duration_usecs']
+        step_start_time = dti.datetime.strptime(step_start_ts, UTC_TS_FORMAT)
+        step_end_time = dti.datetime.strptime(step_end_ts, UTC_TS_FORMAT)
+        dt = (step_end_time - step_start_time)
+        dt_usecs = 1_000_000 * dt.seconds + dt.microseconds
         dt_secs = dt_usecs / 1.e6
         ta_usecs += dt_usecs
         ok = '      ' if step['ok'] else '(FAIL)'
