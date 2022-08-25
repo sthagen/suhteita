@@ -8,6 +8,8 @@ from typing import List, Union
 import suhteita.suhteita as api
 from suhteita import __version__ as version
 
+APPLICATION_FOR_LOG = 'PING'
+
 
 def main(argv: Union[List[str], None] = None) -> int:
     """Drive the ping."""
@@ -25,7 +27,7 @@ def main(argv: Union[List[str], None] = None) -> int:
 
     has_failures = False
 
-    api.init_logger(name=api.APP_ENV, level=logging.DEBUG if api.DEBUG else None)
+    api.init_logger(name=APPLICATION_FOR_LOG, level=logging.DEBUG if api.DEBUG else None)
     if not api.TOKEN:
         api.log.error(f'No secret token or pass phrase given, please set {api.APP_ENV}_TOKEN accordingly')
         return 2
