@@ -40,9 +40,9 @@ def main(argv: Union[List[str], None] = None) -> int:
     api.log.info(f'- Setup <01> Timestamp marker in summaries will be ({ts})')
 
     node_indicator = api.NODE_INDICATOR
-    api.log.info(f'- Setup <ß2> Node indicator ({node_indicator})')
+    api.log.info(f'- Setup <02> Node indicator ({node_indicator})')
     api.log.info(
-        f'- Setup <ß3> Connect will be to upstream ({"cloud" if is_cloud else "on-site"}) service ({target_url})'
+        f'- Setup <03> Connect will be to upstream ({"cloud" if is_cloud else "on-site"}) service ({target_url})'
         f' per login ({user})'
     )
     api.log.info('-' * 84)
