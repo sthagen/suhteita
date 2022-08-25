@@ -34,7 +34,7 @@ def main(argv: Union[List[str], None] = None) -> int:
 
     api.log.info('=' * 84)
     api.log.info(f'Generator {api.APP_ALIAS} version {version}')
-    api.log.info('# Prelude of a 27-steps scenario test execution')
+    api.log.info('# Prelude of a 2-steps ping test execution')
 
     ts = dti.datetime.now(tz=dti.timezone.utc).strftime(api.TS_FORMAT_PAYLOADS)
     api.log.info(f'- Setup <01> Timestamp marker in summaries will be ({ts})')
