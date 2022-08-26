@@ -5,7 +5,7 @@ import json
 import pathlib
 from typing import Dict, Union, no_type_check
 
-from suhteita import Clocking, ENCODING, NODE_INDICATOR, STORE, TS_FORMAT_PAYLOADS
+from suhteita import ENCODING, NODE_INDICATOR, STORE, TS_FORMAT_PAYLOADS, Clocking
 
 TS_FORMAT_STORE = '%Y%m%dT%H%M%S.%fZ'
 

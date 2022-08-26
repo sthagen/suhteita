@@ -10,7 +10,8 @@ import sys
 from typing import Dict, List, Tuple, Union, no_type_check
 
 from atlassian import Jira  # type: ignore
-from suhteita import APP_ALIAS, APP_ENV, Clocking, ENCODING, NODE_INDICATOR, STORE, TS_FORMAT_PAYLOADS, log
+
+from suhteita import APP_ALIAS, APP_ENV, ENCODING, NODE_INDICATOR, STORE, TS_FORMAT_PAYLOADS, Clocking, log
 from suhteita.store import Store
 
 USER = os.getenv(f'{APP_ENV}_USER', '')
