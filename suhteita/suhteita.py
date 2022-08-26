@@ -1,4 +1,3 @@
-#! /usr/bin/env python
 """Load the JIRA instance."""
 import argparse
 import copy

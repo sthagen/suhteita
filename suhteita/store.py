@@ -1,4 +1,3 @@
-#! /usr/bin/env python
 """Provide a simple JSON store for event records."""
 import datetime as dti
 import json
