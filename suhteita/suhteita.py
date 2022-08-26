@@ -4,127 +4,22 @@ import argparse
 import copy
 import datetime as dti
 import json
-import logging
 import os
-import pathlib
-import platform
 import secrets
 import sys
-import uuid
 from typing import Dict, List, Tuple, Union, no_type_check
 
 from atlassian import Jira  # type: ignore
-
-APP_ALIAS = 'suhteita'
-APP_ENV = APP_ALIAS.upper()
-DEBUG = os.getenv(f'{APP_ENV}_DEBUG', '')
-ENCODING = 'utf-8'
+from suhteita import APP_ALIAS, APP_ENV, Clocking, ENCODING, NODE_INDICATOR, STORE, TS_FORMAT_PAYLOADS, log
+from suhteita.store import Store
 
 USER = os.getenv(f'{APP_ENV}_USER', '')
 TOKEN = os.getenv(f'{APP_ENV}_TOKEN', '')
 BASE_URL = os.getenv(f'{APP_ENV}_BASE_URL', '')
 IS_CLOUD = bool(os.getenv(f'{APP_ENV}_IS_CLOUD', ''))
 PROJECT = os.getenv(f'{APP_ENV}_PROJECT', '')
-STORE = os.getenv(f'{APP_ENV}_STORE', '')  # default 'store' per argparse
 IDENTITY = os.getenv(f'{APP_ENV}_IDENTITY', '')  # default 'adhoc' per argparse
 WORDS = os.getenv(f'{APP_ENV}_WORDS', '/usr/share/dict/words')
-NODE_INDICATOR = uuid.uuid3(uuid.NAMESPACE_DNS, platform.node())
-
-log = logging.getLogger()  # Module level logger is sufficient
-LOG_FOLDER = pathlib.Path('logs')
-LOG_FILE = f'{APP_ALIAS}.log'
-LOG_PATH = pathlib.Path(LOG_FOLDER, LOG_FILE) if LOG_FOLDER.is_dir() else pathlib.Path(LOG_FILE)
-LOG_LEVEL = logging.INFO
-
-TS_FORMAT_LOG = '%Y-%m-%dT%H:%M:%S'
-TS_FORMAT_PAYLOADS = '%Y-%m-%d %H:%M:%S.%f UTC'
-TS_FORMAT_STORE = '%Y%m%dT%H%M%S.%fZ'
-Clocking = Tuple[str, float, str]
-
-
-@no_type_check
-class Store:
-    @no_type_check
-    def __init__(self, context: Dict[str, Union[str, dti.datetime]], folder_path: Union[pathlib.Path, str] = STORE):
-        self.store = pathlib.Path(folder_path)
-        self.identity = context['identity']
-        self.start_time = context['start_time']
-        self.end_ts = None
-        self.total_secs = 0.0
-        self.node_indicator = NODE_INDICATOR
-        self.store.mkdir(parents=True, exist_ok=True)
-        self.db_name = f'{self.identity}-{self.start_time.strftime(TS_FORMAT_STORE)}-{self.node_indicator}.json'
-        self.rank = 0
-        self.db = {
-            '_meta': {
-                'scenario': context.get('scenario', 'unknown'),
-                'identity': self.identity,
-                'node_indicator': str(self.node_indicator),
-                'target': context.get('target', 'unknown'),
-                'mode': context.get('mode', 'unknown'),
-                'project': context.get('project', 'unknown'),
-                'db_name': self.db_name,
-                'db_path': str(self.store / self.db_name),
-                'start_ts': self.start_time.strftime(TS_FORMAT_PAYLOADS),
-                'total_secs': self.total_secs,
-                'end_ts': self.end_ts,
-                'has_failures_declared': None,
-                'has_failures_detected': None,
-            },
-            'events': [],
-        }
-
-    @no_type_check
-    def add(self, label: str, ok: bool, clk: Clocking, comment: str = ''):
-        self.rank += 1
-        self.db['events'].append(
-            {
-                'rank': self.rank,
-                'label': label,
-                'ok': ok,
-                'start_ts': clk[0],
-                'duration_usecs': clk[1],
-                'end_ts': clk[2],
-                'comment': comment,
-            }
-        )
-
-    @no_type_check
-    def dump(self, end_time: dti.datetime, has_failures: bool = False):
-        self.end_time = end_time
-        self.db['_meta']['end_ts'] = self.end_time.strftime(TS_FORMAT_PAYLOADS)
-        self.db['_meta']['total_secs'] = (self.end_time - self.start_time).total_seconds()
-        self.db['_meta']['has_failures_declared'] = has_failures
-        detect_failures = False
-        for event in self.db['events']:
-            if not event['ok']:
-                detect_failures = True
-        self.db['_meta']['has_failures_detected'] = detect_failures
-        with open(self.store / self.db_name, 'wt', encoding=ENCODING) as handle:
-            json.dump(self.db, handle)
-
-
-@no_type_check
-def formatTime_RFC3339(self, record, datefmt=None):
-    """HACK A DID ACK we could inject .astimezone() to localize ..."""
-    return dti.datetime.fromtimestamp(record.created, dti.timezone.utc).isoformat()
-
-
-@no_type_check
-def init_logger(name=None, level=None):
-    """Initialize module level logger"""
-    global log  # pylint: disable=global-statement
-
-    log_format = {
-        'format': '%(asctime)s %(levelname)s [%(name)s]: %(message)s',
-        'datefmt': TS_FORMAT_LOG,
-        # 'filename': LOG_PATH,
-        'level': LOG_LEVEL if level is None else level,
-    }
-    logging.Formatter.formatTime = formatTime_RFC3339
-    logging.basicConfig(**log_format)
-    log = logging.getLogger(APP_ENV if name is None else name)
-    log.propagate = True
 
 
 def two_sentences(word_count: int = 4) -> Tuple[str, str]:
@@ -481,7 +376,6 @@ def main(argv: Union[List[str], None] = None, version: str = 'UNKNOWN') -> int:
 
     has_failures = False
 
-    init_logger(name=APP_ENV, level=logging.DEBUG if DEBUG else None)
     if not TOKEN:
         log.error(f'No secret token or pass phrase given, please set {APP_ENV}_TOKEN accordingly')
         return 2
