@@ -3,6 +3,7 @@ import logging
 import os
 import pathlib
 import platform
+import secrets
 import uuid
 from typing import Tuple, no_type_check
 
@@ -21,6 +22,15 @@ ENCODING = 'utf-8'
 NODE_INDICATOR = uuid.uuid3(uuid.NAMESPACE_DNS, platform.node())
 STORE = os.getenv(f'{APP_ENV}_STORE', '')  # default 'store' per argparse
 
+USER = os.getenv(f'{APP_ENV}_USER', '')
+TOKEN = os.getenv(f'{APP_ENV}_TOKEN', '')
+BASE_URL = os.getenv(f'{APP_ENV}_BASE_URL', '')
+IS_CLOUD = bool(os.getenv(f'{APP_ENV}_IS_CLOUD', ''))
+PROJECT = os.getenv(f'{APP_ENV}_PROJECT', '')
+IDENTITY = os.getenv(f'{APP_ENV}_IDENTITY', '')  # default 'adhoc' per argparse
+WORDS = os.getenv(f'{APP_ENV}_WORDS', '/usr/share/dict/words')
+
+
 log = logging.getLogger()  # Module level logger is sufficient
 LOG_FOLDER = pathlib.Path('logs')
 LOG_FILE = f'{APP_ALIAS}.log'
@@ -31,6 +41,22 @@ TS_FORMAT_LOG = '%Y-%m-%dT%H:%M:%S'
 TS_FORMAT_PAYLOADS = '%Y-%m-%d %H:%M:%S.%f UTC'
 
 Clocking = Tuple[str, float, str]
+
+
+def two_sentences(word_count: int = 4) -> Tuple[str, str]:
+    """DRY."""
+    with open(WORDS, 'rt', encoding=ENCODING) as handle:
+        words = [word.strip() for word in handle]
+        wun = ' '.join(secrets.choice(words) for _ in range(word_count))
+        two = ' '.join(secrets.choice(words) for _ in range(word_count))
+        del words
+    return wun, two
+
+
+@no_type_check
+def extract_fields(data, fields):
+    """DRY."""
+    return {field: data[field] for field in fields}
 
 
 @no_type_check
