@@ -1,3 +1,4 @@
+import suhteita.cli as cli
 import suhteita.suhteita as run
 
 
@@ -21,3 +22,9 @@ def test_extract_fields():
     fields = ('a', 'b')
     expectation = {field: 'x' for field in fields}
     assert expectation == run.extract_fields(expectation, fields)
+
+
+def test_setup_twenty_seven():
+    options = cli.parse_request([])
+    cfg = run.setup_twenty_seven(options)
+    assert cfg.duplicate_labels == ['du', 'pli', 'ca', 'te']
