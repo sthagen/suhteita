@@ -47,57 +47,45 @@ def setup_twenty_seven(options: argparse.Namespace) -> object:
     log.info(f'Generator {APP_ALIAS} version {version}')
     log.info('# Prelude of a 27-steps scenario test execution')
 
-    c_rand, d_rand = two_sentences()
-    log.info(f'- Setup <01> Random sentence of original ({c_rand})')
-    log.info(f'- Setup <02> Random sentence of duplicate ({d_rand})')
-    setup.c_rand = c_rand
-    setup.d_rand = d_rand
+    setup.c_rand, setup.d_rand = two_sentences()
+    log.info(f'- Setup <01> Random sentence of original ({setup.c_rand})')
+    log.info(f'- Setup <02> Random sentence of duplicate ({setup.d_rand})')
 
-    random_component = secrets.token_urlsafe()
-    log.info(f'- Setup <03> Random component name ({random_component})')
-    setup.random_component = random_component
+    setup.random_component = secrets.token_urlsafe()
+    log.info(f'- Setup <03> Random component name ({setup.random_component})')
 
-    todo, in_progress, done = ('to do', 'in progress', 'done')
-    log.info(f'- Setup <04> The test workflow assumes the (case insensitive) states ({todo}, {in_progress}, {done})')
-    setup.todo = todo
-    setup.in_progress = in_progress
-    setup.done = done
+    setup.todo, setup.in_progress, setup.done = ('to do', 'in progress', 'done')
+    log.info(
+        f'- Setup <04> The test workflow assumes the (case insensitive) states'
+        f' ({setup.todo}, {setup.in_progress}, {setup.done})'
+    )
 
-    ts = dti.datetime.now(tz=dti.timezone.utc).strftime(TS_FORMAT_PAYLOADS)
-    log.info(f'- Setup <05> Timestamp marker in summaries will be ({ts})')
-    setup.ts = ts
+    setup.ts = dti.datetime.now(tz=dti.timezone.utc).strftime(TS_FORMAT_PAYLOADS)
+    log.info(f'- Setup <05> Timestamp marker in summaries will be ({setup.ts})')
 
-    desc_core = '... and short description we dictate.'
-    log.info(f'- Setup <06> Common description part - of twin issues / pair - will be ({desc_core})')
-    setup.desc_core = desc_core
+    setup.desc_core = '... and short description we dictate.'
+    log.info(f'- Setup <06> Common description part - of twin issues / pair - will be ({setup.desc_core})')
 
-    amendment = 'No, no, no. They duplicated me, help!'
-    log.info(f'- Setup <07> Amendment for original description will be ({amendment})')
-    setup.amendment = amendment
+    setup.amendment = 'No, no, no. They duplicated me, help!'
+    log.info(f'- Setup <07> Amendment for original description will be ({setup.amendment})')
 
-    fake_comment = 'I am the original, surely!'
-    log.info(f'- Setup <08> Fake comment for duplicate will be ({fake_comment})')
-    setup.fake_comment = fake_comment
+    setup.fake_comment = 'I am the original, surely!'
+    log.info(f'- Setup <08> Fake comment for duplicate will be ({setup.fake_comment})')
 
-    duplicate_labels = ['du', 'pli', 'ca', 'te']
-    log.info(f'- Setup <09> Labels for duplicate will be ({duplicate_labels})')
-    setup.duplicate_labels = duplicate_labels
+    setup.duplicate_labels = ['du', 'pli', 'ca', 'te']
+    log.info(f'- Setup <09> Labels for duplicate will be ({setup.duplicate_labels})')
 
-    original_labels = ['for', 'real', 'highlander']
-    log.info(f'- Setup <10> Labels for original will be ({original_labels})')
-    setup.original_labels = original_labels
+    setup.original_labels = ['for', 'real', 'highlander']
+    log.info(f'- Setup <10> Labels for original will be ({setup.original_labels})')
 
-    hours_value = 42
-    log.info(f'- Setup <11> Hours value for original estimate will be ({hours_value})')
-    setup.hours_value = hours_value
+    setup.hours_value = 42
+    log.info(f'- Setup <11> Hours value for original estimate will be ({setup.hours_value})')
 
-    purge_me = 'SUHTEITA_PURGE_ME_ORIGINAL'
-    log.info(f'- Setup <12> Purge indicator comment will be ({purge_me})')
-    setup.purge_me = purge_me
+    setup.purge_me = 'SUHTEITA_PURGE_ME_ORIGINAL'
+    log.info(f'- Setup <12> Purge indicator comment will be ({setup.purge_me})')
 
-    node_indicator = NODE_INDICATOR
-    log.info(f'- Setup <13> Node indicator ({node_indicator})')
-    setup.node_indicator = node_indicator
+    setup.node_indicator = NODE_INDICATOR
+    log.info(f'- Setup <13> Node indicator ({setup.node_indicator})')
 
     log.info(
         f'- Setup <14> Connect will be to upstream ({"cloud" if setup.is_cloud else "on-site"})'
