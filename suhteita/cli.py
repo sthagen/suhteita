@@ -5,7 +5,7 @@ import sys
 from typing import List, Union
 
 import suhteita.suhteita as api
-from suhteita import APP_ALIAS, APP_ENV, BASE_URL, IDENTITY, IS_CLOUD, PROJECT, STORE, USER, __version__ as version
+from suhteita import APP_ALIAS, APP_ENV, BASE_URL, IDENTITY, IS_CLOUD, PROJECT, STORE, USER
 
 
 def parse_request(argv: List[str]) -> argparse.Namespace:
@@ -77,4 +77,4 @@ def main(argv: Union[List[str], None] = None) -> int:
     """Delegate processing to functional module."""
     argv = sys.argv[1:] if argv is None else argv
 
-    return api.main(parse_request(argv), version=version)
+    return api.main(parse_request(argv))

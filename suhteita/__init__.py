@@ -19,7 +19,7 @@ APP_ENV = APP_ALIAS.upper()
 DEBUG = os.getenv(f'{APP_ENV}_DEBUG', '')
 ENCODING = 'utf-8'
 
-NODE_INDICATOR = uuid.uuid3(uuid.NAMESPACE_DNS, platform.node())
+NODE_INDICATOR = str(uuid.uuid3(uuid.NAMESPACE_DNS, platform.node()))
 STORE = os.getenv(f'{APP_ENV}_STORE', '')  # default 'store' per argparse
 
 USER = os.getenv(f'{APP_ENV}_USER', '')

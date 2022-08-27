@@ -1,4 +1,5 @@
 """Provide a simple JSON store for event records."""
+import copy
 import datetime as dti
 import json
 import pathlib
@@ -12,7 +13,9 @@ TS_FORMAT_STORE = '%Y%m%dT%H%M%S.%fZ'
 @no_type_check
 class Store:
     @no_type_check
-    def __init__(self, context: Dict[str, Union[str, dti.datetime]], folder_path: Union[pathlib.Path, str] = STORE):
+    def __init__(
+        self, context: Dict[str, Union[str, dti.datetime]], setup: object, folder_path: Union[pathlib.Path, str] = STORE
+    ):
         self.store = pathlib.Path(folder_path)
         self.identity = context['identity']
         self.start_time = context['start_time']
@@ -37,6 +40,7 @@ class Store:
                 'end_ts': self.end_ts,
                 'has_failures_declared': None,
                 'has_failures_detected': None,
+                'setup': copy.deepcopy(setup.__dict__),
             },
             'events': [],
         }
