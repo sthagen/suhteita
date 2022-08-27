@@ -138,3 +138,6 @@ current-bandit.json
 tmp*
 foo
 store/
+log.html
+report.html
+output.xml
