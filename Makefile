@@ -1,7 +1,7 @@
 .DEFAULT_GOAL := all
-black = black -S -l 120 --target-version py310 suhteita test
-flake8 = flake8 suhteita test
-isort = isort suhteita test
+black = black -S -l 120 --target-version py310 suhteita test examples
+flake8 = flake8 suhteita test examples
+isort = isort suhteita test examples
 pytest = pytest --asyncio-mode=strict --cov=suhteita --cov-report term-missing:skip-covered --cov-branch --log-format="%(levelname)s %(message)s"
 types = mypy suhteita
 
