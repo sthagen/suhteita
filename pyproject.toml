@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "suhteita"
-version = "2022.8.24"
+version = "2022.8.27"
 description = "Relationships (Finnish: suhteita) maintained across distances as load test core."
 readme = "README.md"
 authors = [{ name = "Stefan Hagen", email = "stefan@hagen.link" }]
@@ -21,6 +21,8 @@ classifiers = [
 keywords = ["developer-tools", "validation", "verification"]
 dependencies = [
     "atlassian-python-api >= 3.27.0",
+    "robotframework >= 5.0.1",
+    "wrapt >= 1.14.1",
     'tomli; python_version < "3.11"',
 ]
 requires-python = ">=3.8"
@@ -39,7 +41,7 @@ Test-Coverage = "https://codes.dilettant.life/coverage/suhteita"
 suhteita = "suhteita.cli:main"
 
 [tool.setuptools.packages.find]
-include = ["suhteita"]
+include = ["suhteita", "suhteita.robot", "suhteita.robot.TicketSystemLibrary"]
 exclude = ["test*"]
 
 [bdist_wheel]
