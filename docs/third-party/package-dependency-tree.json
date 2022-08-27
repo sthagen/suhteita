@@ -122,5 +122,12 @@
                 "dependencies": []
             }
         ]
+    },
+    {
+        "key": "robotframework",
+        "package_name": "robotframework",
+        "installed_version": "5.0.1",
+        "required_version": "5.0.1",
+        "dependencies": []
     }
 ]

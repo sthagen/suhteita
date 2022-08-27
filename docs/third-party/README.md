@@ -1,8 +1,8 @@
 # Third Party Dependencies
 
 <!--[[[fill sbom_sha256()]]]-->
-The [SBOM in CycloneDX v1.4 JSON format](https://github.com/sthagen/pilli/blob/default/sbom.json) with SHA256 checksum ([51ee2930 ...](https://raw.githubusercontent.com/sthagen/pilli/default/sbom.json.sha256 "sha256:51ee2930f69e6b8d7a3737f30839428710b0a22fb994a8a8e05c554f568a558f")).
-<!--[[[end]]] (checksum: 5d1bc307bc1b037fb2e076857884e107)-->
+The [SBOM in CycloneDX v1.4 JSON format](https://github.com/sthagen/pilli/blob/default/sbom.json) with SHA256 checksum ([0ca311db ...](https://raw.githubusercontent.com/sthagen/pilli/default/sbom.json.sha256 "sha256:0ca311db09fa9b1134f7f8402e1e669850e642ae938bd5d081cb73d407262bf9")).
+<!--[[[end]]] (checksum: a49b13e122a2b30c801514ef62c0792c)-->
 ## Licenses 
 
 JSON files with complete license info of: [direct dependencies](direct-dependency-licenses.json) | [all dependencies](all-dependency-licenses.json)
@@ -10,10 +10,12 @@ JSON files with complete license info of: [direct dependencies](direct-dependenc
 ### Direct Dependencies
 
 <!--[[[fill direct_dependencies_table()]]]-->
-| Name                                                                          | Version                                                         | License                 | Author           | Description (from packaging data) |
-|:------------------------------------------------------------------------------|:----------------------------------------------------------------|:------------------------|:-----------------|:----------------------------------|
-| [atlassian-python-api](https://github.com/atlassian-api/atlassian-python-api) | [3.27.0](https://pypi.org/project/atlassian-python-api/3.27.0/) | Apache Software License | Matt Harasymczuk | Python Atlassian REST API Wrapper |
-<!--[[[end]]] (checksum: dbdc0d190500d5e5e9dae02bea8382de)-->
+| Name                                                                          | Version                                                         | License                 | Author           | Description (from packaging data)                                                        |
+|:------------------------------------------------------------------------------|:----------------------------------------------------------------|:------------------------|:-----------------|:-----------------------------------------------------------------------------------------|
+| [atlassian-python-api](https://github.com/atlassian-api/atlassian-python-api) | [3.27.0](https://pypi.org/project/atlassian-python-api/3.27.0/) | Apache Software License | Matt Harasymczuk | Python Atlassian REST API Wrapper                                                        |
+| [robotframework](https://robotframework.org/)                                 | [5.0.1](https://pypi.org/project/robotframework/5.0.1/)         | Apache Software License | Pekka Klärck     | Generic automation framework for acceptance testing and robotic process automation (RPA) |
+| [wrapt](https://github.com/GrahamDumpleton/wrapt)                             | [1.14.1](https://pypi.org/project/wrapt/1.14.1/)                | BSD License             | Graham Dumpleton | Module for decorators, wrappers and monkey patching.                                     |
+<!--[[[end]]] (checksum: 8f739e576a464fd7b4dcce887eff4066)-->
 
 ### Indirect Dependencies
 
@@ -54,5 +56,6 @@ atlassian-python-api==3.27.0
       - idna [required: >=2.5,<4, installed: 3.3]
       - urllib3 [required: >=1.21.1,<1.27, installed: 1.26.11]
   - six [required: Any, installed: 1.16.0]
+robotframework==5.0.1
 ````
-<!--[[[end]]] (checksum: 3de0f59ffe6dde9798a66c75113c6882)-->
+<!--[[[end]]] (checksum: 455bbc1f74ac203859575b5141846234)-->
