@@ -72,32 +72,32 @@ for name in sys.argv[1:]:
     print(f'- {start_ts=}')
     print(f'- {total_secs=}')
 
-    print(f'- logins:')
+    print('- logins:')
     for login in logins:
         ok = '' if login['ok'] else ' (FAIL)'
         print(f'  + dt = {login["duration_usecs"]} usecs{ok}')
 
-    print(f'- creates of issue:')
+    print('- creates of issue:')
     for create_issue in creates_of_issue:
         ok = '' if create_issue['ok'] else ' (FAIL)'
         print(f'  + dt = {create_issue["duration_usecs"]} usecs{ok}')
 
-    print(f'- loads of issue:')
+    print('- loads of issue:')
     for load_issue in loads_of_issue:
         ok = '' if load_issue['ok'] else ' (FAIL)'
         print(f'  + dt = {load_issue["duration_usecs"]} usecs{ok}')
 
-    print(f'- adds of comment:')
+    print('- adds of comment:')
     for add_comment in adds_of_comment:
         ok = '' if add_comment['ok'] else ' (FAIL)'
         print(f'  + dt = {add_comment["duration_usecs"]} usecs{ok}')
 
-    print(f'- gets of issue status:')
+    print('- gets of issue status:')
     for get_issue_status in gets_of_issue_status:
         ok = '' if get_issue_status['ok'] else ' (FAIL)'
         print(f'  + dt = {get_issue_status["duration_usecs"]} usecs{ok}')
 
-    print(f'- sets of issue status:')
+    print('- sets of issue status:')
     for set_issue_status in sets_of_issue_status:
         ok = '' if set_issue_status['ok'] else ' (FAIL)'
         print(f'  + dt = {set_issue_status["duration_usecs"]} usecs{ok}')
@@ -117,23 +117,23 @@ for name in sys.argv[1:]:
         # dt_usecs = step['duration_usecs']
         step_start_time = dti.datetime.strptime(step_start_ts, UTC_TS_FORMAT)
         step_end_time = dti.datetime.strptime(step_end_ts, UTC_TS_FORMAT)
-        dt = (step_end_time - step_start_time)
+        dt = step_end_time - step_start_time
         dt_usecs = 1_000_000 * dt.seconds + dt.microseconds
-        dt_secs = dt_usecs / 1.e6
+        dt_secs = dt_usecs / 1.0e6
         ta_usecs += dt_usecs
         ok = '      ' if step['ok'] else '(FAIL)'
         status = 'SUCC' if step['ok'] else 'FAIL'
 
         step_start_time = dti.datetime.strptime(step_start_ts, UTC_TS_FORMAT)
         step_end_time = dti.datetime.strptime(step_end_ts, UTC_TS_FORMAT)
-        gap_before_millis = round(1.e3 * (step_start_time - previous_start_time).total_seconds(), 3)
+        gap_before_millis = round(1.0e3 * (step_start_time - previous_start_time).total_seconds(), 3)
         previous_start_time = step_end_time
         if order == end_step_trigger:
-            gap_after_millis = round(1.e3 * (end_time - step_end_time).total_seconds(), 3)
+            gap_after_millis = round(1.0e3 * (end_time - step_end_time).total_seconds(), 3)
         else:
             peek_next_step_start_ts = steps[order]['start_ts']
             peek_next_step_start_time = dti.datetime.strptime(peek_next_step_start_ts, UTC_TS_FORMAT)
-            gap_after_millis = round(1.e3 * (peek_next_step_start_time - step_end_time).total_seconds(), 3)
+            gap_after_millis = round(1.0e3 * (peek_next_step_start_time - step_end_time).total_seconds(), 3)
 
         if order == 1:
             print(f'      gap before  {gap_before_millis :7.3f} millisecs')
@@ -142,42 +142,69 @@ for name in sys.argv[1:]:
             print(f'      gap after   {gap_after_millis :7.3f} millisecs')
         else:
             print(f'      gap between {gap_after_millis :7.3f} millisecs')
-        steps_profile.append([order, step_start_ts, step_end_ts, dt_usecs, dt_secs, gap_before_millis, gap_after_millis, label, status, comment])
+        steps_profile.append(
+            [
+                order,
+                step_start_ts,
+                step_end_ts,
+                dt_usecs,
+                dt_secs,
+                gap_before_millis,
+                gap_after_millis,
+                label,
+                status,
+                comment,
+            ]
+        )
     print(f'transaction_secs = {round(ta_usecs / 1.e6, 3)} secs')
     print(f'duty_cycle_percent = {round(100. * (ta_usecs / 1.e6) / total_secs, 3)} %')
     print('-' * 42)
-    ta_secs = ta_usecs / 1.e6
-    dc_percent = round(100. * ta_secs / total_secs, 3)
-    for order, step_start_ts, step_end_ts, dt_usecs, dt_secs, gap_before_millis, gap_after_millis, label, status, comment in steps_profile:
-        profiles.append({
-           'scenario': scenario,
-           'sub_scenario': split_id,
-           'identity': identity,
-           'client_node_id': client_node_id,
-           'client_alias': client_alias,
-           'target_alias': target_alias,
-           'target_class': target_class,
-           'start_ts': start_ts,
-           'start_rel_float_epoc': None,  # relative epoc from min of all registered start times
-           'end_ts': end_ts,
-           'end_rel_float_epoc': None,  # dito
-           'total_secs': total_secs,
-           'transactions_secs': ta_secs,
-           'duty_cycle_percent': dc_percent,
-           'sub_transaction': order,
-           'step_start_ts': step_start_ts,
-           'step_start_rel_float_epoc': None,  # dito
-           'step_end_ts': step_end_ts,
-           'step_end_rel_float_epoc': None,  # dito
-           'sub_transaction_local_start_rel_float_percent': None,  #  100 * (step_start - ta_start).total_seconds() / total_secs
-           'step_dt_usecs': dt_usecs,
-           'step_dt_secs': dt_secs,
-           'gap_before_millis': gap_before_millis,
-           'gap_after_millis': gap_after_millis,
-           'step_label': label,
-           'step_status': status,
-           'step_comment': comment,
-        })
+    ta_secs = ta_usecs / 1.0e6
+    dc_percent = round(100.0 * ta_secs / total_secs, 3)
+    for (
+        order,
+        step_start_ts,
+        step_end_ts,
+        dt_usecs,
+        dt_secs,
+        gap_before_millis,
+        gap_after_millis,
+        label,
+        status,
+        comment,
+    ) in steps_profile:
+        profiles.append(
+            {
+                'scenario': scenario,
+                'sub_scenario': split_id,
+                'identity': identity,
+                'client_node_id': client_node_id,
+                'client_alias': client_alias,
+                'target_alias': target_alias,
+                'target_class': target_class,
+                'start_ts': start_ts,
+                'start_rel_float_epoc': None,  # relative epoc from min of all registered start times
+                'end_ts': end_ts,
+                'end_rel_float_epoc': None,  # dito
+                'total_secs': total_secs,
+                'transactions_secs': ta_secs,
+                'duty_cycle_percent': dc_percent,
+                'sub_transaction': order,
+                'step_start_ts': step_start_ts,
+                'step_start_rel_float_epoc': None,  # dito
+                'step_end_ts': step_end_ts,
+                'step_end_rel_float_epoc': None,  # dito
+                # below sub_trans... = 100 * (step_start - ta_start).total_seconds() / total_secs
+                'sub_transaction_local_start_rel_float_percent': None,
+                'step_dt_usecs': dt_usecs,
+                'step_dt_secs': dt_secs,
+                'gap_before_millis': gap_before_millis,
+                'gap_after_millis': gap_after_millis,
+                'step_label': label,
+                'step_status': status,
+                'step_comment': comment,
+            }
+        )
 
 early_ts, late_ts = FAR_FUTURE, LONG_PAST
 early_ts = min(FAR_FUTURE, *[step['start_ts'] for step in profiles])
@@ -195,9 +222,9 @@ print(f'{period_secs}')
 
 for k, profile in enumerate(profiles):
     ta_start_ts = profile['start_ts']
-    ta_start_time =  dti.datetime.strptime(ta_start_ts, UTC_TS_FORMAT)
+    ta_start_time = dti.datetime.strptime(ta_start_ts, UTC_TS_FORMAT)
     ta_end_ts = profile['end_ts']
-    ta_end_time =  dti.datetime.strptime(ta_end_ts, UTC_TS_FORMAT)
+    ta_end_time = dti.datetime.strptime(ta_end_ts, UTC_TS_FORMAT)
     sta_start_ts = profile['step_start_ts']
     sta_start_time = dti.datetime.strptime(sta_start_ts, UTC_TS_FORMAT)
     sta_end_ts = profile['step_end_ts']
@@ -207,7 +234,9 @@ for k, profile in enumerate(profiles):
     profiles[k]['end_rel_float_epoc'] = (ta_end_time - early_time).total_seconds()
     profiles[k]['step_start_rel_float_epoc'] = (sta_start_time - early_time).total_seconds()
     profiles[k]['step_end_rel_float_epoc'] = (sta_end_time - early_time).total_seconds()
-    profiles[k]['sub_transaction_local_start_rel_float_percent'] = 100 * (sta_start_time - ta_start_time).total_seconds() / total_secs
+    profiles[k]['sub_transaction_local_start_rel_float_percent'] = (
+        100 * (sta_start_time - ta_start_time).total_seconds() / total_secs
+    )
 
 with open('creator-profiles.json', 'wt', encoding=ENCODING) as handle:
     json.dump(profiles, handle)
@@ -218,8 +247,21 @@ print(df.head())
 for transaction in scenario_labels_set:
     for node in targets:
         print(node, transaction, '-' * 42)
-        tmp_df = df[df['target_alias'].isin([node]) & df['scenario'].isin(['creator']) & df['step_label'].isin([transaction])]
-        print(tmp_df[['total_secs', 'transactions_secs', 'duty_cycle_percent', 'step_dt_secs', 'gap_before_millis', 'gap_after_millis']].describe())
+        tmp_df = df[
+            df['target_alias'].isin([node]) & df['scenario'].isin(['creator']) & df['step_label'].isin([transaction])
+        ]
+        print(
+            tmp_df[
+                [
+                    'total_secs',
+                    'transactions_secs',
+                    'duty_cycle_percent',
+                    'step_dt_secs',
+                    'gap_before_millis',
+                    'gap_after_millis',
+                ]
+            ].describe()
+        )
         print('-' * 42)
         print()
 
@@ -228,6 +270,17 @@ print(nodes)
 for node in targets:
     print(node)
     tmp_df = df[df['target_alias'].isin([node]) & df['scenario'].isin(['creator'])]
-    print(tmp_df[['total_secs', 'transactions_secs', 'duty_cycle_percent', 'step_dt_secs', 'gap_before_millis', 'gap_after_millis']].describe())
+    print(
+        tmp_df[
+            [
+                'total_secs',
+                'transactions_secs',
+                'duty_cycle_percent',
+                'step_dt_secs',
+                'gap_before_millis',
+                'gap_after_millis',
+            ]
+        ].describe()
+    )
     print('-' * 42)
     print()

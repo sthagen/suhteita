@@ -1,9 +1,7 @@
 import json
-import math
 import os
 import sys
 
-import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -201,23 +199,24 @@ def main(argv=None):
                 palette='deep',
                 scatter_kws={'s': 3},
                 facet_kws={'legend_out': True},
-                legend=True
+                legend=True,
             )
             g = sns.lmplot(**parameters)
             # check axes and find which is have legend
             for ax in g.axes.flat:
                 leg = g.axes.flat[0].get_legend()
-                if not leg is None:
+                if leg is not None:
                     break
             # or legend may be on a figure
             if leg is None:
                 leg = g._legend
             leg.set_title('Action')
-            #handles, p_lables = g.get_legend_handles_labels()
-            #for h in handles:
+            # handles, p_lables = g.get_legend_handles_labels()
+            # for h in handles:
             #    h.set_markersize(10)
-            ## replace legend using handles and labels from above
-            #lgnd = plt.legend(handles, p_lables, bbox_to_anchor=(1.02, 0.5), loc='upper center', borderaxespad=0, title='Actions')
+            # # replace legend using handles and labels from above
+            # lgnd = plt.legend(handles, p_lables, bbox_to_anchor=(1.02, 0.5), loc='upper center', borderaxespad=0,
+            #                   title='Actions')
             fig = g.fig
             axes = plt.gca()
             axes.set_ylim([0, y_max])
@@ -227,8 +226,9 @@ def main(argv=None):
             axes.yaxis.grid(True)
             axes.xaxis.grid(True)
             axes.set_ylabel('dt[µs]')
-            axes.set_xlabel(f'Relative start time during campaign [h]')
-            # lgnd = plt.legend(bbox_to_anchor=(1.04, 0.5), loc="center left", borderaxespad=0, title='Action', scatterpoints=1, fontsize=8)
+            axes.set_xlabel('Relative start time during campaign [h]')
+            # lgnd = plt.legend(bbox_to_anchor=(1.04, 0.5), loc="center left", borderaxespad=0, title='Action',
+            #                                   scatterpoints=1, fontsize=8)
             # for handle in lgnd.legendHandles:
             #     handle.set_sizes([8.0])
 
