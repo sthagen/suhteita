@@ -1,5 +1,37 @@
 # Change History
 
+## 2022.8.27
+
+* Adapted creator example to changed package structure
+* Adapted extract example to new log format
+* Adapted logger module name for ping
+* Adapted ping and creator examples to the new package structure; Linter happiness abound
+* Adapted ping example to changed structure of package
+* Added a robotframework ticket system library
+* Added CPSR style example for creator store report
+* Added CPSR style example for ping store report
+* Added example creator connecting, requesting server info, requesting projects, and creating an issue
+* Added example robot test file
+* Added examples to linting and format targets
+* Added new test deps (pytest-check==1.0.9)
+* Added ping example
+* Added robot related dependencies
+* Added robotframework artifacts to git ignores
+* Bumped dev deps (types-setuptools==65.3.0)
+* Bumped test deps (dirty-equals==0.4)
+* Fixed prelude log for ping
+* Fixed setup counters for ping example
+* Fixed timedelta calculation for steps taking a second or longer
+* Prepared next release and added robot related dependencies
+* Refactored common parts into init and storage into new store module
+* Refactored further functionality and adapted tests
+* Refactored implementation of 27-steps scenario to prepare for keyword use, add setup to store, and increase test coverage
+* Removed superfluous shebang lines
+* Simplified the setup function
+* Updated baseline
+* Updated SBOM
+* Updated third-party docs
+
 ## 2022.8.24
 
 * Added missing log lines for link, effort, set issue steps, and moved calculation of component name out of function
