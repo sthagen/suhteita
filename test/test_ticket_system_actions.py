@@ -1,6 +1,6 @@
 import pytest
 
-import suhteita.actions as actions
+import suhteita.ticket_system_actions as actions
 from suhteita import extract_fields
 
 
