@@ -1,5 +1,12 @@
 # Change History
 
+## 2022.8.28
+
+* Added helper keyword functions for result projections
+* Added jmespath dependency to ease test writing
+* Updated baseline, SBOM, and third-party docs
+* Completed initial test coverage of robot ticket system API with added self reflection test
+
 ## 2022.8.27
 
 * Adapted creator example to changed package structure
