@@ -4,6 +4,7 @@
 
 * Added helper keyword functions for result projections
 * Added jmespath dependency to ease test writing
+* Added experimental source server support
 * Updated baseline, SBOM, and third-party docs
 * Completed initial test coverage of robot ticket system API with added self reflection test
 
