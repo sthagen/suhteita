@@ -1,4 +1,4 @@
-"""Ticket system abstraction relaying keywords to API methods of the underlying ticket system (JIRA)."""
+"""Source server abstraction relaying keywords to API methods of the underlying source server system (Bitbucket)."""
 import ast
 from typing import List, no_type_check
 
@@ -6,7 +6,7 @@ import jmespath
 import wrapt  # type: ignore
 from robot.api import ContinuableFailure, logger  # type: ignore
 
-from suhteita.ticket_system_actions import Jira as Ticket
+from suhteita.source_server_actions import Bitbucket as Source
 
 
 @no_type_check
@@ -28,26 +28,26 @@ def _string_variables_to_data(function, instance, args, kwargs):
 
 
 @no_type_check
-class TicketSystemBridge(object):
+class SourceServerBridge(object):
     """Use the robot framework hybrid API to proxy the calls and support discovery of keywords."""
 
     ROBOT_LIBRARY_SCOPE = 'Global'
-    _ticket_system = Ticket
+    _source_server = Source
     _session = None
 
     def get_keyword_names(self) -> List[str]:
         """Generate the list of keywords from the underlying provider - required hybrid API method."""
-        get_members = self._ticket_system.__dict__.items
+        get_members = self._source_server.__dict__.items
         kws = [name for name, function in get_members() if hasattr(function, '__call__')]
         kws += ['extract_fields', 'extract_paths', 'extract_project_keys', 'ticket_session']
 
         return [kw for kw in kws if not kw.startswith('delete_') and kw not in ('__init__', 'get_issue_remotelinks')]
 
     @no_type_check
-    def ticket_session(self, url=None, username=None, password=None, **kwargs):
+    def source_session(self, url=None, username=None, password=None, **kwargs):
         """Login and fetch the session object."""
-        self._session = self._ticket_system(url=url, username=username, password=password, **kwargs)
-        logger.debug('Connected to ticket system')
+        self._session = self._source_server(url=url, username=username, password=password, **kwargs)
+        logger.debug('Connected to source server')
         return self._session
 
     @no_type_check
@@ -78,8 +78,8 @@ class TicketSystemBridge(object):
     def __getattr__(self, name):
         """Relay the function matching the keyword or the lookup error."""
         func = None
-        if name in self._ticket_system.__dict__.keys():
-            func = getattr(self._ticket_system, name)
+        if name in self._source_server.__dict__.keys():
+            func = getattr(self._source_server, name)
 
         if func:
             return _string_variables_to_data(func)

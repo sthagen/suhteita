@@ -5,7 +5,7 @@ import json
 import secrets
 from typing import no_type_check
 
-import suhteita.actions as actions
+import suhteita.ticket_system_actions as actions
 from suhteita import (
     APP_ALIAS,
     APP_ENV,
