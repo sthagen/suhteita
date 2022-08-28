@@ -39,7 +39,7 @@ class SourceServerBridge(object):
         """Generate the list of keywords from the underlying provider - required hybrid API method."""
         get_members = self._source_server.__dict__.items
         kws = [name for name, function in get_members() if hasattr(function, '__call__')]
-        kws += ['extract_fields', 'extract_paths', 'extract_project_keys', 'ticket_session']
+        kws += ['extract_fields', 'extract_paths', 'extract_project_keys', 'source_session']
 
         return [kw for kw in kws if not kw.startswith('delete_') and kw not in ('__init__', 'get_issue_remotelinks')]
 
