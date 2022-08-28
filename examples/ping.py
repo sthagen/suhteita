@@ -7,8 +7,8 @@ import sys
 from typing import List, Union, no_type_check
 
 import suhteita
-import suhteita.actions as actions
 import suhteita.cli as cli
+import suhteita.ticket_system_actions as actions
 from suhteita import (
     BASE_URL,
     IDENTITY,
