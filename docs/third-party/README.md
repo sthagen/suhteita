@@ -1,8 +1,8 @@
 # Third Party Dependencies
 
 <!--[[[fill sbom_sha256()]]]-->
-The [SBOM in CycloneDX v1.4 JSON format](https://github.com/sthagen/pilli/blob/default/sbom.json) with SHA256 checksum ([0ca311db ...](https://raw.githubusercontent.com/sthagen/pilli/default/sbom.json.sha256 "sha256:0ca311db09fa9b1134f7f8402e1e669850e642ae938bd5d081cb73d407262bf9")).
-<!--[[[end]]] (checksum: a49b13e122a2b30c801514ef62c0792c)-->
+The [SBOM in CycloneDX v1.4 JSON format](https://github.com/sthagen/pilli/blob/default/sbom.json) with SHA256 checksum ([cbc1040d ...](https://raw.githubusercontent.com/sthagen/pilli/default/sbom.json.sha256 "sha256:cbc1040d80cf5e057b047f1a6771b284a07397bb07a07d0b82b258e04cddb2bc")).
+<!--[[[end]]] (checksum: 35a747374ca36180b6edb8ccd8441828)-->
 ## Licenses 
 
 JSON files with complete license info of: [direct dependencies](direct-dependency-licenses.json) | [all dependencies](all-dependency-licenses.json)
@@ -10,12 +10,13 @@ JSON files with complete license info of: [direct dependencies](direct-dependenc
 ### Direct Dependencies
 
 <!--[[[fill direct_dependencies_table()]]]-->
-| Name                                                                          | Version                                                         | License                 | Author           | Description (from packaging data)                                                        |
-|:------------------------------------------------------------------------------|:----------------------------------------------------------------|:------------------------|:-----------------|:-----------------------------------------------------------------------------------------|
-| [atlassian-python-api](https://github.com/atlassian-api/atlassian-python-api) | [3.27.0](https://pypi.org/project/atlassian-python-api/3.27.0/) | Apache Software License | Matt Harasymczuk | Python Atlassian REST API Wrapper                                                        |
-| [robotframework](https://robotframework.org/)                                 | [5.0.1](https://pypi.org/project/robotframework/5.0.1/)         | Apache Software License | Pekka Klärck     | Generic automation framework for acceptance testing and robotic process automation (RPA) |
-| [wrapt](https://github.com/GrahamDumpleton/wrapt)                             | [1.14.1](https://pypi.org/project/wrapt/1.14.1/)                | BSD License             | Graham Dumpleton | Module for decorators, wrappers and monkey patching.                                     |
-<!--[[[end]]] (checksum: 8f739e576a464fd7b4dcce887eff4066)-->
+| Name                                                                          | Version                                                         | License                 | Author             | Description (from packaging data)                                                        |
+|:------------------------------------------------------------------------------|:----------------------------------------------------------------|:------------------------|:-------------------|:-----------------------------------------------------------------------------------------|
+| [atlassian-python-api](https://github.com/atlassian-api/atlassian-python-api) | [3.27.0](https://pypi.org/project/atlassian-python-api/3.27.0/) | Apache Software License | Matt Harasymczuk   | Python Atlassian REST API Wrapper                                                        |
+| [jmespath](https://github.com/jmespath/jmespath.py)                           | [1.0.1](https://pypi.org/project/jmespath/1.0.1/)               | MIT License             | James Saryerwinnie | JSON Matching Expressions                                                                |
+| [robotframework](https://robotframework.org/)                                 | [5.0.1](https://pypi.org/project/robotframework/5.0.1/)         | Apache Software License | Pekka Klärck       | Generic automation framework for acceptance testing and robotic process automation (RPA) |
+| [wrapt](https://github.com/GrahamDumpleton/wrapt)                             | [1.14.1](https://pypi.org/project/wrapt/1.14.1/)                | BSD License             | Graham Dumpleton   | Module for decorators, wrappers and monkey patching.                                     |
+<!--[[[end]]] (checksum: 32f1fdcb117d9956ce3873a127f3b422)-->
 
 ### Indirect Dependencies
 
@@ -56,6 +57,7 @@ atlassian-python-api==3.27.0
       - idna [required: >=2.5,<4, installed: 3.3]
       - urllib3 [required: >=1.21.1,<1.27, installed: 1.26.11]
   - six [required: Any, installed: 1.16.0]
+jmespath==1.0.1
 robotframework==5.0.1
 ````
-<!--[[[end]]] (checksum: 455bbc1f74ac203859575b5141846234)-->
+<!--[[[end]]] (checksum: c5a6a0a1a9f80c12ac356ddd9f0700c4)-->

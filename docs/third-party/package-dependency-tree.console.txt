@@ -15,4 +15,5 @@ atlassian-python-api==3.27.0
       - idna [required: >=2.5,<4, installed: 3.3]
       - urllib3 [required: >=1.21.1,<1.27, installed: 1.26.11]
   - six [required: Any, installed: 1.16.0]
+jmespath==1.0.1
 robotframework==5.0.1
