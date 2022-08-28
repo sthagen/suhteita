@@ -50,3 +50,15 @@ def test_tsb_extract_project_keys_sad():
 def test_tsl_extract_project_keys():
     tsl = TicketSystemLibrary()
     assert tsl.extract_project_keys([{'key': 'SOMEPROJECT'}, {'yek': -3, 'key': 'X'}]) == ['SOMEPROJECT', 'X']
+
+
+def test_tsl_keyword_sad():
+    tsl = TicketSystemLibrary()
+
+    class Thing:
+        pass
+
+    thing = Thing()
+    message = r'Keyword delete_everything does not exist or has been overridden by this library.'
+    with pytest.raises(AttributeError, match=re.escape(message)):
+        tsl.delete_everything(thing, 'does-not-exist-42', delete_subtasks=False)
