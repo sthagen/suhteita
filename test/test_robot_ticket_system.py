@@ -5,7 +5,10 @@ from robot.api import ContinuableFailure
 
 import suhteita.robot.TicketSystemLibrary
 from suhteita.robot.TicketSystemLibrary import TicketSystemBridge, TicketSystemLibrary
-from suhteita.robot.TicketSystemLibrary.ticket_system_bridge import _string_variables_to_data as private_trampoline
+from suhteita.robot.TicketSystemLibrary.ticket_system_bridge import (
+    _string_to_data as private_parser,
+    _string_variables_to_data as private_trampoline,
+)
 
 
 class Arij(dict):
@@ -81,5 +84,9 @@ def test_tsl_keyword():
     assert session
 
 
-def test_private_proxy():
+def test_private_trampoline():
     assert private_trampoline(str, None, [42])(42) == '42'
+
+
+def test_private_parser():
+    assert private_parser('1n-valid-expression') == '1n-valid-expression'
