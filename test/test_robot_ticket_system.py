@@ -84,6 +84,13 @@ def test_tsl_keyword():
     assert session
 
 
+def test_tsl_self_reflection_keyword():
+    suhteita.robot.TicketSystemLibrary.Ticket = Arij
+    tsl = TicketSystemLibrary()
+    names = tsl.__getattr__('user')
+    assert names
+
+
 def test_private_trampoline():
     assert private_trampoline(str, None, [42])(42) == '42'
 
