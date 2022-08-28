@@ -3,7 +3,25 @@ import re
 import pytest
 from robot.api import ContinuableFailure
 
+import suhteita.actions as actions
 from suhteita.robot.TicketSystemLibrary import TicketSystemBridge, TicketSystemLibrary
+
+
+class Arij(dict):
+    def factory(self, url='target_url', username='user', password='password', cloud=False):
+        self['fake'] = 'yes'
+
+    def __init__(self, url='target_url', username='user', password='password', cloud=False):
+        self.factory(url, username, password, cloud)
+
+    def get_server_info(self, foo: bool):
+        return {'everything': 'fine', 'foo': foo}
+
+    def get_all_projects(self, included_archived=None):
+        if included_archived is None:
+            return [{'key': 'this'}, {'key': 'that'}]
+        else:
+            return [{'key': 'this'}, {'key': 'that'}, {'key': 'attic'}]
 
 
 def test_tsb_class():
@@ -62,3 +80,10 @@ def test_tsl_keyword_sad():
     message = r'Keyword delete_everything does not exist or has been overridden by this library.'
     with pytest.raises(AttributeError, match=re.escape(message)):
         tsl.delete_everything(thing, 'does-not-exist-42', delete_subtasks=False)
+
+
+def test_tsl_keyword():
+    actions.Jira = Arij
+    tsl = TicketSystemLibrary()
+    session = tsl.ticket_session()
+    assert session
