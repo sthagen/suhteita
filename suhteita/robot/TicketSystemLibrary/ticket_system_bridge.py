@@ -2,6 +2,7 @@
 import ast
 from typing import List, no_type_check
 
+import jmespath
 import wrapt  # type: ignore
 from robot.api import ContinuableFailure, logger  # type: ignore
 
@@ -38,7 +39,7 @@ class TicketSystemBridge(object):
         """Generate the list of keywords from the underlying provider - required hybrid API method."""
         get_members = self._ticket_system.__dict__.items
         kws = [name for name, function in get_members() if hasattr(function, '__call__')]
-        kws += ['extract_fields', 'ticket_session']
+        kws += ['extract_fields', 'extract_paths', 'extract_project_keys', 'ticket_session']
 
         return [kw for kw in kws if not kw.startswith('delete_') and kw not in ('__init__', 'get_issue_remotelinks')]
 
@@ -52,11 +53,26 @@ class TicketSystemBridge(object):
     @no_type_check
     @staticmethod
     def extract_fields(data, fields):
-        """Extract dictionary fields from data to reduce the clutter in logs."""
+        """Extract dictionary fields from data per key value (field name) to reduce the clutter in logs."""
         try:
             return {field: data[field] for field in fields}
         except KeyError as err:
             raise ContinuableFailure(f'Extraction of fields failed for (field=={err})')
+
+    @no_type_check
+    @staticmethod
+    def extract_paths(data, paths):
+        """Extract dictionary fields from data per paths to values to reduce the clutter in logs."""
+        return {path: jmespath.search(path.lstrip('/').replace('/', '.'), data) for path in paths}
+
+    @no_type_check
+    @staticmethod
+    def extract_project_keys(projects):
+        """Extract dictionary key field values from list of project dicts received per API."""
+        try:
+            return [project['key'] for project in projects]
+        except KeyError as err:
+            raise ContinuableFailure(f'Extraction of key field failed for projects (field=={err})')
 
     @no_type_check
     def __getattr__(self, name):
