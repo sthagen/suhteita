@@ -3,8 +3,9 @@ import re
 import pytest
 from robot.api import ContinuableFailure
 
-import suhteita.actions as actions
+import suhteita.robot.TicketSystemLibrary
 from suhteita.robot.TicketSystemLibrary import TicketSystemBridge, TicketSystemLibrary
+from suhteita.robot.TicketSystemLibrary.ticket_system_bridge import _string_variables_to_data as private_trampoline
 
 
 class Arij(dict):
@@ -13,15 +14,6 @@ class Arij(dict):
 
     def __init__(self, url='target_url', username='user', password='password', cloud=False):
         self.factory(url, username, password, cloud)
-
-    def get_server_info(self, foo: bool):
-        return {'everything': 'fine', 'foo': foo}
-
-    def get_all_projects(self, included_archived=None):
-        if included_archived is None:
-            return [{'key': 'this'}, {'key': 'that'}]
-        else:
-            return [{'key': 'this'}, {'key': 'that'}, {'key': 'attic'}]
 
 
 def test_tsb_class():
@@ -83,7 +75,11 @@ def test_tsl_keyword_sad():
 
 
 def test_tsl_keyword():
-    actions.Jira = Arij
+    suhteita.robot.TicketSystemLibrary.Ticket = Arij
     tsl = TicketSystemLibrary()
     session = tsl.ticket_session()
     assert session
+
+
+def test_private_proxy():
+    assert private_trampoline(str, None, [42])(42) == '42'
