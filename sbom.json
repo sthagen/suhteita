@@ -2,10 +2,10 @@
   "$schema": "http://cyclonedx.org/schema/bom-1.4.schema.json",
   "bomFormat": "CycloneDX",
   "specVersion": "1.4",
-  "serialNumber": "urn:uuid:698d001a-1d31-4328-a98f-a0213193be83",
+  "serialNumber": "urn:uuid:dd4a6bae-1d2e-4a09-82c3-ed4cefe21889",
   "version": 1,
   "metadata": {
-    "timestamp": "2022-08-27T20:58:11.643890+00:00",
+    "timestamp": "2022-08-28T10:43:37.825103+00:00",
     "tools": [
       {
         "vendor": "CycloneDX",
@@ -56,21 +56,28 @@
   "components": [
     {
       "type": "library",
-      "bom-ref": "4d1f2f0e-9d7a-401d-a562-5611d711278c",
+      "bom-ref": "9f832f96-fac6-4870-8154-ef84e8609fde",
       "name": "atlassian-python-api",
       "version": "3.27.0",
       "purl": "pkg:pypi/atlassian-python-api@3.27.0"
     },
     {
       "type": "library",
-      "bom-ref": "ae6572fd-ffe9-4c43-be5c-71d18c025bf1",
+      "bom-ref": "04821ab3-19c5-44ad-b24a-8c450d492f4b",
+      "name": "jmespath",
+      "version": "1.0.1",
+      "purl": "pkg:pypi/jmespath@1.0.1"
+    },
+    {
+      "type": "library",
+      "bom-ref": "dc251dfd-f7ab-4280-b1cf-e6ee9966102b",
       "name": "robotframework",
       "version": "5.0.1",
       "purl": "pkg:pypi/robotframework@5.0.1"
     },
     {
       "type": "library",
-      "bom-ref": "7b1d47d3-30f6-49e8-b7d3-4fa9dccc9cad",
+      "bom-ref": "7c23a4ca-b959-4636-8c9d-79d20ab68913",
       "name": "wrapt",
       "version": "1.14.1",
       "purl": "pkg:pypi/wrapt@1.14.1"
@@ -78,15 +85,19 @@
   ],
   "dependencies": [
     {
-      "ref": "4d1f2f0e-9d7a-401d-a562-5611d711278c",
+      "ref": "9f832f96-fac6-4870-8154-ef84e8609fde",
       "dependsOn": []
     },
     {
-      "ref": "ae6572fd-ffe9-4c43-be5c-71d18c025bf1",
+      "ref": "04821ab3-19c5-44ad-b24a-8c450d492f4b",
       "dependsOn": []
     },
     {
-      "ref": "7b1d47d3-30f6-49e8-b7d3-4fa9dccc9cad",
+      "ref": "dc251dfd-f7ab-4280-b1cf-e6ee9966102b",
+      "dependsOn": []
+    },
+    {
+      "ref": "7c23a4ca-b959-4636-8c9d-79d20ab68913",
       "dependsOn": []
     }
   ]
