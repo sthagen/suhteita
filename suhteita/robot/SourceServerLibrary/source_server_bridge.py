@@ -41,7 +41,9 @@ class SourceServerBridge(object):
         kws = [name for name, function in get_members() if hasattr(function, '__call__')]
         kws += ['extract_fields', 'extract_paths', 'extract_project_keys', 'source_session']
 
-        return list(set([kw for kw in kws if not kw.startswith('delete_') and kw not in ('__init__', 'get_pullrequest')]))
+        return list(
+            set([kw for kw in kws if not kw.startswith('delete_') and kw not in ('__init__', 'get_pullrequest')])
+        )
 
     @no_type_check
     def source_session(self, url=None, username=None, password=None, **kwargs):
