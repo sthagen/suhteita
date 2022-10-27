@@ -45,22 +45,22 @@ STEP_TA_MAP = {
 }
 
 TA_MMAP = {
-    'LOGIN': [1],
-    'SERVER_INFO': [2],
-    'PROJECTS': [3],
-    'CREATE_ISSUE': [4, 6],
-    'ISSUE_EXISTS': [5, 7],
-    'EXECUTE_JQL': [8],
-    'AMEND_ISSUE_DESCRIPTION': [9],
     'ADD_COMMENT': [10, 18, 26, 27],
-    'UPDATE_ISSUE_FIELD': [11, 12],
+    'AMEND_ISSUE_DESCRIPTION': [9],
+    'CREATE_COMPONENT': [23],
     'CREATE_DUPLICATES_ISSUE_LINK': [13],
+    'CREATE_ISSUE': [4, 6],
+    'EXECUTE_JQL': [8],
     'GET_ISSUE_STATUS': [14, 17, 20, 22],
+    'ISSUE_EXISTS': [5, 7],
+    'LOAD_ISSUE': [25],
+    'LOGIN': [1],
+    'PROJECTS': [3],
+    'RELATE_ISSUE_TO_COMPONENT': [24],
+    'SERVER_INFO': [2],
     'SET_ISSUE_STATUS': [15, 16, 21],
     'SET_ORIGINAL_ESTIMATE': [19],
-    'CREATE_COMPONENT': [23],
-    'RELATE_ISSUE_TO_COMPONENT': [24],
-    'LOAD_ISSUE': [25],
+    'UPDATE_ISSUE_FIELD': [11, 12],
 }
 
 STATS = {
@@ -90,6 +90,7 @@ STATS = {
     },
     'stddev': None,
     'variance': None,
+    'N': None,
 }
 ReportDict = dict[int | str, float | int | str | dict[int | str, float | int | str | Any | Any]]
 benchmark: dict[str, int | str | list[int, float, str] | ReportDict] = {
@@ -319,6 +320,7 @@ for target in benchmark['targets']:
         }
         benchmark['targets'][target]['transaction_stats'][label]['stddev'] = stdev(data)
         benchmark['targets'][target]['transaction_stats'][label]['variance'] = variance(data)
+        benchmark['targets'][target]['transaction_stats'][label]['N'] = len(data)
 
 with open(pathlib.Path('out') / 'benchmark.json', 'wt', encoding=ENCODING) as handle:
     json.dump(benchmark, handle, indent=2)
@@ -369,25 +371,17 @@ table_buffer = {
 }
 for target in targets:
     tg = benchmark['targets'][target]
-    tg_start = tg['first_start_ts']
-    table_buffer['body']['From'].append(tg_start)
-    tg_end = tg['last_end_ts']
-    table_buffer['body']['Through'].append(tg_end)
-    tg_probes_count = len(tg['probes'])
-    table_buffer['body']['Probes'].append(tg_probes_count)
-    tg_sequence_count = tg['sequence_count']
-    table_buffer['body']['Runs'].append(tg_sequence_count)
-    tg_sequence_ok_count = tg['sequence_ok_count']
-    table_buffer['body']['Runs OK'].append(tg_sequence_ok_count)
-    tg_total_ta_count = tg['total_ta_count']
-    table_buffer['body']['TAs'].append(tg_total_ta_count)
-    tg_ta_ok_count = tg['ta_ok_count']
-    table_buffer['body']['TAs OK'].append(tg_ta_ok_count)
-    tg_slow_ta_count = tg['slow_ta_count']
-    table_buffer['body']['TAs Slow'].append(tg_slow_ta_count)
+    table_buffer['body']['From'].append(tg['first_start_ts'])
+    table_buffer['body']['Through'].append(tg['last_end_ts'])
+    table_buffer['body']['Probes'].append(len(tg['probes']))
+    table_buffer['body']['Runs'].append(tg['sequence_count'])
+    table_buffer['body']['Runs OK'].append(tg['sequence_ok_count'])
+    table_buffer['body']['TAs'].append(tg['total_ta_count'])
+    table_buffer['body']['TAs OK'].append(tg['ta_ok_count'])
+    table_buffer['body']['TAs Slow'].append(tg['slow_ta_count'])
 
 print(f'| {" | ".join(table_buffer["head"])} |')
-print(f'|:{":|".join("-----" for _ in table_buffer["head"])}:|')
+print(f'|:---|{":|".join("-----" for _ in table_buffer["head"][1:])}:|')
 for row_head, row_data in table_buffer['body'].items():
     print(f'| {row_head} | ', end='')
     print(f'{" | ".join(str(e) for e in row_data)} |')
@@ -422,5 +416,60 @@ for target in targets:
         f'{tg_slow_ta_count} of the {tg_total_ta_count} total transactions were rated as slow'
         f' (taking longer than {benchmark["slow_means_more_than_secs"]} seconds).'
     )
+    print()
+    print('#### Transaction Statistics')
+    print()
+    aspects = [
+        'min',
+        'Q(1%)',
+        'Q(2%)',
+        'Q(5%)',
+        'Q(10%)',
+        'Q(20%)',
+        'Q(25%)',
+        'median',
+        'mean',
+        'stddev',
+        'Q(75%)',
+        'Q(80%)',
+        'Q(90%)',
+        'Q(95%)',
+        'Q(98%)',
+        'Q(99%)',
+        'max',
+        'N',
+    ]
+    ta_stats_table = {
+        'head': ['Transaction \\ Aspect'] + [aspect for aspect in aspects],
+        'body': {label: [] for label in TA_MMAP},
+    }
+    for label in TA_MMAP:
+        ta_stats = benchmark['targets'][target]['transaction_stats'][label]
+        ta_stats_table['body'][label].append(ta_stats['min'])
+        ta_stats_table['body'][label].append(int(round(ta_stats['quantiles']['01%'], 0)))
+        ta_stats_table['body'][label].append(int(round(ta_stats['quantiles']['02%'], 0)))
+        ta_stats_table['body'][label].append(int(round(ta_stats['quantiles']['05%'], 0)))
+        ta_stats_table['body'][label].append(int(round(ta_stats['quantiles']['10%'], 0)))
+        ta_stats_table['body'][label].append(int(round(ta_stats['quantiles']['20%'], 0)))
+        ta_stats_table['body'][label].append(int(round(ta_stats['quantiles']['25%'], 0)))
+        ta_stats_table['body'][label].append(int(round(ta_stats['median_low'], 0)))
+        ta_stats_table['body'][label].append(round(ta_stats['mean'], 1))
+        ta_stats_table['body'][label].append(round(ta_stats['stddev'], 2))
+        ta_stats_table['body'][label].append(int(round(ta_stats['quantiles']['75%'], 0)))
+        ta_stats_table['body'][label].append(int(round(ta_stats['quantiles']['80%'], 0)))
+        ta_stats_table['body'][label].append(int(round(ta_stats['quantiles']['90%'], 0)))
+        ta_stats_table['body'][label].append(int(round(ta_stats['quantiles']['95%'], 0)))
+        ta_stats_table['body'][label].append(int(round(ta_stats['quantiles']['98%'], 0)))
+        ta_stats_table['body'][label].append(int(round(ta_stats['quantiles']['99%'], 0)))
+        ta_stats_table['body'][label].append(ta_stats['max'])
+        ta_stats_table['body'][label].append(ta_stats['N'])
+
+    print(f'| {" | ".join(ta_stats_table["head"])} |')
+    print(f'|:----|{":|".join("-----" for _ in ta_stats_table["head"][1:])}:|')
+    for row_head, row_data in ta_stats_table['body'].items():
+        print(f'| {row_head} | ', end='')
+        print(f'{" | ".join(str(e) for e in row_data)} |')
+    print()
+
 print()
 
