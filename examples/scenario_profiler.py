@@ -6,6 +6,7 @@ import glob
 import json
 import pathlib
 import sys
+from statistics import fmean, geometric_mean, harmonic_mean, median_high, median_low, quantiles, stdev, variance
 from typing import Any
 
 ENCODING = 'utf-8'
@@ -62,6 +63,34 @@ TA_MMAP = {
     'LOAD_ISSUE': [25],
 }
 
+STATS = {
+    'geometric_mean': None,
+    'harmonic_mean': None,
+    'max': None,
+    'median_high': None,
+    'median_low': None,
+    'mean': None,
+    'min': None,
+    'quantiles': {
+        '01%': None,
+        '02%': None,
+        '05%': None,
+        '10%': None,
+        '20%': None,
+        '25%': None,
+        '33%': None,
+        '50%': None,
+        '67%': None,
+        '75%': None,
+        '80%': None,
+        '90%': None,
+        '95%': None,
+        '98%': None,
+        '99%': None,
+    },
+    'stddev': None,
+    'variance': None,
+}
 ReportDict = dict[int | str, float | int | str | dict[int | str, float | int | str | Any | Any]]
 benchmark: dict[str, int | str | list[int, float, str] | ReportDict] = {
     'ts_frame_start': None,
@@ -110,6 +139,8 @@ for path in sorted(glob.glob(sys.argv[1])):
             'probes': [],
             'scenarios': [],
             'flavors': [],
+            'transaction_stats': {ta: copy.deepcopy(STATS) for ta in TA_MMAP},
+            'transaction_samples': {ta: [] for ta in TA_MMAP},
             'first_start_ts': start_ts_str,
             'last_end_ts': end_ts_str,
             'sequence_count': 0,
@@ -164,6 +195,8 @@ for path in sorted(glob.glob(sys.argv[1])):
                 'end_rel': end_rel.total_seconds(),
             }
         )
+        benchmark['targets'][target]['transaction_samples'][label].append(dt_usecs)  # noqa
+
     report['duty_secs'] = duty_secs / 1.e6
     duty_cycle_percent = 100 * report['duty_secs'] / total_secs
     report['duty_cycle_percent'] = duty_cycle_percent
@@ -252,6 +285,41 @@ for path in sorted(glob.glob(sys.argv[1])):
     with open(pathlib.Path(pathlib.Path('out') / report_name), 'wt', encoding=ENCODING) as handle:
         json.dump(report, handle, indent=2)
 
+# benchmark['targets'][target]['transaction_samples'][label]
+for target in benchmark['targets']:
+    tg = benchmark['targets'][target]
+    print(target)
+    for label in tg['transaction_samples']:
+        data = tg['transaction_samples'][label]
+        # print(f'- {label} -> {data}')
+        qs = quantiles(data, n=100, method='inclusive')
+        benchmark['targets'][target]['transaction_stats'][label]['geometric_mean'] = geometric_mean(data)
+        benchmark['targets'][target]['transaction_stats'][label]['harmonic_mean'] = harmonic_mean(data)
+        benchmark['targets'][target]['transaction_stats'][label]['max'] = max(data)
+        benchmark['targets'][target]['transaction_stats'][label]['median_high'] = median_high(data)
+        benchmark['targets'][target]['transaction_stats'][label]['median_low'] = median_low(data)
+        benchmark['targets'][target]['transaction_stats'][label]['mean'] = fmean(data)
+        benchmark['targets'][target]['transaction_stats'][label]['min'] = min(data)
+        benchmark['targets'][target]['transaction_stats'][label]['quantiles'] = {
+            '01%': qs[0],
+            '02%': qs[1],
+            '05%': qs[4],
+            '10%': qs[9],
+            '20%': qs[19],
+            '25%': qs[24],
+            '33%': qs[32],
+            '50%': qs[49],
+            '67%': qs[66],
+            '75%': qs[74],
+            '80%': qs[79],
+            '90%': qs[89],
+            '95%': qs[94],
+            '98%': qs[97],
+            '99%': qs[98],
+        }
+        benchmark['targets'][target]['transaction_stats'][label]['stddev'] = stdev(data)
+        benchmark['targets'][target]['transaction_stats'][label]['variance'] = variance(data)
+
 with open(pathlib.Path('out') / 'benchmark.json', 'wt', encoding=ENCODING) as handle:
     json.dump(benchmark, handle, indent=2)
 
@@ -319,7 +387,7 @@ for target in targets:
     table_buffer['body']['TAs Slow'].append(tg_slow_ta_count)
 
 print(f'| {" | ".join(table_buffer["head"])} |')
-print(f'| {" | ".join("-----" for _ in table_buffer["head"])} |')
+print(f'|:{":|".join("-----" for _ in table_buffer["head"])}:|')
 for row_head, row_data in table_buffer['body'].items():
     print(f'| {row_head} | ', end='')
     print(f'{" | ".join(str(e) for e in row_data)} |')
