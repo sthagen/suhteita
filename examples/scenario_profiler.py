@@ -285,18 +285,57 @@ print(
 )
 print()
 
-print('## Targets')
 targets = sorted(target for target in benchmark['targets'])
+table_buffer = {
+    'head': ['Quantity \\ Target'] + [target for target in targets],
+    'body': {
+        'From': [],
+        'Through': [],
+        'Probes': [],
+        'Runs': [],
+        'Runs OK': [],
+        'TAs': [],
+        'TAs OK': [],
+        'TAs Slow': [],
+    }
+}
+for target in targets:
+    tg = benchmark['targets'][target]
+    tg_start = tg['first_start_ts']
+    table_buffer['body']['From'].append(tg_start)
+    tg_end = tg['last_end_ts']
+    table_buffer['body']['Through'].append(tg_end)
+    tg_probes_count = len(tg['probes'])
+    table_buffer['body']['Probes'].append(tg_probes_count)
+    tg_sequence_count = tg['sequence_count']
+    table_buffer['body']['Runs'].append(tg_sequence_count)
+    tg_sequence_ok_count = tg['sequence_ok_count']
+    table_buffer['body']['Runs OK'].append(tg_sequence_ok_count)
+    tg_total_ta_count = tg['total_ta_count']
+    table_buffer['body']['TAs'].append(tg_total_ta_count)
+    tg_ta_ok_count = tg['ta_ok_count']
+    table_buffer['body']['TAs OK'].append(tg_ta_ok_count)
+    tg_slow_ta_count = tg['slow_ta_count']
+    table_buffer['body']['TAs Slow'].append(tg_slow_ta_count)
+
+print(f'| {" | ".join(table_buffer["head"])} |')
+print(f'| {" | ".join("-----" for _ in table_buffer["head"])} |')
+for row_head, row_data in table_buffer['body'].items():
+    print(f'| {row_head} | ', end='')
+    print(f'{" | ".join(str(e) for e in row_data)} |')
+print()
+
+print('## Targets')
 for target in targets:
     tg = benchmark['targets'][target]
     tg_start = tg['first_start_ts']
     tg_end = tg['last_end_ts']
-    tg_sequence_count = tg['sequence_count']
-    tg_slow_ta_count = tg['slow_ta_count']
-    tg_total_ta_count = tg['total_ta_count']
-    tg_sequence_ok_count = tg['sequence_ok_count']
-    tg_ta_ok_count = tg['ta_ok_count']
     tg_probes_count = len(tg['probes'])
+    tg_sequence_count = tg['sequence_count']
+    tg_sequence_ok_count = tg['sequence_ok_count']
+    tg_total_ta_count = tg['total_ta_count']
+    tg_ta_ok_count = tg['ta_ok_count']
+    tg_slow_ta_count = tg['slow_ta_count']
     print()
     print(f'### JIRA Instance - {target}')
     print()
@@ -316,3 +355,4 @@ for target in targets:
         f' (taking longer than {benchmark["slow_means_more_than_secs"]} seconds).'
     )
 print()
+
