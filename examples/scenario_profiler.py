@@ -154,7 +154,7 @@ for path in sorted(glob.glob(sys.argv[1])):
             'total_secs': [],
             'duty_secs': [],
             'duty_cycles_percent': [],
-            'slow_transactions': []
+            'slow_transactions': [],
         }
 
     events = profile['events']
@@ -198,7 +198,7 @@ for path in sorted(glob.glob(sys.argv[1])):
         )
         benchmark['targets'][target]['transaction_samples'][label].append(dt_usecs)  # noqa
 
-    report['duty_secs'] = duty_secs / 1.e6
+    report['duty_secs'] = duty_secs / 1.0e6
     duty_cycle_percent = 100 * report['duty_secs'] / total_secs
     report['duty_cycle_percent'] = duty_cycle_percent
 
@@ -267,7 +267,8 @@ for path in sorted(glob.glob(sys.argv[1])):
     print(
         f'{scenario}:{probe} -> {target} => {total_secs :5.2f} secs duration ({duty_cycle_percent :.3f}% duty-cycle)'
         f' started {start_ts_str} and status {"OK" if ok else "FAIL"}',
-        file=sys.stderr)
+        file=sys.stderr,
+    )
     print(file=sys.stderr)
     for event in report['trace']:
         step = event['step']
@@ -279,7 +280,7 @@ for path in sorted(glob.glob(sys.argv[1])):
         alert = '' if duration_usecs < HALF_SECOND_OF_USECS else f' {"*" * (duration_usecs // HALF_SECOND_OF_USECS)}'
         print(
             f'- {step :2d}: {start_rel :6.3f} -> {end_rel :6.3f} [{duration_usecs :8d} usecs] for {label :28}{alert}',
-            file=sys.stderr
+            file=sys.stderr,
         )
 
     report_name = pathlib.Path(path).name
@@ -330,7 +331,7 @@ seq_ok = benchmark['sequence_ok_count']
 total_ta_count = benchmark['total_ta_count']
 tas_ok = benchmark['ta_ok_count']
 slow_ta_count = benchmark['slow_ta_count']
-probes_count = len(benchmark["probes"])
+probes_count = len(benchmark['probes'])
 rep_start = benchmark['ts_frame_start']
 rep_end = benchmark['ts_frame_end']
 rep_start_date = rep_start[:10]
@@ -367,7 +368,7 @@ table_buffer = {
         'TAs': [],
         'TAs OK': [],
         'TAs Slow': [],
-    }
+    },
 }
 for target in targets:
     tg = benchmark['targets'][target]
@@ -472,4 +473,3 @@ for target in targets:
     print()
 
 print()
-
