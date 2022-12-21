@@ -19,7 +19,7 @@ classifiers = [
 ]
 keywords = ["developer-tools", "validation", "verification"]
 dependencies = [
-    "atlassian-python-api >= 3.31.0",
+    "atlassian-python-api >= 3.32.1",
     "jmespath >= 1.0.1",
     "robotframework >= 6.0.1",
     "wrapt >= 1.14.1",
