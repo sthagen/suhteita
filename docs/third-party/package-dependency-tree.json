@@ -2,8 +2,8 @@
     {
         "key": "atlassian-python-api",
         "package_name": "atlassian-python-api",
-        "installed_version": "3.27.0",
-        "required_version": "3.27.0",
+        "installed_version": "3.32.1",
+        "required_version": "3.32.1",
         "dependencies": [
             {
                 "key": "deprecated",
@@ -23,7 +23,7 @@
             {
                 "key": "oauthlib",
                 "package_name": "oauthlib",
-                "installed_version": "3.2.0",
+                "installed_version": "3.2.2",
                 "required_version": "Any",
                 "dependencies": []
             },
@@ -36,28 +36,28 @@
                     {
                         "key": "certifi",
                         "package_name": "certifi",
-                        "installed_version": "2022.6.15",
+                        "installed_version": "2022.12.7",
                         "required_version": ">=2017.4.17",
                         "dependencies": []
                     },
                     {
                         "key": "charset-normalizer",
                         "package_name": "charset-normalizer",
-                        "installed_version": "2.1.0",
+                        "installed_version": "2.1.1",
                         "required_version": ">=2,<3",
                         "dependencies": []
                     },
                     {
                         "key": "idna",
                         "package_name": "idna",
-                        "installed_version": "3.3",
+                        "installed_version": "3.4",
                         "required_version": ">=2.5,<4",
                         "dependencies": []
                     },
                     {
                         "key": "urllib3",
                         "package_name": "urllib3",
-                        "installed_version": "1.26.11",
+                        "installed_version": "1.26.13",
                         "required_version": ">=1.21.1,<1.27",
                         "dependencies": []
                     }
@@ -72,7 +72,7 @@
                     {
                         "key": "oauthlib",
                         "package_name": "oauthlib",
-                        "installed_version": "3.2.0",
+                        "installed_version": "3.2.2",
                         "required_version": ">=3.0.0",
                         "dependencies": []
                     },
@@ -85,28 +85,28 @@
                             {
                                 "key": "certifi",
                                 "package_name": "certifi",
-                                "installed_version": "2022.6.15",
+                                "installed_version": "2022.12.7",
                                 "required_version": ">=2017.4.17",
                                 "dependencies": []
                             },
                             {
                                 "key": "charset-normalizer",
                                 "package_name": "charset-normalizer",
-                                "installed_version": "2.1.0",
+                                "installed_version": "2.1.1",
                                 "required_version": ">=2,<3",
                                 "dependencies": []
                             },
                             {
                                 "key": "idna",
                                 "package_name": "idna",
-                                "installed_version": "3.3",
+                                "installed_version": "3.4",
                                 "required_version": ">=2.5,<4",
                                 "dependencies": []
                             },
                             {
                                 "key": "urllib3",
                                 "package_name": "urllib3",
-                                "installed_version": "1.26.11",
+                                "installed_version": "1.26.13",
                                 "required_version": ">=1.21.1,<1.27",
                                 "dependencies": []
                             }
@@ -133,8 +133,8 @@
     {
         "key": "robotframework",
         "package_name": "robotframework",
-        "installed_version": "5.0.1",
-        "required_version": "5.0.1",
+        "installed_version": "6.0.1",
+        "required_version": "6.0.1",
         "dependencies": []
     }
 ]
