@@ -1,8 +1,10 @@
 ---
 urls:
+  idna: https://github.com/kjd/idna/blob/master/README.rst
   typing-extensions: https://github.com/python/typing/blob/master/typing_extensions/README.rst
   rtoml: https://github.com/samuelcolvin/rtoml/blob/main/README.md
 authors:
+  idna: 'Kim Davies (kjd)'
   lazr.uri: '"LAZR Developers" team'
   typing-extensions: The Python Typing Team
   msgspec: Jim Crist-Harif
