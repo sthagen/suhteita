@@ -1,8 +1,8 @@
 # Third Party Dependencies
 
 <!--[[[fill sbom_sha256()]]]-->
-The [SBOM in CycloneDX v1.4 JSON format](https://github.com/sthagen/pilli/blob/default/sbom.json) with SHA256 checksum ([c491a498 ...](https://raw.githubusercontent.com/sthagen/pilli/default/sbom.json.sha256 "sha256:c491a498208a1c2e72aa7f67f3be66ba9f0c8bd049e0b7bd951411472425aee7")).
-<!--[[[end]]] (checksum: 84e60a9652b0aabaee05e6ab6c8c345d)-->
+The [SBOM in CycloneDX v1.4 JSON format](https://github.com/sthagen/pilli/blob/default/sbom.json) with SHA256 checksum ([ca0ea73a ...](https://raw.githubusercontent.com/sthagen/pilli/default/sbom.json.sha256 "sha256:ca0ea73ac9b8223d4d720ad0883c1609e5d1d81f573ac41a87a39242854eb814")).
+<!--[[[end]]] (checksum: 2a5b5b8e8df267ce798590cdb386de22)-->
 ## Licenses 
 
 JSON files with complete license info of: [direct dependencies](direct-dependency-licenses.json) | [all dependencies](all-dependency-licenses.json)
@@ -26,13 +26,13 @@ JSON files with complete license info of: [direct dependencies](direct-dependenc
 | [Deprecated](https://github.com/tantale/deprecated)                | [1.2.13](https://pypi.org/project/Deprecated/1.2.13/)       | MIT License                          | Laurent LAPORTE        | Python @deprecated decorator to deprecate old python classes, functions or methods.                     |
 | [certifi](https://github.com/certifi/python-certifi)               | [2022.12.7](https://pypi.org/project/certifi/2022.12.7/)    | Mozilla Public License 2.0 (MPL 2.0) | Kenneth Reitz          | Python package for providing Mozilla's CA Bundle.                                                       |
 | [charset-normalizer](https://github.com/ousret/charset_normalizer) | [2.1.1](https://pypi.org/project/charset-normalizer/2.1.1/) | MIT License                          | Ahmed TAHRI @Ousret    | The Real First Universal Charset Detector. Open, modern and actively maintained alternative to Chardet. |
+| [idna](https://github.com/kjd/idna/blob/master/README.rst)         | [3.4](https://pypi.org/project/idna/3.4/)                   | BSD License                          | Kim Davies (kjd)       | Internationalized Domain Names in Applications (IDNA)                                                   |
 | [oauthlib](https://github.com/oauthlib/oauthlib)                   | [3.2.2](https://pypi.org/project/oauthlib/3.2.2/)           | BSD License                          | The OAuthlib Community | A generic, spec-compliant, thorough implementation of the OAuth request-signing logic                   |
 | [requests-oauthlib](https://github.com/requests/requests-oauthlib) | [1.3.1](https://pypi.org/project/requests-oauthlib/1.3.1/)  | BSD License                          | Kenneth Reitz          | OAuthlib authentication support for Requests.                                                           |
 | [requests](https://requests.readthedocs.io)                        | [2.28.1](https://pypi.org/project/requests/2.28.1/)         | Apache Software License              | Kenneth Reitz          | Python HTTP for Humans.                                                                                 |
 | [six](https://github.com/benjaminp/six)                            | [1.16.0](https://pypi.org/project/six/1.16.0/)              | MIT License                          | Benjamin Peterson      | Python 2 and 3 compatibility utilities                                                                  |
 | [urllib3](https://urllib3.readthedocs.io/)                         | [1.26.13](https://pypi.org/project/urllib3/1.26.13/)        | MIT License                          | Andrey Petrov          | HTTP library with thread-safe connection pooling, file post, and more.                                  |
-| idna                                                               | [3.4](https://pypi.org/project/idna/3.4/)                   | BSD License                          | UNKNOWN                | Internationalized Domain Names in Applications (IDNA)                                                   |
-<!--[[[end]]] (checksum: 7cf8d38f8ccdbc55bc4bcb48acbd6184)-->
+<!--[[[end]]] (checksum: f4da81afee710e1802c53b7c80b42602)-->
 
 ## Dependency Tree(s)
 
