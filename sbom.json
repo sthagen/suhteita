@@ -2,20 +2,20 @@
   "$schema": "http://cyclonedx.org/schema/bom-1.4.schema.json",
   "bomFormat": "CycloneDX",
   "specVersion": "1.4",
-  "serialNumber": "urn:uuid:b80ee57c-f474-43cb-b74e-62ca022e4a3a",
+  "serialNumber": "urn:uuid:860a3a3b-588a-4439-bf18-cce55f803540",
   "version": 1,
   "metadata": {
-    "timestamp": "2022-08-28T20:37:07.339251+00:00",
+    "timestamp": "2022-12-24T13:30:31.056873+00:00",
     "tools": [
       {
         "vendor": "CycloneDX",
         "name": "cyclonedx-bom",
-        "version": "3.5.0"
+        "version": "3.10.1"
       },
       {
         "vendor": "CycloneDX",
         "name": "cyclonedx-python-lib",
-        "version": "2.7.1",
+        "version": "3.1.1",
         "externalReferences": [
           {
             "url": "https://github.com/CycloneDX/cyclonedx-python-lib/actions",
@@ -56,28 +56,28 @@
   "components": [
     {
       "type": "library",
-      "bom-ref": "2a567cd9-8c34-4a02-afb4-92d4266baee4",
+      "bom-ref": "9a323bcc-ba2c-4538-8aaa-f701703c4652",
       "name": "atlassian-python-api",
-      "version": "3.27.0",
-      "purl": "pkg:pypi/atlassian-python-api@3.27.0"
+      "version": "3.32.1",
+      "purl": "pkg:pypi/atlassian-python-api@3.32.1"
     },
     {
       "type": "library",
-      "bom-ref": "3621afa4-37c6-43d9-8fbb-cdd0145efa31",
+      "bom-ref": "4f0f545d-13e8-4bb6-bf96-308696907e05",
       "name": "jmespath",
       "version": "1.0.1",
       "purl": "pkg:pypi/jmespath@1.0.1"
     },
     {
       "type": "library",
-      "bom-ref": "f20a9916-2b5c-425a-9a48-e475c2cffea3",
+      "bom-ref": "f8fb1224-dd40-426e-8a58-469b3b508426",
       "name": "robotframework",
-      "version": "5.0.1",
-      "purl": "pkg:pypi/robotframework@5.0.1"
+      "version": "6.0.1",
+      "purl": "pkg:pypi/robotframework@6.0.1"
     },
     {
       "type": "library",
-      "bom-ref": "27d6f28b-991f-49ff-8416-eeaaf465c51c",
+      "bom-ref": "879b3a63-9d51-4887-8757-ff2da0d5e374",
       "name": "wrapt",
       "version": "1.14.1",
       "purl": "pkg:pypi/wrapt@1.14.1"
@@ -85,19 +85,19 @@
   ],
   "dependencies": [
     {
-      "ref": "2a567cd9-8c34-4a02-afb4-92d4266baee4",
+      "ref": "9a323bcc-ba2c-4538-8aaa-f701703c4652",
       "dependsOn": []
     },
     {
-      "ref": "3621afa4-37c6-43d9-8fbb-cdd0145efa31",
+      "ref": "4f0f545d-13e8-4bb6-bf96-308696907e05",
       "dependsOn": []
     },
     {
-      "ref": "f20a9916-2b5c-425a-9a48-e475c2cffea3",
+      "ref": "f8fb1224-dd40-426e-8a58-469b3b508426",
       "dependsOn": []
     },
     {
-      "ref": "27d6f28b-991f-49ff-8416-eeaaf465c51c",
+      "ref": "879b3a63-9d51-4887-8757-ff2da0d5e374",
       "dependsOn": []
     }
   ]
