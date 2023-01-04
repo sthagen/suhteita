@@ -2,10 +2,10 @@
   "$schema": "http://cyclonedx.org/schema/bom-1.4.schema.json",
   "bomFormat": "CycloneDX",
   "specVersion": "1.4",
-  "serialNumber": "urn:uuid:aa569630-cf46-4e03-b14b-b9c5b72c45ee",
+  "serialNumber": "urn:uuid:a9e2c554-6dcd-43df-a8cf-2c9b041cae09",
   "version": 1,
   "metadata": {
-    "timestamp": "2022-12-28T16:42:22.167031+00:00",
+    "timestamp": "2023-01-04T22:12:42.782918+00:00",
     "tools": [
       {
         "vendor": "CycloneDX",
@@ -56,28 +56,28 @@
   "components": [
     {
       "type": "library",
-      "bom-ref": "a56a60d9-bb92-40c7-9638-8c29419aed6e",
+      "bom-ref": "45ee2b6e-393e-4558-98ef-6315ed593738",
       "name": "atlassian-python-api",
-      "version": "3.32.1",
-      "purl": "pkg:pypi/atlassian-python-api@3.32.1"
+      "version": "3.32.2",
+      "purl": "pkg:pypi/atlassian-python-api@3.32.2"
     },
     {
       "type": "library",
-      "bom-ref": "b4f47ed4-10f0-4811-b913-32907a7132e0",
+      "bom-ref": "e2f5b384-440d-4737-9338-3238d335d17e",
       "name": "jmespath",
       "version": "1.0.1",
       "purl": "pkg:pypi/jmespath@1.0.1"
     },
     {
       "type": "library",
-      "bom-ref": "b00ff0fe-e95c-4c33-a14e-23cfbee0e6c0",
+      "bom-ref": "fdba8afc-a133-4217-bf0e-37465f819d0f",
       "name": "robotframework",
       "version": "6.0.1",
       "purl": "pkg:pypi/robotframework@6.0.1"
     },
     {
       "type": "library",
-      "bom-ref": "ffd279c5-def3-46cd-ad3d-dfe9ceb8972c",
+      "bom-ref": "840138d1-83f9-41fe-b13c-2258f8dcede0",
       "name": "wrapt",
       "version": "1.14.1",
       "purl": "pkg:pypi/wrapt@1.14.1"
@@ -85,19 +85,19 @@
   ],
   "dependencies": [
     {
-      "ref": "a56a60d9-bb92-40c7-9638-8c29419aed6e",
+      "ref": "45ee2b6e-393e-4558-98ef-6315ed593738",
       "dependsOn": []
     },
     {
-      "ref": "b4f47ed4-10f0-4811-b913-32907a7132e0",
+      "ref": "e2f5b384-440d-4737-9338-3238d335d17e",
       "dependsOn": []
     },
     {
-      "ref": "b00ff0fe-e95c-4c33-a14e-23cfbee0e6c0",
+      "ref": "fdba8afc-a133-4217-bf0e-37465f819d0f",
       "dependsOn": []
     },
     {
-      "ref": "ffd279c5-def3-46cd-ad3d-dfe9ceb8972c",
+      "ref": "840138d1-83f9-41fe-b13c-2258f8dcede0",
       "dependsOn": []
     }
   ]
