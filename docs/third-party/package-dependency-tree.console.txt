@@ -1,4 +1,4 @@
-atlassian-python-api==3.32.1
+atlassian-python-api==3.32.2
   - deprecated [required: Any, installed: 1.2.13]
     - wrapt [required: >=1.10,<2, installed: 1.14.1]
   - oauthlib [required: Any, installed: 3.2.2]
