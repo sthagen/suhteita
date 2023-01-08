@@ -23,7 +23,9 @@ Feature requests and bug reports are best entered in the [todos of suhteita](htt
 ## Primary Source repository
 
 The main source of `suhteita` is on a mountain in central Switzerland.
-We use distributed version control (git). No central hub. Each clone can become a new source for the benefit of all.
+We use distributed version control (git).
+There is no central hub.
+Every clone can become a new source for the benefit of all.
 The preferred public clones of `suhteita` are:
 
 * [on codeberg](https://codeberg.org/sthagen/suhteita) - a democratic community-driven, non-profit software development platform operated by Codeberg e.V.
