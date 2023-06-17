@@ -19,9 +19,9 @@ classifiers = [
 ]
 keywords = ["developer-tools", "validation", "verification"]
 dependencies = [
-    "atlassian-python-api >= 3.38.0",
+    "atlassian-python-api >= 3.39.0",
     "jmespath >= 1.0.1",
-    "robotframework >= 6.0.2",
+    "robotframework >= 6.1",
     "wrapt >= 1.15.0",
     'tomli; python_version < "3.11"',
 ]
