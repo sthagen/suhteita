@@ -2,19 +2,19 @@
     {
         "key": "atlassian-python-api",
         "package_name": "atlassian-python-api",
-        "installed_version": "3.32.2",
-        "required_version": "3.32.2",
+        "installed_version": "3.39.0",
+        "required_version": "3.39.0",
         "dependencies": [
             {
                 "key": "deprecated",
-                "package_name": "deprecated",
+                "package_name": "Deprecated",
                 "installed_version": "1.2.13",
                 "required_version": "Any",
                 "dependencies": [
                     {
                         "key": "wrapt",
                         "package_name": "wrapt",
-                        "installed_version": "1.14.1",
+                        "installed_version": "1.15.0",
                         "required_version": ">=1.10,<2",
                         "dependencies": []
                     }
@@ -133,8 +133,8 @@
     {
         "key": "robotframework",
         "package_name": "robotframework",
-        "installed_version": "6.0.1",
-        "required_version": "6.0.1",
+        "installed_version": "6.1",
+        "required_version": "6.1",
         "dependencies": []
     }
 ]
