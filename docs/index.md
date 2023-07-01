@@ -11,6 +11,7 @@ Third party dependencies are documented in the folder [third-party](third-party/
 [![wheel](https://img.shields.io/pypi/wheel/suhteita.svg?style=flat)](https://pypi.python.org/pypi/suhteita/)
 [![supported-versions](https://img.shields.io/pypi/pyversions/suhteita.svg?style=flat)](https://pypi.python.org/pypi/suhteita/)
 [![supported-implementations](https://img.shields.io/pypi/implementation/suhteita.svg?style=flat)](https://pypi.python.org/pypi/suhteita/)
+[![maintenance-status](https://img.shields.io/github/commit-activity/y/sthagen/suhteita.svg?style=flat)](https://git.sr.ht/~sthagen/suhteita/log)
 
 ## Bug Tracker
 
