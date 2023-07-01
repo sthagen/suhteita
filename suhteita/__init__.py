@@ -1,3 +1,4 @@
+"""Relationships (Finnish: suhteita) maintained across distances as load test core."""
 import datetime as dti
 import logging
 import os
@@ -14,10 +15,16 @@ __version_info__ = tuple(
     e if '-' not in e else e.split('-')[0] for part in __version__.split('+') for e in part.split('.') if e != 'parent'
 )
 
-APP_ALIAS = 'suhteita'
+APP_ALIAS = str(pathlib.Path(__file__).parent.name)
 APP_ENV = APP_ALIAS.upper()
-DEBUG = os.getenv(f'{APP_ENV}_DEBUG', '')
+APP_NAME = locals()['__doc__']
+DEBUG = bool(os.getenv(f'{APP_ENV}_DEBUG', ''))
+VERBOSE = bool(os.getenv(f'{APP_ENV}_VERBOSE', ''))
+QUIET = False
+STRICT = bool(os.getenv(f'{APP_ENV}_STRICT', ''))
 ENCODING = 'utf-8'
+ENCODING_ERRORS_POLICY = 'ignore'
+DEFAULT_CONFIG_NAME = f'.{APP_ALIAS}.json'
 
 NODE_INDICATOR = str(uuid.uuid3(uuid.NAMESPACE_DNS, platform.node()))
 STORE = os.getenv(f'{APP_ENV}_STORE', '')  # default 'store' per argparse
