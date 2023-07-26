@@ -1,0 +1,14 @@
+name: suhteita
+description: Relationships (Finnish: suhteita) maintained across distances as load test core.
+license_spdx: MIT
+version: 2023.6.18
+spec_version: 1.0
+home_url: https://git.sr.ht/~sthagen/suhteita
+news_url: https://libraries.io/pypi/suhteita/versions.atom
+date: 2023-06-18
+about_resource: ./
+libraries_io_url: https://libraries.io/pypi/suhteita?number=2023.6.18
+vcs_tool: git
+vcs_repository: https://git.sr.ht/~sthagen/suhteita
+vcs_branch: default
+
