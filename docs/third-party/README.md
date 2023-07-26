@@ -1,8 +1,8 @@
 # Third Party Dependencies
 
 <!--[[[fill sbom_sha256()]]]-->
-The [SBOM in CycloneDX v1.4 JSON format](https://git.sr.ht/~sthagen/suhteita/blob/default/sbom/cdx.json) with SHA256 checksum ([7f4891db ...](https://git.sr.ht/~sthagen/suhteita/blob/default/sbom/cdx.json.sha256 "sha256:7f4891db487043bb398cde704c2267fe6631d07a46d62e1d678b5441b874ee83")).
-<!--[[[end]]] (checksum: 4c4741c0135c9c8d5d105cc4b7f6199c)-->
+The [SBOM in CycloneDX v1.4 JSON format](https://git.sr.ht/~sthagen/suhteita/blob/default/sbom/cdx.json) with SHA256 checksum ([622fe71b ...](https://git.sr.ht/~sthagen/suhteita/blob/default/sbom/cdx.json.sha256 "sha256:622fe71b5e5e15d1d41835dd85cc67e87896e276740ec547f605cab8e115c1d0")).
+<!--[[[end]]] (checksum: f8b4031d41e994afde72e5b470492ab0)-->
 ## Licenses 
 
 JSON files with complete license info of: [direct dependencies](direct-dependency-licenses.json) | [all dependencies](all-dependency-licenses.json)
@@ -29,10 +29,10 @@ JSON files with complete license info of: [direct dependencies](direct-dependenc
 | [idna](https://github.com/kjd/idna)                                | [3.4](https://pypi.org/project/idna/3.4/)                   | BSD License                          | Kim Davies <kim@cynosure.com.au> | Internationalized Domain Names in Applications (IDNA)                                                   |
 | [oauthlib](https://github.com/oauthlib/oauthlib)                   | [3.2.2](https://pypi.org/project/oauthlib/3.2.2/)           | BSD License                          | The OAuthlib Community           | A generic, spec-compliant, thorough implementation of the OAuth request-signing logic                   |
 | [requests-oauthlib](https://github.com/requests/requests-oauthlib) | [1.3.1](https://pypi.org/project/requests-oauthlib/1.3.1/)  | BSD License                          | Kenneth Reitz                    | OAuthlib authentication support for Requests.                                                           |
-| [requests](https://requests.readthedocs.io)                        | [2.28.1](https://pypi.org/project/requests/2.28.1/)         | Apache Software License              | Kenneth Reitz                    | Python HTTP for Humans.                                                                                 |
+| [requests](https://requests.readthedocs.io)                        | [2.31.0](https://pypi.org/project/requests/2.31.0/)         | Apache Software License              | Kenneth Reitz                    | Python HTTP for Humans.                                                                                 |
 | [six](https://github.com/benjaminp/six)                            | [1.16.0](https://pypi.org/project/six/1.16.0/)              | MIT License                          | Benjamin Peterson                | Python 2 and 3 compatibility utilities                                                                  |
 | [urllib3](https://urllib3.readthedocs.io/)                         | [1.26.13](https://pypi.org/project/urllib3/1.26.13/)        | MIT License                          | Andrey Petrov                    | HTTP library with thread-safe connection pooling, file post, and more.                                  |
-<!--[[[end]]] (checksum: 19e84e3ddc726ae804bbe4622f1221c9)-->
+<!--[[[end]]] (checksum: d0ea7502faf7fad72a308204eb4eb78e)-->
 
 ## Dependency Tree(s)
 
@@ -52,20 +52,20 @@ atlassian-python-api==3.39.0
 ├── Deprecated [required: Any, installed: 1.2.13]
 │   └── wrapt [required: >=1.10,<2, installed: 1.15.0]
 ├── oauthlib [required: Any, installed: 3.2.2]
-├── requests [required: Any, installed: 2.28.1]
+├── requests [required: Any, installed: 2.31.0]
 │   ├── certifi [required: >=2017.4.17, installed: 2022.12.7]
-│   ├── charset-normalizer [required: >=2,<3, installed: 2.1.1]
+│   ├── charset-normalizer [required: >=2,<4, installed: 2.1.1]
 │   ├── idna [required: >=2.5,<4, installed: 3.4]
-│   └── urllib3 [required: >=1.21.1,<1.27, installed: 1.26.13]
+│   └── urllib3 [required: >=1.21.1,<3, installed: 1.26.13]
 ├── requests-oauthlib [required: Any, installed: 1.3.1]
 │   ├── oauthlib [required: >=3.0.0, installed: 3.2.2]
-│   └── requests [required: >=2.0.0, installed: 2.28.1]
+│   └── requests [required: >=2.0.0, installed: 2.31.0]
 │       ├── certifi [required: >=2017.4.17, installed: 2022.12.7]
-│       ├── charset-normalizer [required: >=2,<3, installed: 2.1.1]
+│       ├── charset-normalizer [required: >=2,<4, installed: 2.1.1]
 │       ├── idna [required: >=2.5,<4, installed: 3.4]
-│       └── urllib3 [required: >=1.21.1,<1.27, installed: 1.26.13]
+│       └── urllib3 [required: >=1.21.1,<3, installed: 1.26.13]
 └── six [required: Any, installed: 1.16.0]
 jmespath==1.0.1
 robotframework==6.1
 ````
-<!--[[[end]]] (checksum: d540d7a6aa7e01ac63c5a52d57c7aaf6)-->
+<!--[[[end]]] (checksum: 8bfedfdf7d2589a69e13cc4a541ce09e)-->
