@@ -1,8 +1,8 @@
 # Third Party Dependencies
 
 <!--[[[fill sbom_sha256()]]]-->
-The [SBOM in CycloneDX v1.4 JSON format](https://git.sr.ht/~sthagen/suhteita/blob/default/sbom/cdx.json) with SHA256 checksum ([122f9162 ...](https://git.sr.ht/~sthagen/suhteita/blob/default/sbom/cdx.json.sha256 "sha256:122f9162ef8070a8e22e3f30abf74636950e44b71fe0978a7191564c43e5e3b6")).
-<!--[[[end]]] (checksum: 576089b9c4fd07204ff7458192cc5830)-->
+The [SBOM in CycloneDX v1.4 JSON format](https://git.sr.ht/~sthagen/suhteita/blob/default/sbom/cdx.json) with SHA256 checksum ([f8b0621e ...](https://git.sr.ht/~sthagen/suhteita/blob/default/sbom/cdx.json.sha256 "sha256:f8b0621e4335d527599541aa0dedfb9baa37bfbbf1a08a30e9f68b1c72b9f0d6")).
+<!--[[[end]]] (checksum: 5b016da7652ce29934819eeff490a7ef)-->
 ## Licenses 
 
 JSON files with complete license info of: [direct dependencies](direct-dependency-licenses.json) | [all dependencies](all-dependency-licenses.json)
@@ -12,11 +12,11 @@ JSON files with complete license info of: [direct dependencies](direct-dependenc
 <!--[[[fill direct_dependencies_table()]]]-->
 | Name                                                                          | Version                                                         | License                 | Author             | Description (from packaging data)                                                        |
 |:------------------------------------------------------------------------------|:----------------------------------------------------------------|:------------------------|:-------------------|:-----------------------------------------------------------------------------------------|
-| [atlassian-python-api](https://github.com/atlassian-api/atlassian-python-api) | [3.40.1](https://pypi.org/project/atlassian-python-api/3.40.1/) | Apache Software License | Matt Harasymczuk   | Python Atlassian REST API Wrapper                                                        |
+| [atlassian-python-api](https://github.com/atlassian-api/atlassian-python-api) | [3.41.0](https://pypi.org/project/atlassian-python-api/3.41.0/) | Apache Software License | Matt Harasymczuk   | Python Atlassian REST API Wrapper                                                        |
 | [jmespath](https://github.com/jmespath/jmespath.py)                           | [1.0.1](https://pypi.org/project/jmespath/1.0.1/)               | MIT License             | James Saryerwinnie | JSON Matching Expressions                                                                |
 | [robotframework](https://robotframework.org)                                  | [6.1.1](https://pypi.org/project/robotframework/6.1.1/)         | Apache Software License | Pekka Klärck       | Generic automation framework for acceptance testing and robotic process automation (RPA) |
 | [wrapt](https://github.com/GrahamDumpleton/wrapt)                             | [1.15.0](https://pypi.org/project/wrapt/1.15.0/)                | BSD License             | Graham Dumpleton   | Module for decorators, wrappers and monkey patching.                                     |
-<!--[[[end]]] (checksum: 4800b329905c200d8aad2e27392fd037)-->
+<!--[[[end]]] (checksum: e2242105b0cb0e58f424faf9dbf9a85c)-->
 
 ### Indirect Dependencies
 
@@ -48,7 +48,7 @@ Base graphviz file in dot format: [Trees of the direct dependencies](package-dep
 
 <!--[[[fill dependency_tree_console_text()]]]-->
 ````console
-atlassian-python-api==3.40.1
+atlassian-python-api==3.41.0
 ├── Deprecated [required: Any, installed: 1.2.14]
 │   └── wrapt [required: >=1.10,<2, installed: 1.15.0]
 ├── oauthlib [required: Any, installed: 3.2.2]
@@ -68,4 +68,4 @@ atlassian-python-api==3.40.1
 jmespath==1.0.1
 robotframework==6.1.1
 ````
-<!--[[[end]]] (checksum: c088510a6857ffd59e674638b48be086)-->
+<!--[[[end]]] (checksum: 65541e397ed54998ad9d97877dac8046)-->
