@@ -7,7 +7,7 @@ Relationships (Finnish: suhteita) maintained across distances as load test core.
 Third party dependencies are documented in the folder [third-party](docs/third-party/README.md).
 
 [![version](https://img.shields.io/pypi/v/suhteita.svg?style=flat)](https://pypi.python.org/pypi/suhteita/)
-[![downloads](https://pepy.tech/badge/suhteita/month)](https://pepy.tech/project/suhteita)
+[![downloads](https://static.pepy.tech/badge/suhteita/month)](https://pepy.tech/project/suhteita)
 [![wheel](https://img.shields.io/pypi/wheel/suhteita.svg?style=flat)](https://pypi.python.org/pypi/suhteita/)
 [![supported-versions](https://img.shields.io/pypi/pyversions/suhteita.svg?style=flat)](https://pypi.python.org/pypi/suhteita/)
 [![supported-implementations](https://img.shields.io/pypi/implementation/suhteita.svg?style=flat)](https://pypi.python.org/pypi/suhteita/)
