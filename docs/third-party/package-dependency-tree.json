@@ -2,8 +2,8 @@
     {
         "key": "atlassian-python-api",
         "package_name": "atlassian-python-api",
-        "installed_version": "3.41.0",
-        "required_version": "3.41.0",
+        "installed_version": "3.41.1",
+        "required_version": "3.41.1",
         "dependencies": [
             {
                 "key": "deprecated",
