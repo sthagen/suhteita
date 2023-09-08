@@ -4,7 +4,7 @@ digraph {
 	"atlassian-python-api" -> oauthlib [label=any]
 	"atlassian-python-api" -> requests [label=any]
 	"atlassian-python-api" -> six [label=any]
-	"atlassian-python-api" [label="atlassian-python-api\n3.41.1"]
+	"atlassian-python-api" [label="atlassian-python-api\n3.41.2"]
 	"charset-normalizer" [label="charset-normalizer\n3.2.0"]
 	"requests-oauthlib" -> oauthlib [label=">=3.0.0"]
 	"requests-oauthlib" -> requests [label=">=2.0.0"]
