@@ -2,7 +2,7 @@
 
 Relationships (Finnish: suhteita) maintained across distances as load test core.
 
-[License: MIT](https://git.sr.ht/~sthagen/suhteita/tree/default/item/LICENSE)
+[License: MIT](https://git.sr.ht/~sthagen/suhteita/tree/default/item/LICENSE) | 
 [Country of origin: Switzerland](https://git.sr.ht/~sthagen/suhteita/tree/default/item/COUNTRY-OF-ORIGIN)
 
 Third party dependencies are documented in the folder [third-party](docs/third-party/README.md).
