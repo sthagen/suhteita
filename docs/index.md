@@ -7,7 +7,7 @@ Relationships (Finnish: suhteita) maintained across distances as load test core.
 [![Export Classification Control Number (ECCN)](badges/export-control-classification-number_eccn-ear99-neutral.svg)](https://git.sr.ht/~sthagen/suhteita/tree/default/item/EXPORT-CONTROL-CLASSIFICATION-NUMBER)
 [![Configuration](badges/configuration-sbom.svg)](third-party/index.html)
 
-[![Version](https://img.shields.io/pypi/v/suhteita.svg?style=flat)](https://pypi.python.org/pypi/suhteita/)
+[![Version](badges/latest-release.svg)](https://pypi.python.org/pypi/suhteita/)
 [![Downloads](badges/downloads-per-month.svg)](https://pepy.tech/project/suhteita)
 [![Supported Versions](https://img.shields.io/pypi/pyversions/suhteita.svg?style=flat)](https://pypi.python.org/pypi/suhteita/)
 [![Maintenance Status](badges/commits-per-year.svg)](https://git.sr.ht/~sthagen/suhteita/log)
