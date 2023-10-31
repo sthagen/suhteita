@@ -9,7 +9,7 @@ Relationships (Finnish: suhteita) maintained across distances as load test core.
 
 [![Version](badges/latest-release.svg)](https://pypi.python.org/pypi/suhteita/)
 [![Downloads](badges/downloads-per-month.svg)](https://pepy.tech/project/suhteita)
-[![Supported Versions](https://img.shields.io/pypi/pyversions/suhteita.svg?style=flat)](https://pypi.python.org/pypi/suhteita/)
+[![Python](badges/python-versions.svg)](https://pypi.python.org/pypi/suhteita/)
 [![Maintenance Status](badges/commits-per-year.svg)](https://git.sr.ht/~sthagen/suhteita/log)
 
 ## Bug Tracker
