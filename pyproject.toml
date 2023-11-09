@@ -23,7 +23,7 @@ dependencies = [
     "atlassian-python-api >= 3.41.3",
     "jmespath >= 1.0.1",
     "robotframework >= 6.1.1",
-    "wrapt >= 1.15.0",
+    "wrapt >= 1.16.0",
     'tomli; python_version < "3.11"',
 ]
 requires-python = ">=3.9"
