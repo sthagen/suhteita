@@ -90,7 +90,7 @@
 <title>wrapt</title>
 <ellipse fill="none" stroke="black" cx="54.8" cy="-139.47" rx="35.71" ry="28.99"/>
 <text text-anchor="middle" x="54.8" y="-142.67" font-family="Times,serif" font-size="14.00">wrapt</text>
-<text text-anchor="middle" x="54.8" y="-126.17" font-family="Times,serif" font-size="14.00">1.15.0</text>
+<text text-anchor="middle" x="54.8" y="-126.17" font-family="Times,serif" font-size="14.00">1.16.0</text>
 </g>
 <!-- deprecated&#45;&gt;wrapt -->
 <g id="edge12" class="edge">

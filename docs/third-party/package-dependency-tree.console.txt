@@ -1,6 +1,6 @@
 atlassian-python-api==3.41.3
 ├── Deprecated [required: Any, installed: 1.2.14]
-│   └── wrapt [required: >=1.10,<2, installed: 1.15.0]
+│   └── wrapt [required: >=1.10,<2, installed: 1.16.0]
 ├── oauthlib [required: Any, installed: 3.2.2]
 ├── requests [required: Any, installed: 2.31.0]
 │   ├── certifi [required: >=2017.4.17, installed: 2023.7.22]

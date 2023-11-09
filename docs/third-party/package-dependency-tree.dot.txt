@@ -23,5 +23,5 @@ digraph {
 	robotframework [label="robotframework\n6.1.1"]
 	six [label="six\n1.16.0"]
 	urllib3 [label="urllib3\n2.0.4"]
-	wrapt [label="wrapt\n1.15.0"]
+	wrapt [label="wrapt\n1.16.0"]
 }

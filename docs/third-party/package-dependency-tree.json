@@ -14,7 +14,7 @@
                     {
                         "key": "wrapt",
                         "package_name": "wrapt",
-                        "installed_version": "1.15.0",
+                        "installed_version": "1.16.0",
                         "required_version": ">=1.10,<2",
                         "dependencies": []
                     }
