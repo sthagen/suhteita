@@ -1,7 +1,7 @@
 {
   "suhteita": {
-    "version": "7.3.2",
-    "timestamp": "2023-12-02T15:34:57.076178",
+    "coverage_tool_version": "7.3.2",
+    "timestamp": "2023-12-02 16:31:25 +00:00",
     "branch_coverage": true,
     "show_contexts": true,
     "covered_lines": 355,
@@ -13,6 +13,30 @@
     "num_branches": 72,
     "num_partial_branches": 2,
     "covered_branches": 40,
-    "missing_branches": 32
+    "missing_branches": 32,
+    "node_id": "c79891e5-aabf-3a83-95b9-588edcd8327f",
+    "nfiles": 11,
+    "files": [
+      "suhteita/__init__.py",
+      "suhteita/cli.py",
+      "suhteita/robot/SourceServerLibrary/__init__.py",
+      "suhteita/robot/SourceServerLibrary/source_server_bridge.py",
+      "suhteita/robot/TicketSystemLibrary/__init__.py",
+      "suhteita/robot/TicketSystemLibrary/ticket_system_bridge.py",
+      "suhteita/robot/__init__.py",
+      "suhteita/source_server_actions.py",
+      "suhteita/store.py",
+      "suhteita/suhteita.py",
+      "suhteita/ticket_system_actions.py"
+    ],
+    "blake3": "7ed8c94497cbc79f8f78ead9e5c287767e81475d2fd4826a262ad2a292090669",
+    "blake2": "5608bae224f87987b8e6896848b7efa0adbed170f84a16526d59e27a53d9f66c61b07e9bf3fc2d509f58570c44d269548988f495be0ced0cc10dceb1d882948f",
+    "sha512": "126556ee0b741cdd66e74161f28f746e553ad6f705201323d48abc14a3d3bff97200478d9105f8316874f2dec51f75df629aff9daf6db3bc248ca0e19331d7c1",
+    "sha384": "47c694d0be6672cf13632ad5b8341684cea3fb1d60cf53bf1e7ea65cc099360a7f51d4445605ba60f4997e150475bb84",
+    "sha256": "a58a964c9c023074aa353dd743f88a63de215558f2b85bed66c62c8de20813c4",
+    "sha1": "34b629f23f7b79b192497f149e9390501cc86de1",
+    "md5": "37524cb95c9fbb321085c6a49f472f8c",
+    "python_version": "3.10.12",
+    "entropy": 5.050886
   }
 }
