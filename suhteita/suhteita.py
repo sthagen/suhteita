@@ -1,4 +1,5 @@
 """Load the JIRA instance."""
+
 import argparse
 import datetime as dti
 import json

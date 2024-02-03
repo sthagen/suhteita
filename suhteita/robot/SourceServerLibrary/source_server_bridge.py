@@ -1,10 +1,11 @@
 """Source server abstraction relaying keywords to API methods of the underlying source server system (Bitbucket)."""
+
 import ast
 from typing import List, no_type_check
 
 import jmespath
 import wrapt  # type: ignore
-from robot.api import ContinuableFailure, logger  # type: ignore
+from robot.api import ContinuableFailure, logger
 
 from suhteita.source_server_actions import Bitbucket as Source
 

@@ -1,10 +1,11 @@
 """Ticket system abstraction relaying keywords to API methods of the underlying ticket system (JIRA)."""
+
 import ast
 from typing import List, no_type_check
 
 import jmespath
 import wrapt  # type: ignore
-from robot.api import ContinuableFailure, logger  # type: ignore
+from robot.api import ContinuableFailure, logger
 
 from suhteita.ticket_system_actions import Jira as Ticket
 

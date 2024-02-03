@@ -1,4 +1,5 @@
 """Provide a simple JSON store for event records."""
+
 import copy
 import datetime as dti
 import json

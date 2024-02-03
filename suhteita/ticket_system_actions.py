@@ -1,4 +1,5 @@
 """Actions on ticket system instances."""
+
 import copy
 import datetime as dti
 from typing import Dict, List, Tuple, no_type_check
