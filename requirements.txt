@@ -1,4 +1,4 @@
-atlassian-python-api==3.41.4
+atlassian-python-api==3.41.9
 jmespath==1.0.1
-robotframework==6.1.1
+robotframework==7.0
 wrapt==1.16.0
