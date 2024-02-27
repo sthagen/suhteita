@@ -21,6 +21,7 @@
       "last_month": -1,
       "last_week": -1
     },
+    "dynamic": null,
     "home_page": "",
     "keywords": "developer-tools,validation,verification",
     "license": "",
@@ -37,6 +38,7 @@
       "Source-Code": "https://git.sr.ht/~sthagen/suhteita",
       "Test-Coverage": "https://codes.dilettant.life/coverage/suhteita"
     },
+    "provides_extra": null,
     "release_url": "https://pypi.org/project/suhteita/2023.6.18/",
     "requires_dist": [
       "atlassian-python-api (>=3.39.0)",
