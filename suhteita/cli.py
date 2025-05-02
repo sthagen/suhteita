@@ -23,7 +23,7 @@ def parse_request(argv: List[str]) -> argparse.Namespace:
         '-T',
         dest='token',
         default=TOKEN,
-        help=f'token (default: set {APP_ENV}_TOKEN for default")',
+        help='token (default: ' ' set {APP_ENV}_TOKEN for default)',
     )
     parser.add_argument(
         '--target',
