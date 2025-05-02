@@ -37,6 +37,7 @@ def setup_twenty_seven(options: argparse.Namespace) -> object:
     setup = Setup()
 
     setup.user = options.user if options.user else USER
+    setup.token = options.token if options.token else TOKEN
     setup.target_url = options.target_url if options.target_url else BASE_URL
     setup.is_cloud = options.is_cloud if options.is_cloud else IS_CLOUD
     setup.target_project = options.target_project if options.target_project else PROJECT
@@ -100,7 +101,7 @@ def setup_twenty_seven(options: argparse.Namespace) -> object:
 def main(options: argparse.Namespace) -> int:
     """Drive the transactions."""
 
-    if not TOKEN:
+    if not options.token and not TOKEN:
         log.error(f'No secret token or pass phrase given, please set {APP_ENV}_TOKEN accordingly')
         return 2
 
@@ -123,7 +124,7 @@ def main(options: argparse.Namespace) -> int:
     store = Store(context=context, setup=cfg, folder_path=cfg.storage_path)
     log.info(f'# Starting 27-steps scenario test execution at at ({start_ts})')
     log.info('- Step <01> LOGIN')
-    clk, service = actions.login(cfg.target_url, cfg.user, password=TOKEN, is_cloud=cfg.is_cloud)
+    clk, service = actions.login(cfg.target_url, cfg.user, password=cfg.token, is_cloud=cfg.is_cloud)
     log.info(f'^ Connected to upstream service; CLK={clk}')
     store.add('LOGIN', True, clk)
 

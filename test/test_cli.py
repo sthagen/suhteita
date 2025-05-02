@@ -23,7 +23,7 @@ def test_main_ok_smvp(capsys):
 
 def test_main(caplog):
     impl.TOKEN = ''
-    assert 2 == cli.main(['-p', 'XYZ'])
+    assert 2 == cli.main(['-p', 'XYZ', '-T', ''])
     message = 'No secret token or pass phrase given, please set SUHTEITA_TOKEN accordingly'
     assert caplog.record_tuples == [('SUHTEITA', logging.ERROR, message)]
 

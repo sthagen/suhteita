@@ -5,7 +5,7 @@ import sys
 from typing import List, Union
 
 import suhteita.suhteita as api
-from suhteita import APP_ALIAS, APP_ENV, BASE_URL, IDENTITY, IS_CLOUD, PROJECT, STORE, USER
+from suhteita import APP_ALIAS, APP_ENV, BASE_URL, IDENTITY, IS_CLOUD, PROJECT, STORE, TOKEN, USER
 
 
 def parse_request(argv: List[str]) -> argparse.Namespace:
@@ -17,6 +17,13 @@ def parse_request(argv: List[str]) -> argparse.Namespace:
         dest='user',
         default=USER,
         help=f'user (default: {USER if USER else f"None, set {APP_ENV}_USER for default"})',
+    )
+    parser.add_argument(
+        '--token',
+        '-T',
+        dest='token',
+        default=TOKEN,
+        help=f'token (default: set {APP_ENV}_TOKEN for default")',
     )
     parser.add_argument(
         '--target',
