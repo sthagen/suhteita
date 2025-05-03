@@ -1,5 +1,8 @@
 # Change History
 
+2025.5.3
+:    Added token, debug, and trace (transitive debug) options
+
 2023.6.18
 :    * Migrated to ruff
 * Moved SBOM noise into folder and added SPDX SBOM (derived) in multiple file formats
