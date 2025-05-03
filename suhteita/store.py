@@ -9,14 +9,13 @@ from typing import Dict, Union, no_type_check
 from suhteita import ENCODING, NODE_INDICATOR, STORE, TS_FORMAT_PAYLOADS, Clocking
 
 TS_FORMAT_STORE = '%Y%m%dT%H%M%S.%fZ'
+Context = Dict[str, Union[str, dti.datetime]]
 
 
 @no_type_check
 class Store:
     @no_type_check
-    def __init__(
-        self, context: Dict[str, Union[str, dti.datetime]], setup: object, folder_path: Union[pathlib.Path, str] = STORE
-    ):
+    def __init__(self, context: Context, setup: object, folder_path: Union[pathlib.Path, str] = STORE):
         self.store = pathlib.Path(folder_path)
         self.identity = context['identity']
         self.start_time = context['start_time']

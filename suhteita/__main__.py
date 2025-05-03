@@ -1,5 +1,5 @@
-# -*- coding: utf-8 -*-
-# pylint: disable=missing-docstring
+"""Boilerplate magic to make the module executable."""
+
 import sys
 
 from suhteita.cli import main

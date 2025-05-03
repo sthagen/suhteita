@@ -3,8 +3,9 @@
 import argparse
 import datetime as dti
 import json
+import logging
 import secrets
-from typing import no_type_check
+from typing import Dict, Union, no_type_check
 
 import suhteita.ticket_system_actions as actions
 from suhteita import (
@@ -26,10 +27,12 @@ from suhteita import (
 )
 from suhteita.store import Store
 
+Context = Dict[str, Union[str, dti.datetime]]
+
 
 @no_type_check
 def setup_twenty_seven(options: argparse.Namespace) -> object:
-    """Setup the scenario adn return the parameters as members of an object."""
+    """Set up the scenario adn return the parameters as members of an object."""
 
     class Setup:
         pass
@@ -105,6 +108,8 @@ def main(options: argparse.Namespace) -> int:
         log.error(f'No secret token or pass phrase given, please set {APP_ENV}_TOKEN accordingly')
         return 2
 
+    if options.debug:
+        log.setLevel(logging.DEBUG)
     cfg = setup_twenty_seven(options=options)
 
     # Belt and braces:
@@ -113,7 +118,7 @@ def main(options: argparse.Namespace) -> int:
     # Here we start the timer for the session:
     start_time = dti.datetime.now(tz=dti.timezone.utc)
     start_ts = start_time.strftime(TS_FORMAT_PAYLOADS)
-    context = {
+    context: Context = {
         'target': cfg.target_url,
         'mode': f'{"cloud" if cfg.is_cloud else "on-site"}',
         'project': cfg.target_project,

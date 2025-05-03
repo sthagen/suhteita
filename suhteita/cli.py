@@ -1,11 +1,11 @@
-#! /usr/bin/env python
 """CLI operations for relationships (Finnish: suhteita) maintained across distances as load test core."""
+
 import argparse
 import sys
 from typing import List, Union
 
 import suhteita.suhteita as api
-from suhteita import APP_ALIAS, APP_ENV, BASE_URL, IDENTITY, IS_CLOUD, PROJECT, STORE, TOKEN, USER
+from suhteita import APP_ALIAS, APP_ENV, BASE_URL, DEBUG, IDENTITY, IS_CLOUD, PROJECT, STORE, TOKEN, USER
 
 
 def parse_request(argv: List[str]) -> argparse.Namespace:
@@ -74,6 +74,16 @@ def parse_request(argv: List[str]) -> argparse.Namespace:
         help=(
             'output folder path for recording'
             f' (default: {STORE if STORE else f"store, set {APP_ENV}_STORE for default"})'
+        ),
+    )
+    parser.add_argument(
+        '--debug',
+        action='store_true',
+        dest='debug',
+        default=DEBUG,
+        help=(
+            'emit debug level information (default: '
+            f'{"True" if DEBUG else f"False, set {APP_ENV}_DEBUG for a different default"})'
         ),
     )
     return parser.parse_args(argv)
