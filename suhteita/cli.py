@@ -78,6 +78,7 @@ def parse_request(argv: List[str]) -> argparse.Namespace:
     )
     parser.add_argument(
         '--debug',
+        '-d',
         action='store_true',
         dest='debug',
         default=DEBUG,
