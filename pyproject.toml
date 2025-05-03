@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "suhteita"
-version = "2023.6.18"
+version = "2025.5.3"
 description = "Relationships (Finnish: suhteita) maintained across distances as load test core."
 readme = "README.md"
 license = {file = "LICENSE"}
@@ -17,6 +17,7 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3.9",
 ]
 keywords = ["developer-tools", "validation", "verification"]
