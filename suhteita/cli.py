@@ -87,6 +87,13 @@ def parse_request(argv: List[str]) -> argparse.Namespace:
             f'{"True" if DEBUG else f"False, set {APP_ENV}_DEBUG for a different default"})'
         ),
     )
+    parser.add_argument(
+        '--trace',
+        action='store_true',
+        dest='trace',
+        default=False,
+        help='hand down debug level request to imported modules (default: "False")',
+    )
     return parser.parse_args(argv)
 
 

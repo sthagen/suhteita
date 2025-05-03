@@ -108,7 +108,9 @@ def main(options: argparse.Namespace) -> int:
         log.error(f'No secret token or pass phrase given, please set {APP_ENV}_TOKEN accordingly')
         return 2
 
-    if options.debug:
+    if options.trace:
+        logging.getLogger().setLevel(logging.DEBUG)
+    elif options.debug:
         log.setLevel(logging.DEBUG)
     cfg = setup_twenty_seven(options=options)
 
