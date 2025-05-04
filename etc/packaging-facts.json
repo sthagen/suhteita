@@ -1,6 +1,6 @@
 {
   "info": {
-    "author": "",
+    "author": null,
     "author_email": "Stefan Hagen <stefan@hagen.link>",
     "bugtrack_url": null,
     "classifiers": [
@@ -10,24 +10,29 @@
       "Programming Language :: Python :: 3.10",
       "Programming Language :: Python :: 3.11",
       "Programming Language :: Python :: 3.12",
+      "Programming Language :: Python :: 3.13",
       "Programming Language :: Python :: 3.9"
     ],
-    "description": "# Suhteita\n\nRelationships (Finnish: suhteita) maintained across distances as load test core.\n\n[License: MIT](https://git.sr.ht/~sthagen/suhteita/tree/default/item/LICENSE)\n\nThird party dependencies are documented in the folder [third-party](docs/third-party/README.md).\n\n[![version](https://img.shields.io/pypi/v/suhteita.svg?style=flat)](https://pypi.python.org/pypi/suhteita/)\n[![downloads](https://pepy.tech/badge/suhteita/month)](https://pepy.tech/project/suhteita)\n[![wheel](https://img.shields.io/pypi/wheel/suhteita.svg?style=flat)](https://pypi.python.org/pypi/suhteita/)\n[![supported-versions](https://img.shields.io/pypi/pyversions/suhteita.svg?style=flat)](https://pypi.python.org/pypi/suhteita/)\n[![supported-implementations](https://img.shields.io/pypi/implementation/suhteita.svg?style=flat)](https://pypi.python.org/pypi/suhteita/)\n\n## Documentation\n\nUser and developer [documentation of suhteita](https://codes.dilettant.life/docs/suhteita).\n\n## Bug Tracker\n\nAny feature requests or bug reports shall go to the [todos of suhteita](https://todo.sr.ht/~sthagen/suhteita).\n\n## Primary Source repository\n\nThe main source of `suhteita` is on a mountain in central Switzerland.\nWe use distributed version control (git).\nThere is no central hub.\nEvery clone can become a new source for the benefit of all.\nThe preferred public clones of `suhteita` are:\n\n* [on codeberg](https://codeberg.org/sthagen/suhteita) - a democratic community-driven, non-profit software development platform operated by Codeberg e.V.\n* [at sourcehut](https://git.sr.ht/~sthagen/suhteita) - a collection of tools useful for software development.\n\n## Contributions\n\nPlease do not submit \"pull requests\" (I found no way to disable that \"feature\" on GitHub).\nIf you like to share small changes under the repositories license please kindly do so by sending a patchset.\nYou can either send such a patchset per email using [git send-email](https://git-send-email.io) or \nif you are a sourcehut user by selecting \"Prepare a patchset\" on the summary page of your fork at [sourcehut](https://git.sr.ht/).\n\n## Status\n\nExperimental.\n\n**Note**: The default branch is `default`.\n",
+    "description": "# Suhteita\n\nRelationships (Finnish: suhteita) maintained across distances as load test core.\n\n[![License](https://git.sr.ht/~sthagen/suhteita/blob/default/docs/badges/license-spdx-mit.svg)](https://git.sr.ht/~sthagen/suhteita/tree/default/item/LICENSE)\n[![Country of Origin](https://git.sr.ht/~sthagen/suhteita/blob/default/docs/badges/country-of-origin-name-switzerland-neutral.svg)](https://git.sr.ht/~sthagen/suhteita/tree/default/item/COUNTRY-OF-ORIGIN)\n[![Export Classification Control Number (ECCN)](https://git.sr.ht/~sthagen/suhteita/blob/default/docs/badges/export-control-classification-number_eccn-ear99-neutral.svg)](https://git.sr.ht/~sthagen/suhteita/tree/default/item/EXPORT-CONTROL-CLASSIFICATION-NUMBER)\n[![Configuration](https://git.sr.ht/~sthagen/suhteita/blob/default/docs/badges/configuration-sbom.svg)](https://git.sr.ht/~sthagen/suhteita/tree/default/item/docs/third-party/README.md)\n\n[![Version](https://git.sr.ht/~sthagen/suhteita/blob/default/docs/badges/latest-release.svg)](https://pypi.python.org/pypi/suhteita/)\n[![Downloads](https://git.sr.ht/~sthagen/suhteita/blob/default/docs/badges/downloads-per-month.svg)](https://pepy.tech/project/suhteita)\n[![Python](https://git.sr.ht/~sthagen/suhteita/blob/default/docs/badges/python-versions.svg)](https://pypi.python.org/pypi/suhteita/)\n[![Maintenance Status](https://git.sr.ht/~sthagen/suhteita/blob/default/docs/badges/commits-per-year.svg)](https://git.sr.ht/~sthagen/suhteita/log)\n\n## Documentation\n\nUser and developer [documentation of suhteita](https://codes.dilettant.life/docs/suhteita).\n\n## Bug Tracker\n\nAny feature requests or bug reports shall go to the [todos of suhteita](https://todo.sr.ht/~sthagen/suhteita).\n\n## Primary Source repository\n\nThe main source of `suhteita` is on a mountain in central Switzerland.\nWe use distributed version control (git).\nThere is no central hub.\nEvery clone can become a new source for the benefit of all.\nThe preferred public clone of `suhteita` is:\n\n* [at sourcehut](https://git.sr.ht/~sthagen/suhteita) - a collection of tools useful for software development.\n\n## Contributions\n\nPlease do not submit \"pull requests\" (I found no way to disable that \"feature\" on GitHub).\nIf you like to share small changes under the repositories license please kindly do so by sending a patchset.\nYou can either send such a patchset per email using [git send-email](https://git-send-email.io) or \nif you are a sourcehut user by selecting \"Prepare a patchset\" on the summary page of your fork at [sourcehut](https://git.sr.ht/).\n\n## Support\n\nPlease kindly submit issues at https://todo.sr.ht/~sthagen/suhteita or write plain text email to ~sthagen/suhteita@lists.sr.ht to submit patches and request support. Thanks.\n\n## Status\n\nExperimental.\n\n**Note**: The default branch is `default`.\n",
     "description_content_type": "text/markdown",
     "docs_url": null,
-    "download_url": "",
+    "download_url": null,
     "downloads": {
       "last_day": -1,
       "last_month": -1,
       "last_week": -1
     },
-    "dynamic": null,
-    "home_page": "",
-    "keywords": "developer-tools,validation,verification",
-    "license": "",
+    "dynamic": [
+      "License-File"
+    ],
+    "home_page": null,
+    "keywords": "developer-tools, validation, verification",
+    "license": "MIT License\n        \n        Copyright (c) 2025 Stefan Hagen\n        \n        Permission is hereby granted, free of charge, to any person obtaining a copy\n        of this software and associated documentation files (the \"Software\"), to deal\n        in the Software without restriction, including without limitation the rights\n        to use, copy, modify, merge, publish, distribute, sublicense, and/or sell\n        copies of the Software, and to permit persons to whom the Software is\n        furnished to do so, subject to the following conditions:\n        \n        The above copyright notice and this permission notice shall be included in all\n        copies or substantial portions of the Software.\n        \n        THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\n        IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\n        FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\n        AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\n        LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\n        OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\n        SOFTWARE.\n        ",
     "license_expression": null,
-    "license_files": null,
-    "maintainer": "",
+    "license_files": [
+      "LICENSE"
+    ],
+    "maintainer": null,
     "maintainer_email": "Stefan Hagen <stefan@hagen.link>",
     "name": "suhteita",
     "package_url": "https://pypi.org/project/suhteita/",
@@ -40,31 +45,33 @@
       "Source-Code": "https://git.sr.ht/~sthagen/suhteita",
       "Test-Coverage": "https://codes.dilettant.life/coverage/suhteita"
     },
-    "provides_extra": null,
-    "release_url": "https://pypi.org/project/suhteita/2023.6.18/",
+    "provides_extra": [
+      "dev"
+    ],
+    "release_url": "https://pypi.org/project/suhteita/2025.5.3/",
     "requires_dist": [
-      "atlassian-python-api (>=3.39.0)",
-      "jmespath (>=1.0.1)",
-      "robotframework (>=6.1)",
-      "wrapt (>=1.15.0)",
-      "tomli ; python_version < \"3.11\"",
-      "black ; extra == 'dev'",
-      "coverage ; extra == 'dev'",
-      "hypothesis ; extra == 'dev'",
-      "mypy ; extra == 'dev'",
-      "pytest ; extra == 'dev'",
-      "pytest-cov ; extra == 'dev'",
-      "pytest-flake8 ; extra == 'dev'",
-      "ruff ; extra == 'dev'",
-      "types-jmespath ; extra == 'dev'"
+      "atlassian-python-api>=3.41.3",
+      "jmespath>=1.0.1",
+      "robotframework>=6.1.1",
+      "wrapt>=1.16.0",
+      "tomli; python_version < \"3.11\"",
+      "black; extra == \"dev\"",
+      "coverage; extra == \"dev\"",
+      "hypothesis; extra == \"dev\"",
+      "mypy; extra == \"dev\"",
+      "pytest; extra == \"dev\"",
+      "pytest-cov; extra == \"dev\"",
+      "pytest-flake8; extra == \"dev\"",
+      "ruff; extra == \"dev\"",
+      "types-jmespath; extra == \"dev\""
     ],
     "requires_python": ">=3.9",
     "summary": "Relationships (Finnish: suhteita) maintained across distances as load test core.",
-    "version": "2023.6.18",
+    "version": "2025.5.3",
     "yanked": false,
     "yanked_reason": null
   },
-  "last_serial": 18552704,
+  "last_serial": 28857470,
   "releases": {
     "2022.8.11": [
       {
@@ -505,48 +512,92 @@
         "yanked": false,
         "yanked_reason": null
       }
+    ],
+    "2025.5.3": [
+      {
+        "comment_text": null,
+        "digests": {
+          "blake2b_256": "105b7c1657d359d3527be94dbbd04468a4a30e37e9b672083738240289bc364d",
+          "md5": "7d08506f851730ad214711bd7890f08c",
+          "sha256": "c2a8398bd3876078d964834f8c71409d1304dad5958ad4f69d7fd30ce95ded26"
+        },
+        "downloads": -1,
+        "filename": "suhteita-2025.5.3-py3-none-any.whl",
+        "has_sig": false,
+        "md5_digest": "7d08506f851730ad214711bd7890f08c",
+        "packagetype": "bdist_wheel",
+        "python_version": "py3",
+        "requires_python": ">=3.9",
+        "size": 16817,
+        "upload_time": "2025-05-03T13:27:25",
+        "upload_time_iso_8601": "2025-05-03T13:27:25.903217Z",
+        "url": "https://files.pythonhosted.org/packages/10/5b/7c1657d359d3527be94dbbd04468a4a30e37e9b672083738240289bc364d/suhteita-2025.5.3-py3-none-any.whl",
+        "yanked": false,
+        "yanked_reason": null
+      },
+      {
+        "comment_text": null,
+        "digests": {
+          "blake2b_256": "3a988f8106cc70cdeb4ec7545cb198d0a8873bbe760ffd55df88b1e6f7d24ba5",
+          "md5": "114d26c65281df95e37f409c47661e80",
+          "sha256": "aec4cb0536f5b23e009c9e0e3fddc8148eb310b9be02637d721d4b8399790682"
+        },
+        "downloads": -1,
+        "filename": "suhteita-2025.5.3.tar.gz",
+        "has_sig": false,
+        "md5_digest": "114d26c65281df95e37f409c47661e80",
+        "packagetype": "sdist",
+        "python_version": "source",
+        "requires_python": ">=3.9",
+        "size": 19379,
+        "upload_time": "2025-05-03T13:27:26",
+        "upload_time_iso_8601": "2025-05-03T13:27:26.906920Z",
+        "url": "https://files.pythonhosted.org/packages/3a/98/8f8106cc70cdeb4ec7545cb198d0a8873bbe760ffd55df88b1e6f7d24ba5/suhteita-2025.5.3.tar.gz",
+        "yanked": false,
+        "yanked_reason": null
+      }
     ]
   },
   "urls": [
     {
-      "comment_text": "",
+      "comment_text": null,
       "digests": {
-        "blake2b_256": "2b8d7278d9cccf2abc57233de5964eb07bc18d06ede4c42a648457949ba7b495",
-        "md5": "1336592fa27ac7ea7af902943775a801",
-        "sha256": "3e7577ec54119301901d2d739fd62d81a5aa9a7b6ec513d6c81b73b6de2e96b4"
+        "blake2b_256": "105b7c1657d359d3527be94dbbd04468a4a30e37e9b672083738240289bc364d",
+        "md5": "7d08506f851730ad214711bd7890f08c",
+        "sha256": "c2a8398bd3876078d964834f8c71409d1304dad5958ad4f69d7fd30ce95ded26"
       },
       "downloads": -1,
-      "filename": "suhteita-2023.6.18-py3-none-any.whl",
+      "filename": "suhteita-2025.5.3-py3-none-any.whl",
       "has_sig": false,
-      "md5_digest": "1336592fa27ac7ea7af902943775a801",
+      "md5_digest": "7d08506f851730ad214711bd7890f08c",
       "packagetype": "bdist_wheel",
       "python_version": "py3",
       "requires_python": ">=3.9",
-      "size": 15656,
-      "upload_time": "2023-06-18T20:32:28",
-      "upload_time_iso_8601": "2023-06-18T20:32:28.712533Z",
-      "url": "https://files.pythonhosted.org/packages/2b/8d/7278d9cccf2abc57233de5964eb07bc18d06ede4c42a648457949ba7b495/suhteita-2023.6.18-py3-none-any.whl",
+      "size": 16817,
+      "upload_time": "2025-05-03T13:27:25",
+      "upload_time_iso_8601": "2025-05-03T13:27:25.903217Z",
+      "url": "https://files.pythonhosted.org/packages/10/5b/7c1657d359d3527be94dbbd04468a4a30e37e9b672083738240289bc364d/suhteita-2025.5.3-py3-none-any.whl",
       "yanked": false,
       "yanked_reason": null
     },
     {
-      "comment_text": "",
+      "comment_text": null,
       "digests": {
-        "blake2b_256": "9042165bd78ee03792651c869f2747b1e69902c559a752ed77d4f02270a5a1ba",
-        "md5": "17e0f5426a590248d362c09d0fb7dd9a",
-        "sha256": "458a70be49f156bf8eb0061e504cc00a82be8b85d480b4d1ee6089763d9e40b7"
+        "blake2b_256": "3a988f8106cc70cdeb4ec7545cb198d0a8873bbe760ffd55df88b1e6f7d24ba5",
+        "md5": "114d26c65281df95e37f409c47661e80",
+        "sha256": "aec4cb0536f5b23e009c9e0e3fddc8148eb310b9be02637d721d4b8399790682"
       },
       "downloads": -1,
-      "filename": "suhteita-2023.6.18.tar.gz",
+      "filename": "suhteita-2025.5.3.tar.gz",
       "has_sig": false,
-      "md5_digest": "17e0f5426a590248d362c09d0fb7dd9a",
+      "md5_digest": "114d26c65281df95e37f409c47661e80",
       "packagetype": "sdist",
       "python_version": "source",
       "requires_python": ">=3.9",
-      "size": 17959,
-      "upload_time": "2023-06-18T20:32:30",
-      "upload_time_iso_8601": "2023-06-18T20:32:30.246249Z",
-      "url": "https://files.pythonhosted.org/packages/90/42/165bd78ee03792651c869f2747b1e69902c559a752ed77d4f02270a5a1ba/suhteita-2023.6.18.tar.gz",
+      "size": 19379,
+      "upload_time": "2025-05-03T13:27:26",
+      "upload_time_iso_8601": "2025-05-03T13:27:26.906920Z",
+      "url": "https://files.pythonhosted.org/packages/3a/98/8f8106cc70cdeb4ec7545cb198d0a8873bbe760ffd55df88b1e6f7d24ba5/suhteita-2025.5.3.tar.gz",
       "yanked": false,
       "yanked_reason": null
     }
