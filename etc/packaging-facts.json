@@ -6,7 +6,6 @@
     "classifiers": [
       "Development Status :: 3 - Alpha",
       "Intended Audience :: Developers",
-      "License :: OSI Approved :: MIT License",
       "Programming Language :: Python :: 3.10",
       "Programming Language :: Python :: 3.11",
       "Programming Language :: Python :: 3.12",
@@ -27,8 +26,8 @@
     ],
     "home_page": null,
     "keywords": "developer-tools, validation, verification",
-    "license": "MIT License\n        \n        Copyright (c) 2025 Stefan Hagen\n        \n        Permission is hereby granted, free of charge, to any person obtaining a copy\n        of this software and associated documentation files (the \"Software\"), to deal\n        in the Software without restriction, including without limitation the rights\n        to use, copy, modify, merge, publish, distribute, sublicense, and/or sell\n        copies of the Software, and to permit persons to whom the Software is\n        furnished to do so, subject to the following conditions:\n        \n        The above copyright notice and this permission notice shall be included in all\n        copies or substantial portions of the Software.\n        \n        THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\n        IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\n        FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\n        AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\n        LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\n        OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\n        SOFTWARE.\n        ",
-    "license_expression": null,
+    "license": null,
+    "license_expression": "MIT",
     "license_files": [
       "LICENSE"
     ],
@@ -48,12 +47,12 @@
     "provides_extra": [
       "dev"
     ],
-    "release_url": "https://pypi.org/project/suhteita/2025.5.3/",
+    "release_url": "https://pypi.org/project/suhteita/2025.8.25/",
     "requires_dist": [
-      "atlassian-python-api>=3.41.3",
+      "atlassian-python-api>=4.0.7",
       "jmespath>=1.0.1",
-      "robotframework>=6.1.1",
-      "wrapt>=1.16.0",
+      "robotframework>=7.3.2",
+      "wrapt>=1.17.3",
       "tomli; python_version < \"3.11\"",
       "black; extra == \"dev\"",
       "coverage; extra == \"dev\"",
@@ -67,11 +66,11 @@
     ],
     "requires_python": ">=3.9",
     "summary": "Relationships (Finnish: suhteita) maintained across distances as load test core.",
-    "version": "2025.5.3",
+    "version": "2025.8.25",
     "yanked": false,
     "yanked_reason": null
   },
-  "last_serial": 28857470,
+  "last_serial": 30878766,
   "releases": {
     "2022.8.11": [
       {
@@ -556,48 +555,92 @@
         "yanked": false,
         "yanked_reason": null
       }
+    ],
+    "2025.8.25": [
+      {
+        "comment_text": null,
+        "digests": {
+          "blake2b_256": "cfbf07da2a12e509179d482f427541343eb64bd2165203706b52ae89f22023e4",
+          "md5": "efc5d55cb422bd7d16e3b29befb5f3e3",
+          "sha256": "e73cc67962710a1c22eda4a9164a947d3f7368e08513511d36dd40434161c124"
+        },
+        "downloads": -1,
+        "filename": "suhteita-2025.8.25-py3-none-any.whl",
+        "has_sig": false,
+        "md5_digest": "efc5d55cb422bd7d16e3b29befb5f3e3",
+        "packagetype": "bdist_wheel",
+        "python_version": "py3",
+        "requires_python": ">=3.9",
+        "size": 16569,
+        "upload_time": "2025-08-25T21:31:23",
+        "upload_time_iso_8601": "2025-08-25T21:31:23.967689Z",
+        "url": "https://files.pythonhosted.org/packages/cf/bf/07da2a12e509179d482f427541343eb64bd2165203706b52ae89f22023e4/suhteita-2025.8.25-py3-none-any.whl",
+        "yanked": false,
+        "yanked_reason": null
+      },
+      {
+        "comment_text": null,
+        "digests": {
+          "blake2b_256": "16f89e3120dcbe5a92797e49fa9d6cf7753fbc1da502d29596c3efdd3fe8b916",
+          "md5": "1335458b8453b1fff8fa51105f808dfc",
+          "sha256": "8e320d42e5333969d5138aff5460b641b5c6d2e5ca4fccea2582e0595b5c5805"
+        },
+        "downloads": -1,
+        "filename": "suhteita-2025.8.25.tar.gz",
+        "has_sig": false,
+        "md5_digest": "1335458b8453b1fff8fa51105f808dfc",
+        "packagetype": "sdist",
+        "python_version": "source",
+        "requires_python": ">=3.9",
+        "size": 18992,
+        "upload_time": "2025-08-25T21:31:24",
+        "upload_time_iso_8601": "2025-08-25T21:31:24.943171Z",
+        "url": "https://files.pythonhosted.org/packages/16/f8/9e3120dcbe5a92797e49fa9d6cf7753fbc1da502d29596c3efdd3fe8b916/suhteita-2025.8.25.tar.gz",
+        "yanked": false,
+        "yanked_reason": null
+      }
     ]
   },
   "urls": [
     {
       "comment_text": null,
       "digests": {
-        "blake2b_256": "105b7c1657d359d3527be94dbbd04468a4a30e37e9b672083738240289bc364d",
-        "md5": "7d08506f851730ad214711bd7890f08c",
-        "sha256": "c2a8398bd3876078d964834f8c71409d1304dad5958ad4f69d7fd30ce95ded26"
+        "blake2b_256": "cfbf07da2a12e509179d482f427541343eb64bd2165203706b52ae89f22023e4",
+        "md5": "efc5d55cb422bd7d16e3b29befb5f3e3",
+        "sha256": "e73cc67962710a1c22eda4a9164a947d3f7368e08513511d36dd40434161c124"
       },
       "downloads": -1,
-      "filename": "suhteita-2025.5.3-py3-none-any.whl",
+      "filename": "suhteita-2025.8.25-py3-none-any.whl",
       "has_sig": false,
-      "md5_digest": "7d08506f851730ad214711bd7890f08c",
+      "md5_digest": "efc5d55cb422bd7d16e3b29befb5f3e3",
       "packagetype": "bdist_wheel",
       "python_version": "py3",
       "requires_python": ">=3.9",
-      "size": 16817,
-      "upload_time": "2025-05-03T13:27:25",
-      "upload_time_iso_8601": "2025-05-03T13:27:25.903217Z",
-      "url": "https://files.pythonhosted.org/packages/10/5b/7c1657d359d3527be94dbbd04468a4a30e37e9b672083738240289bc364d/suhteita-2025.5.3-py3-none-any.whl",
+      "size": 16569,
+      "upload_time": "2025-08-25T21:31:23",
+      "upload_time_iso_8601": "2025-08-25T21:31:23.967689Z",
+      "url": "https://files.pythonhosted.org/packages/cf/bf/07da2a12e509179d482f427541343eb64bd2165203706b52ae89f22023e4/suhteita-2025.8.25-py3-none-any.whl",
       "yanked": false,
       "yanked_reason": null
     },
     {
       "comment_text": null,
       "digests": {
-        "blake2b_256": "3a988f8106cc70cdeb4ec7545cb198d0a8873bbe760ffd55df88b1e6f7d24ba5",
-        "md5": "114d26c65281df95e37f409c47661e80",
-        "sha256": "aec4cb0536f5b23e009c9e0e3fddc8148eb310b9be02637d721d4b8399790682"
+        "blake2b_256": "16f89e3120dcbe5a92797e49fa9d6cf7753fbc1da502d29596c3efdd3fe8b916",
+        "md5": "1335458b8453b1fff8fa51105f808dfc",
+        "sha256": "8e320d42e5333969d5138aff5460b641b5c6d2e5ca4fccea2582e0595b5c5805"
       },
       "downloads": -1,
-      "filename": "suhteita-2025.5.3.tar.gz",
+      "filename": "suhteita-2025.8.25.tar.gz",
       "has_sig": false,
-      "md5_digest": "114d26c65281df95e37f409c47661e80",
+      "md5_digest": "1335458b8453b1fff8fa51105f808dfc",
       "packagetype": "sdist",
       "python_version": "source",
       "requires_python": ">=3.9",
-      "size": 19379,
-      "upload_time": "2025-05-03T13:27:26",
-      "upload_time_iso_8601": "2025-05-03T13:27:26.906920Z",
-      "url": "https://files.pythonhosted.org/packages/3a/98/8f8106cc70cdeb4ec7545cb198d0a8873bbe760ffd55df88b1e6f7d24ba5/suhteita-2025.5.3.tar.gz",
+      "size": 18992,
+      "upload_time": "2025-08-25T21:31:24",
+      "upload_time_iso_8601": "2025-08-25T21:31:24.943171Z",
+      "url": "https://files.pythonhosted.org/packages/16/f8/9e3120dcbe5a92797e49fa9d6cf7753fbc1da502d29596c3efdd3fe8b916/suhteita-2025.8.25.tar.gz",
       "yanked": false,
       "yanked_reason": null
     }
