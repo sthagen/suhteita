@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "suhteita"
-version = "2025.5.3"
+version = "2025.8.25"
 description = "Relationships (Finnish: suhteita) maintained across distances as load test core."
 readme = "README.md"
 license = "MIT"
@@ -22,10 +22,10 @@ classifiers = [
 ]
 keywords = ["developer-tools", "validation", "verification"]
 dependencies = [
-    "atlassian-python-api >= 3.41.3",
+    "atlassian-python-api >= 4.0.7",
     "jmespath >= 1.0.1",
-    "robotframework >= 6.1.1",
-    "wrapt >= 1.16.0",
+    "robotframework >= 7.3.2",
+    "wrapt >= 1.17.3",
     'tomli; python_version < "3.11"',
 ]
 requires-python = ">=3.9"
