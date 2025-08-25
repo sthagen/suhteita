@@ -4,7 +4,7 @@ import copy
 import datetime as dti
 from typing import Dict, List, Tuple, no_type_check
 
-from atlassian import Jira  # type: ignore
+from atlassian import Jira
 
 from suhteita import IS_CLOUD, TOKEN, TS_FORMAT_PAYLOADS, Clocking, log
 
@@ -243,7 +243,7 @@ def create_component(service: Jira, project: str, name: str, description: str) -
         (end_time - start_time).microseconds,
         end_time.strftime(TS_FORMAT_PAYLOADS),
     )
-    comp_id = comp_create_resp['id']
+    comp_id = comp_create_resp['id']  # type: ignore
     return clocking, comp_id, name, service.component(comp_id)
 
 

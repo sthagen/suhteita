@@ -12,6 +12,7 @@ from suhteita import (
     APP_ALIAS,
     APP_ENV,
     BASE_URL,
+    COMMA,
     IDENTITY,
     IS_CLOUD,
     NODE_INDICATOR,
@@ -20,7 +21,7 @@ from suhteita import (
     TOKEN,
     TS_FORMAT_PAYLOADS,
     USER,
-    __version__ as version,
+    VERSION,
     extract_fields,
     log,
     two_sentences,
@@ -49,7 +50,7 @@ def setup_twenty_seven(options: argparse.Namespace) -> object:
     setup.storage_path = options.out_path if options.out_path else STORE
 
     log.info('=' * 84)
-    log.info(f'Generator {APP_ALIAS} version {version}')
+    log.info(f'Generator {APP_ALIAS} version {VERSION}')
     log.info('# Prelude of a 27-steps scenario test execution')
 
     setup.c_rand, setup.d_rand = two_sentences()
@@ -59,7 +60,7 @@ def setup_twenty_seven(options: argparse.Namespace) -> object:
     setup.random_component = secrets.token_urlsafe()
     log.info(f'- Setup <03> Random component name ({setup.random_component})')
 
-    setup.todo, setup.in_progress, setup.done = ('to do', 'in progress', 'done')
+    setup.todo, setup.in_progress, setup.done = options.workflow_csv.split(COMMA)  # Default: 'to do,in progress,done'
     log.info(
         f'- Setup <04> The test workflow assumes the (case insensitive) states'
         f' ({setup.todo}, {setup.in_progress}, {setup.done})'
@@ -103,6 +104,10 @@ def setup_twenty_seven(options: argparse.Namespace) -> object:
 
 def main(options: argparse.Namespace) -> int:
     """Drive the transactions."""
+
+    if options.version:
+        print(VERSION)
+        return 0
 
     if not options.token and not TOKEN:
         log.error(f'No secret token or pass phrase given, please set {APP_ENV}_TOKEN accordingly')

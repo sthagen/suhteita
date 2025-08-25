@@ -5,7 +5,19 @@ import sys
 from typing import List, Union
 
 import suhteita.suhteita as api
-from suhteita import APP_ALIAS, APP_ENV, BASE_URL, DEBUG, IDENTITY, IS_CLOUD, PROJECT, STORE, TOKEN, USER
+from suhteita import (
+    APP_ALIAS,
+    APP_ENV,
+    BASE_URL,
+    DEBUG,
+    IDENTITY,
+    IS_CLOUD,
+    PROJECT,
+    STORE,
+    TOKEN,
+    USER,
+    WORKFLOW_CSV,
+)
 
 
 def parse_request(argv: List[str]) -> argparse.Namespace:
@@ -57,6 +69,16 @@ def parse_request(argv: List[str]) -> argparse.Namespace:
         help='scenario for recording (default: unknown)',
     )
     parser.add_argument(
+        '--workflow',
+        '-w',
+        dest='workflow_csv',
+        default=WORKFLOW_CSV,
+        help=(
+            'workflow triplet as comma separated values'
+            f'(default: "{WORKFLOW_CSV if WORKFLOW_CSV else "None, set SUHTEITA_WORKFLOW_CSV for default"}")'
+        ),
+    )
+    parser.add_argument(
         '--identity',
         '-i',
         dest='identity',
@@ -93,6 +115,14 @@ def parse_request(argv: List[str]) -> argparse.Namespace:
         dest='trace',
         default=False,
         help='hand down debug level request to imported modules (default: "False")',
+    )
+    parser.add_argument(
+        '--version',
+        '-V',
+        action='store_true',
+        dest='version',
+        default=False,
+        help='print version info and exit',
     )
     return parser.parse_args(argv)
 

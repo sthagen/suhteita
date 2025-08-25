@@ -29,6 +29,9 @@ DEFAULT_CONFIG_NAME = f'.{APP_ALIAS}.json'
 
 NODE_INDICATOR = str(uuid.uuid3(uuid.NAMESPACE_DNS, platform.node()))
 STORE = os.getenv(f'{APP_ENV}_STORE', '')  # default 'store' per argparse
+COMMA = ','
+VERSION = __version__
+VERSION_INFO = __version_info__
 
 USER = os.getenv(f'{APP_ENV}_USER', '')
 TOKEN = os.getenv(f'{APP_ENV}_TOKEN', '')
@@ -37,7 +40,7 @@ IS_CLOUD = bool(os.getenv(f'{APP_ENV}_IS_CLOUD', ''))
 PROJECT = os.getenv(f'{APP_ENV}_PROJECT', '')
 IDENTITY = os.getenv(f'{APP_ENV}_IDENTITY', '')  # default 'adhoc' per argparse
 WORDS = os.getenv(f'{APP_ENV}_WORDS', '/usr/share/dict/words')
-
+WORKFLOW_CSV = os.getenv(f'{APP_ENV}_WORKFLOW_CSV', 'to do,in progress,done')
 
 log = logging.getLogger()  # Module level logger is sufficient
 LOG_FOLDER = pathlib.Path('logs')
@@ -49,6 +52,34 @@ TS_FORMAT_LOG = '%Y-%m-%dT%H:%M:%S'
 TS_FORMAT_PAYLOADS = '%Y-%m-%d %H:%M:%S.%f UTC'
 
 Clocking = Tuple[str, float, str]
+
+__all__ = [
+    'APP_ALIAS',
+    'APP_ENV',
+    'APP_NAME',
+    'COMMA',
+    'DEBUG',
+    'DEFAULT_CONFIG_NAME',
+    'ENCODING',
+    'ENCODING_ERRORS_POLICY',
+    'IDENTITY',
+    'LOG_FILE',
+    'LOG_LEVEL',
+    'LOG_PATH',
+    'NODE_INDICATOR',
+    'PROJECT',
+    'QUIET',
+    'STORE',
+    'STRICT',
+    'TS_FORMAT_LOG',
+    'TS_FORMAT_PAYLOADS',
+    'VERBOSE',
+    'VERSION',
+    'VERSION_INFO',
+    'WORDS',
+    'WORKFLOW_CSV',
+    'Clocking',
+]
 
 
 def two_sentences(word_count: int = 4) -> Tuple[str, str]:
