@@ -1,5 +1,8 @@
 # Change History
 
+2025.8.25
+:    Added workflow and version options
+
 2025.5.3
 :    Added token, debug, and trace (transitive debug) options
 
