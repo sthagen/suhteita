@@ -3,7 +3,7 @@
     {
       "category": "3.10",
       "date": "2025-04",
-      "downloads": 32
+      "downloads": 16
     },
     {
       "category": "3.10",
@@ -33,7 +33,7 @@
     {
       "category": "3.11",
       "date": "2025-04",
-      "downloads": 32
+      "downloads": 16
     },
     {
       "category": "3.11",
@@ -63,7 +63,7 @@
     {
       "category": "3.12",
       "date": "2025-04",
-      "downloads": 34
+      "downloads": 16
     },
     {
       "category": "3.12",
@@ -98,7 +98,7 @@
     {
       "category": "3.8",
       "date": "2025-04",
-      "downloads": 32
+      "downloads": 16
     },
     {
       "category": "3.8",
@@ -128,7 +128,7 @@
     {
       "category": "null",
       "date": "2025-04",
-      "downloads": 24
+      "downloads": 4
     },
     {
       "category": "null",
@@ -158,7 +158,7 @@
     {
       "category": "null",
       "date": "2025-10",
-      "downloads": 42
+      "downloads": 43
     }
   ],
   "package": "suhteita",
