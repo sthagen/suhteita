@@ -1,7 +1,7 @@
 # Change History
 
 2026.2.2
-:    Removed support for python 3.9
+:    Removed support for python 3.9 and added retry for fashionable eventual consistency of ticket mgmt system
 
 2025.8.25
 :    Added workflow and version options

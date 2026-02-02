@@ -4,10 +4,10 @@
 
 Versions of suhteita currently being supported with security updates.
 
-| Version(s)  | Supported |
-|:------------|:--------- |
-| 2025.8.25   | yes       |
-| < 2025.8.25 | no        |
+| Version(s) | Supported |
+|:-----------|:----------|
+| 2026.2.2   | yes       |
+| < 2026.2.2 | no        |
 
 ## Reporting a Vulnerability
 
