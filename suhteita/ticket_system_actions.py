@@ -2,14 +2,14 @@
 
 import copy
 import datetime as dti
-from typing import Dict, List, Tuple, no_type_check
+from typing import no_type_check
 
 from atlassian import Jira
 
 from suhteita import IS_CLOUD, TOKEN, TS_FORMAT_PAYLOADS, Clocking, log
 
 
-def login(target_url: str, user: str, password: str = TOKEN, is_cloud: bool = IS_CLOUD) -> Tuple[Clocking, Jira]:
+def login(target_url: str, user: str, password: str = TOKEN, is_cloud: bool = IS_CLOUD) -> tuple[Clocking, Jira]:
     """DRY."""
     start_time = dti.datetime.now(tz=dti.timezone.utc)
     service = Jira(url=target_url, username=user, password=password, cloud=is_cloud)
@@ -22,7 +22,7 @@ def login(target_url: str, user: str, password: str = TOKEN, is_cloud: bool = IS
     return clocking, service
 
 
-def get_server_info(service: Jira) -> Tuple[Clocking, object]:
+def get_server_info(service: Jira) -> tuple[Clocking, object]:
     """DRY."""
     start_time = dti.datetime.now(tz=dti.timezone.utc)
     data = copy.deepcopy(service.get_server_info(True))
@@ -35,7 +35,7 @@ def get_server_info(service: Jira) -> Tuple[Clocking, object]:
     return clocking, data
 
 
-def get_all_projects(service: Jira) -> Tuple[Clocking, List[Dict[str, str]]]:
+def get_all_projects(service: Jira) -> tuple[Clocking, list[dict[str, str]]]:
     """DRY."""
     start_time = dti.datetime.now(tz=dti.timezone.utc)
     projects = copy.deepcopy(service.get_all_projects(included_archived=None))
@@ -49,7 +49,7 @@ def get_all_projects(service: Jira) -> Tuple[Clocking, List[Dict[str, str]]]:
 
 
 @no_type_check
-def create_issue(service: Jira, project: str, ts: str, description: str) -> Tuple[Clocking, str]:
+def create_issue(service: Jira, project: str, ts: str, description: str) -> tuple[Clocking, str]:
     """DRY."""
     fields = {
         'project': {'key': project},
@@ -69,7 +69,7 @@ def create_issue(service: Jira, project: str, ts: str, description: str) -> Tupl
 
 
 @no_type_check
-def issue_exists(service: Jira, issue_key: str) -> Tuple[Clocking, bool]:
+def issue_exists(service: Jira, issue_key: str) -> tuple[Clocking, bool]:
     """DRY."""
     start_time = dti.datetime.now(tz=dti.timezone.utc)
     exists = copy.deepcopy(service.issue_exists(issue_key))
@@ -83,7 +83,7 @@ def issue_exists(service: Jira, issue_key: str) -> Tuple[Clocking, bool]:
 
 
 @no_type_check
-def get_issue_status(service: Jira, issue_key: str) -> Tuple[Clocking, str]:
+def get_issue_status(service: Jira, issue_key: str) -> tuple[Clocking, str]:
     """DRY."""
     start_time = dti.datetime.now(tz=dti.timezone.utc)
     status = copy.deepcopy(service.get_issue_status(issue_key))
@@ -96,7 +96,7 @@ def get_issue_status(service: Jira, issue_key: str) -> Tuple[Clocking, str]:
     return clocking, status
 
 
-def set_issue_status(service: Jira, issue_key: str, status: str) -> Tuple[Clocking, object]:
+def set_issue_status(service: Jira, issue_key: str, status: str) -> tuple[Clocking, object]:
     """DRY."""
     start_time = dti.datetime.now(tz=dti.timezone.utc)
     response = copy.deepcopy(service.set_issue_status(issue_key, status))
@@ -109,7 +109,7 @@ def set_issue_status(service: Jira, issue_key: str, status: str) -> Tuple[Clocki
     return clocking, response
 
 
-def load_issue(service: Jira, issue_key: str) -> Tuple[Clocking, object]:
+def load_issue(service: Jira, issue_key: str) -> tuple[Clocking, object]:
     """DRY."""
     start_time = dti.datetime.now(tz=dti.timezone.utc)
     data = copy.deepcopy(service.issue(issue_key))
@@ -123,7 +123,7 @@ def load_issue(service: Jira, issue_key: str) -> Tuple[Clocking, object]:
 
 
 @no_type_check
-def execute_jql(service: Jira, query: str) -> Tuple[Clocking, object]:
+def execute_jql(service: Jira, query: str) -> tuple[Clocking, object]:
     """DRY."""
     start_time = dti.datetime.now(tz=dti.timezone.utc)
     data = copy.deepcopy(service.jql(query))
@@ -156,7 +156,7 @@ def amend_issue_description(service: Jira, issue_key: str, amendment: str, issue
 
 
 @no_type_check
-def add_comment(service: Jira, issue_key: str, comment: str) -> Tuple[Clocking, object]:
+def add_comment(service: Jira, issue_key: str, comment: str) -> tuple[Clocking, object]:
     """DRY."""
     start_time = dti.datetime.now(tz=dti.timezone.utc)
     response = copy.deepcopy(service.issue_add_comment(issue_key, comment))
@@ -169,7 +169,7 @@ def add_comment(service: Jira, issue_key: str, comment: str) -> Tuple[Clocking, 
     return clocking, response
 
 
-def update_issue_field(service: Jira, issue_key: str, labels: List[str]) -> Clocking:
+def update_issue_field(service: Jira, issue_key: str, labels: list[str]) -> Clocking:
     """DRY."""
     start_time = dti.datetime.now(tz=dti.timezone.utc)
     _ = copy.deepcopy(service.update_issue_field(issue_key, fields={'labels': labels}))
@@ -184,7 +184,7 @@ def update_issue_field(service: Jira, issue_key: str, labels: List[str]) -> Cloc
 
 def create_duplicates_issue_link(
     service: Jira, duplicate_issue_key: str, original_issue_key: str
-) -> Tuple[Clocking, object]:
+) -> tuple[Clocking, object]:
     """DRY."""
     data = {
         'type': {'name': 'Duplicate'},
@@ -205,7 +205,7 @@ def create_duplicates_issue_link(
     return clocking, response
 
 
-def set_original_estimate(service: Jira, issue_key: str, hours: int) -> Tuple[Clocking, bool]:
+def set_original_estimate(service: Jira, issue_key: str, hours: int) -> tuple[Clocking, bool]:
     """DRY."""
     ok = True
     try:
@@ -227,7 +227,7 @@ def set_original_estimate(service: Jira, issue_key: str, hours: int) -> Tuple[Cl
     return clocking, ok
 
 
-def create_component(service: Jira, project: str, name: str, description: str) -> Tuple[Clocking, str, str, object]:
+def create_component(service: Jira, project: str, name: str, description: str) -> tuple[Clocking, str, str, object]:
     """DRY."""
     comp_data = {
         'project': project,
@@ -247,7 +247,7 @@ def create_component(service: Jira, project: str, name: str, description: str) -
     return clocking, comp_id, name, service.component(comp_id)
 
 
-def relate_issue_to_component(service: Jira, issue_key: str, comp_id: str, comp_name: str) -> Tuple[Clocking, bool]:
+def relate_issue_to_component(service: Jira, issue_key: str, comp_id: str, comp_name: str) -> tuple[Clocking, bool]:
     """DRY."""
     ok = True
     try:

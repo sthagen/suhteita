@@ -7,7 +7,7 @@ import pathlib
 import platform
 import secrets
 import uuid
-from typing import Tuple, no_type_check
+from typing import no_type_check
 
 # [[[fill git_describe()]]]
 __version__ = '2025.8.25+parent.gaf1c9d0d'
@@ -51,7 +51,7 @@ LOG_LEVEL = logging.INFO
 TS_FORMAT_LOG = '%Y-%m-%dT%H:%M:%S'
 TS_FORMAT_PAYLOADS = '%Y-%m-%d %H:%M:%S.%f UTC'
 
-Clocking = Tuple[str, float, str]
+Clocking = tuple[str, float, str]
 
 __all__ = [
     'APP_ALIAS',
@@ -82,7 +82,7 @@ __all__ = [
 ]
 
 
-def two_sentences(word_count: int = 4) -> Tuple[str, str]:
+def two_sentences(word_count: int = 4) -> tuple[str, str]:
     """DRY."""
     with open(WORDS, 'rt', encoding=ENCODING) as handle:
         words = [word.strip() for word in handle]

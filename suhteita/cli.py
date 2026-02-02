@@ -2,7 +2,6 @@
 
 import argparse
 import sys
-from typing import List, Union
 
 import suhteita.suhteita as api
 from suhteita import (
@@ -20,7 +19,7 @@ from suhteita import (
 )
 
 
-def parse_request(argv: List[str]) -> argparse.Namespace:
+def parse_request(argv: list[str]) -> argparse.Namespace:
     """DRY."""
     parser = argparse.ArgumentParser(description=APP_ALIAS)
     parser.add_argument(
@@ -128,7 +127,7 @@ def parse_request(argv: List[str]) -> argparse.Namespace:
 
 
 # pylint: disable=expression-not-assigned
-def main(argv: Union[List[str], None] = None) -> int:
+def main(argv: list[str] | None = None) -> int:
     """Delegate processing to functional module."""
     argv = sys.argv[1:] if argv is None else argv
 

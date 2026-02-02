@@ -1,10 +1,10 @@
 """Source server abstraction relaying keywords to API methods of the underlying source server system (Bitbucket)."""
 
 import ast
-from typing import List, no_type_check
+from typing import no_type_check
 
 import jmespath
-import wrapt  # type: ignore
+import wrapt
 from robot.api import ContinuableFailure, logger
 
 from suhteita.source_server_actions import Bitbucket as Source
@@ -36,7 +36,7 @@ class SourceServerBridge(object):
     _source_server = Source
     _session = None
 
-    def get_keyword_names(self) -> List[str]:
+    def get_keyword_names(self) -> list[str]:
         """Generate the list of keywords from the underlying provider - required hybrid API method."""
         get_members = self._source_server.__dict__.items
         kws = [name for name, function in get_members() if hasattr(function, '__call__')]

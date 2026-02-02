@@ -5,7 +5,7 @@ import datetime as dti
 import json
 import logging
 import secrets
-from typing import Dict, Union, no_type_check
+from typing import no_type_check
 
 import suhteita.ticket_system_actions as actions
 from suhteita import (
@@ -28,7 +28,7 @@ from suhteita import (
 )
 from suhteita.store import Store
 
-Context = Dict[str, Union[str, dti.datetime]]
+Context = dict[str, str | dti.datetime]
 
 
 @no_type_check

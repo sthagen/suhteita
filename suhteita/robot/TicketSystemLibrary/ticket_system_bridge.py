@@ -1,10 +1,10 @@
 """Ticket system abstraction relaying keywords to API methods of the underlying ticket system (JIRA)."""
 
 import ast
-from typing import List, no_type_check
+from typing import no_type_check
 
 import jmespath
-import wrapt  # type: ignore
+import wrapt
 from robot.api import ContinuableFailure, logger
 
 from suhteita.ticket_system_actions import Jira as Ticket
@@ -15,7 +15,7 @@ def _string_to_data(string):
     """Parse the string into the underlying data type if successful else return the string."""
     try:
         return ast.literal_eval(str(string).strip())
-    except Exception:
+    except Exception:  # noqa
         return string
 
 
@@ -36,7 +36,7 @@ class TicketSystemBridge(object):
     _ticket_system = Ticket
     _session = None
 
-    def get_keyword_names(self) -> List[str]:
+    def get_keyword_names(self) -> list[str]:
         """Generate the list of keywords from the underlying provider - required hybrid API method."""
         get_members = self._ticket_system.__dict__.items
         kws = [name for name, function in get_members() if hasattr(function, '__call__')]
