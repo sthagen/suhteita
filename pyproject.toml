@@ -24,9 +24,9 @@ classifiers = [
 keywords = ["developer-tools", "validation", "verification"]
 dependencies = [
     "atlassian-python-api >= 4.0.7",
-    "jmespath >= 1.0.1",
-    "robotframework >= 7.3.2",
-    "wrapt >= 2.0.1",
+    "jmespath >= 1.1.0",
+    "robotframework >= 7.4.1",
+    "wrapt >= 2.1.0",
     'tomli; python_version < "3.11"',
 ]
 requires-python = ">=3.9"
