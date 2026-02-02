@@ -15,7 +15,7 @@ def _string_to_data(string):
     """Parse the string into the underlying data type if successful else return the string."""
     try:
         return ast.literal_eval(str(string).strip())
-    except Exception:
+    except Exception:  # noqa
         return string
 
 

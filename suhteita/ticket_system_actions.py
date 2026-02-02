@@ -2,6 +2,7 @@
 
 import copy
 import datetime as dti
+import time
 from typing import no_type_check
 
 from atlassian import Jira
@@ -140,12 +141,21 @@ def execute_jql(service: Jira, query: str) -> tuple[Clocking, object]:
 def amend_issue_description(service: Jira, issue_key: str, amendment: str, issue_context) -> Clocking:
     """DRY."""
     start_time = dti.datetime.now(tz=dti.timezone.utc)
-    _ = copy.deepcopy(
-        service.update_issue_field(
-            issue_key,
-            fields={'description': f"{issue_context['issues'][0]['fields']['description']}\n{amendment}"},
+    try:
+        _ = copy.deepcopy(
+            service.update_issue_field(
+                issue_key,
+                fields={'description': f"{issue_context['issues'][0]['fields']['description']}\n{amendment}"},
+            )
         )
-    )
+    except IndexError:
+        time.sleep(0.1)
+        _ = copy.deepcopy(
+            service.update_issue_field(
+                issue_key,
+                fields={'description': f"{issue_context['issues'][0]['fields']['description']}\n2nd-{amendment}"},
+            )
+        )
     end_time = dti.datetime.now(tz=dti.timezone.utc)
     clocking: Clocking = (
         start_time.strftime(TS_FORMAT_PAYLOADS),
