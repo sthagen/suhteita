@@ -196,9 +196,14 @@ def main(options: argparse.Namespace) -> int:
     store.add('EXECUTE_JQL', True, clk, f'query({query.replace(c_key, "original-key")})')
 
     log.info('- Step <09> AMEND_ISSUE_DESCRIPTION')
-    clk = actions.amend_issue_description(service, c_key, amendment=cfg.amendment, issue_context=c_q)
-    log.info(f'^ Amended description of original {d_key} with ({cfg.amendment}); CLK={clk}')
-    store.add('AMEND_ISSUE_DESCRIPTION', True, clk, 'original')
+    try:
+        clk = actions.amend_issue_description(service, c_key, amendment=cfg.amendment, issue_context=c_q)
+        log.info(f'^ Amended description of original {d_key} with ({cfg.amendment}); CLK={clk}')
+        store.add('AMEND_ISSUE_DESCRIPTION', True, clk, 'original')
+    except IndexError as err:
+        log.error(f'^ Failed amending description of original {d_key} with ({cfg.amendment}); CLK={clk}')
+        log.error(f'^^ Detail: {err}')
+        store.add('AMEND_ISSUE_DESCRIPTION', False, clk, 'original')
 
     log.info('- Step <10> ADD_COMMENT')
     clk, _ = actions.add_comment(service=service, issue_key=d_key, comment=cfg.fake_comment)
@@ -235,9 +240,14 @@ def main(options: argparse.Namespace) -> int:
     store.add('SET_ISSUE_STATUS', True, clk, f'duplicate ({cfg.todo})->({cfg.in_progress})')
 
     log.info('- Step <16> SET_ISSUE_STATUS')
-    clk, _ = actions.set_issue_status(service, d_key, cfg.done)
-    log.info(f'^ Transitioned the duplicate {d_key} to ({cfg.done}); CLK={clk}')
-    store.add('SET_ISSUE_STATUS', True, clk, f'duplicate ({cfg.in_progress})->({cfg.done})')
+    try:
+        clk, _ = actions.set_issue_status(service, d_key, cfg.done)
+        log.info(f'^ Transitioned the duplicate {d_key} to ({cfg.done}); CLK={clk}')
+        store.add('SET_ISSUE_STATUS', True, clk, f'duplicate ({cfg.in_progress})->({cfg.done})')
+    except Exception as err:  # noqa
+        log.error(f'^ Failed transitioning the duplicate {d_key} to ({cfg.done}); CLK={clk}')
+        log.error(f'^^ Detail: {err}')
+        store.add('SET_ISSUE_STATUS', False, clk, f'duplicate ({cfg.in_progress})->({cfg.done})')
 
     log.info('- Step <17> GET_ISSUE_STATUS')
     clk, d_iss_state_done = actions.get_issue_status(service, d_key)
