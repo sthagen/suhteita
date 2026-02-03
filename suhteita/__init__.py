@@ -10,8 +10,8 @@ import uuid
 from typing import no_type_check
 
 # [[[fill git_describe()]]]
-__version__ = '2026.2.2+parent.g2ae55261'
-# [[[end]]] (checksum: 5ba7d947fb5654b96f0ef9b8c59a236f)
+__version__ = '2026.2.3+parent.g88869d4b'
+# [[[end]]] (checksum: ba0cb34713c384ef259040e3a0d1bb03)
 __version_info__ = tuple(
     e if '-' not in e else e.split('-')[0] for part in __version__.split('+') for e in part.split('.') if e != 'parent'
 )
