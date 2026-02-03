@@ -1,5 +1,8 @@
 # Change History
 
+2026.2.3
+:    Fixed regression introduced by retry feature (based on stale data)
+
 2026.2.2
 :    Removed support for python 3.9 and added retry for fashionable eventual consistency of ticket mgmt system
 
